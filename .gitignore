@@ -1,0 +1,29 @@
+/vendor*
+/coverage*
+/composer.lock
+
+# archives and other useless files
+*.swp
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.7z
+
+# compile files
+*.com
+*.class
+*.dll
+*.exe
+*.app
+*.o
+*.so
+
+# system files
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db

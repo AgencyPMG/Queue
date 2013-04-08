@@ -1,0 +1,19 @@
+{
+    "name": "pmg/queue",
+    "description": "A task queue for PHP",
+    "authors": [
+        { "name": "Christopher Davis", "email": "chris@pmg.co" }
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "PMG\\Queue": "src/",
+            "PMG\\Queue\\Test": "test/"
+        }
+    }
+}
