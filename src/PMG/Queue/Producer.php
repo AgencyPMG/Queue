@@ -1,0 +1,69 @@
+<?php
+/**
+ * This file is part of PMG\Queue
+ *
+ * Copyright (c) 2013 PMG Worldwide
+ *
+ * @package     PMGQueue
+ * @copyright   2013 PMG Worldwide
+ * @license     http://opensource.org/licenses/MIT MIT
+ */
+
+namespace PMG\Queue;
+
+class Producer implements ProducerInterface, AdapaterAwareInterface
+{
+    /**
+     * Container for the Adapater (server backend)
+     *
+     * @since   0.1
+     * @access  private
+     * @var     PMG\Queue\Adapater\AdapaterInterface
+     */
+    private $adapater;
+
+    /**
+     * Constructor. Set the Adapater.
+     *
+     * @since   0.1
+     * @access  public
+     * @param   PMG\Queue\Adapater\AdapterInterface $adpt
+     * @return  void
+     */
+    public function __construct(\PMG\Queue\Adapater\AdapaterInterface $adpt)
+    {
+        $this->adapater = $adpt;
+    }
+
+    /**
+     * From ProducerInterface
+     *
+     * {@inheritdoc}
+     */
+    public function addJob($name, $ttr, array $args=array())
+    {
+        $args['__job_name'] = $name;
+
+        return $this->getAdapater()->put($ttr, $args);
+    }
+
+    /**
+     * From AdapaterAwareInterface
+     *
+     * {@inheritdoc}
+     */
+    public function setAdapter(\PMG\Queue\Adapater\AdapaterInterface $adpt)
+    {
+        $this->adapater = $adpt;
+    }
+
+    /**
+     * From AdapaterAwareInterface
+     *
+     * {@inheritdoc}
+     */
+    public function getAdapater()
+    {
+        return $this->adapater;
+    }
+}
