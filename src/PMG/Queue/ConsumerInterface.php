@@ -30,9 +30,10 @@ interface ConsumerInterface
      *          from ProducerInterface::addJob)
      * @param   string $job_class A class that implements JobInterface to be
      *          instantiated to run the job.
+     * @param   array $constructor An array of args to pass to the job constructor
      * @return  void
      */
-    public function whitelistJob();
+    public function whitelistJob($name, $job_class);
 
     /**
      * Run the consumer.
