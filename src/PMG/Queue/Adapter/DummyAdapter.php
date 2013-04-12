@@ -17,7 +17,7 @@ namespace PMG\Queue\Adapter;
  * @since   0.1
  * @author  Christopher Davis <chris@pmg.co>
  */
-class DummyAdapater implements AdapaterInterface
+class DummyAdapter implements AdapterInterface
 {
     /**
      * The current job.
@@ -26,7 +26,7 @@ class DummyAdapater implements AdapaterInterface
      * @access  private
      * @var     string
      */
-    private $current;
+    private $current = null;
 
     /**
      * The queue.
@@ -56,7 +56,13 @@ class DummyAdapater implements AdapaterInterface
      */
     public function acquire()
     {
+        if ($job = $this->queue->dequeue()) {
+            $this->current = $job;
+            $job_name = isset($job['__job_name']) ? $job['__job_name'] : false;
+            return array($job_name, $job);
+        }
 
+        throw new Exception\TimeoutException("No job available");
     }
 
     /**
@@ -66,7 +72,12 @@ class DummyAdapater implements AdapaterInterface
      */
     public function finish()
     {
+        if ($this->current) {
+            $this->current = null;
+            return true;
+        }
 
+        $this->noJob();
     }
 
     /**
@@ -76,7 +87,13 @@ class DummyAdapater implements AdapaterInterface
      */
     public function punt()
     {
+        if ($this->current) {
+            $this->queue->enqueue($this->current);
+            $this->current = null;
+            return true;
+        }
 
+        $this->noJob();
     }
 
     /**
@@ -86,7 +103,7 @@ class DummyAdapater implements AdapaterInterface
      */
     public function touch()
     {
-
+        // do nothing
     }
 
     /**
@@ -96,6 +113,11 @@ class DummyAdapater implements AdapaterInterface
      */
     public function put($ttr, array $job_body)
     {
+        $this->queue->enqueue($job_body);
+    }
 
+    private function noJob()
+    {
+        throw new Exception\NoActiveJobException("No currently active job");
     }
 }

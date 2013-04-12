@@ -21,7 +21,7 @@ namespace PMG\Queue\Adapter;
  * @since   0.1
  * @access  public
  */
-interface AdapaterInterface
+interface AdapterInterface
 {
     /**
      * Acquire a job from the queue.

@@ -13,8 +13,9 @@ namespace PMG\Queue;
 
 use Psr\Log\LogLevel;
 
-class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\LoggerAwareInterface
+class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\LoggerAwareInterface
 {
+    const E_STARTED         = 'started';
     const E_EXIT_FAIL       = 'exit_failure';
     const E_EXIT            = 'exit';
     const E_CHILD_EXIT      = 'child_exit';
@@ -74,17 +75,20 @@ class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\Lo
      * @return  void
      */
     public function __construct(
-        Adapter\AdapaterInterface $adpt,
-        \Psr\Log\LoggerInterface $logger,
+        Adapter\AdapterInterface $adpt,
+        \Psr\Log\LoggerInterface $logger=null,
         \Symfony\Component\EventDispatcher\EventDispatcherInterface $event=null)
     {
         if (!$event) {
             $event = new \Symfony\Component\EventDispatcher\EventDispatcher();
         }
 
-        $this->setAdapater($adpt);
-        $this->setLogger($logger);
+        $this->setAdapter($adpt);
         $this->setEventManager($event);
+
+        if ($logger) {
+            $this->setLogger($logger);
+        }
     }
 
     /**
@@ -104,6 +108,8 @@ class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\Lo
      */
     public function run()
     {
+        $this->dispatch(static::E_STARTED, new \Symfony\Component\EventDispatcher\Event());
+
         while (true) {
             $this->runOnce();
         }
@@ -118,10 +124,10 @@ class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\Lo
      */
     public function runOnce()
     {
-        $adapater = $this->getAdapater();
+        $adapter = $this->getAdapter();
 
         try {
-            list($job_name, $args) = $adapater->acquire();
+            list($job_name, $args) = $adapter->acquire();
         } catch (Adapater\Exception\MustQuitException $e) {
             $exit_code = $e->getCode();
 
@@ -133,27 +139,39 @@ class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\Lo
         } catch (Exception\QueueException $e) {
             $this->dispatch(static::E_QUEUE_EXCEPTION, new Event\ExceptionEvent($e));
             $this->log(LogLevel::ERROR, "Caught QueueException, continuing");
-            continue;
+            return;
         } catch (\Exception $e) {
             $this->dispatch(static::E_EXCEPTION, new Event\ExceptionEvent($e));
             $this->log(LogLevel::ERROR, "Caught unexpected exception, continuing");
-            continue;
+            return;
         }
 
         if (!isset($this->jobs[$job_name])) {
             $this->dispatch(static::E_NOJOB, new Event\NoJobEvent($job_name, $args));
             $this->log(LogLevel::WARNING, "Got non-whitelisted job {$job_name}, continuing");
-            continue;
+            return;
         }
 
         $code = $this->doJob($job_name, $args);
 
+        $status_event = new Event\JobStatusEvent($job_name);
+
         if (0 === $code) {
-            $adapater->finish();
-            $this->dispatch(static::E_JOB_FINISHED, $e);
+            try {
+                $adapter->finish();
+            } catch (Exception\QueueException $except) {
+                $this->dispatch(static::E_QUEUE_EXCEPTION, new Event\ExceptionEvent($except));
+            }
+
+            $this->dispatch(static::E_JOB_FINISHED, $status_event);
         } else {
-            $adapater->punt();
-            $this->dispatch(static::E_JOB_FAILED, $e);
+            try {
+                $adapter->punt();
+            } catch (Exception\QueueException $except) {
+                $this->dispatch(static::E_QUEUE_EXCEPTION, new Event\ExceptionEvent($except));
+            }
+
+            $this->dispatch(static::E_JOB_FAILED, $status_event);
         }
     }
 
@@ -162,7 +180,7 @@ class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\Lo
      *
      * {@inheritdoc}
      */
-    public function setAdapter(\PMG\Queue\Adapater\AdapaterInterface $adpt)
+    public function setAdapter(\PMG\Queue\Adapter\AdapterInterface $adpt)
     {
         $this->adapater = $adpt;
     }
@@ -172,7 +190,7 @@ class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\Lo
      *
      * {@inheritdoc}
      */
-    public function getAdapater()
+    public function getAdapter()
     {
         return $this->adapater;
     }
@@ -239,20 +257,24 @@ class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\Lo
      */
     protected function log($level, $message, array $context=array())
     {
-        $this->logger->log($level, $message, $context);
+        if ($this->logger) {
+            $this->logger->log($level, $message, $context);
+        }
     }
 
     protected function doJob($job_name, $args)
     {
-        $job = $this->createJobClass($this->jobs[$job_name]);
+        $job = $this->createJobInstance($this->jobs[$job_name]);
 
-        $e = new EventJobEvent($job);
+        $e = new Event\JobEvent($job);
 
         $this->dispatch(static::E_PREFORK, $e);
 
         $child = static::fork();
 
-        if (0 === $child || false === $child) {
+        $status = 0;
+
+        if ($child <= 0) {
             // child thread
             try {
                 $job->work($args);
@@ -262,18 +284,16 @@ class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\Lo
                     $status = 1;
                 }
 
-                if (false === $child) {
-                    return $status;
+                // if we forked, child will be zero
+                if (0 === $child) {
+                    exit($status);
                 }
-
-                exit($status);
             }
 
-            if (false === $child) {
-                return 0;
+            // if we forked, child will be zero
+            if (0 === $child) {
+                exit(0);
             }
-
-            exit(0);
         } elseif ($child > 0) {
             // parent thread
             $this->dispatch(static::E_POSTFORK, $e);
@@ -284,7 +304,8 @@ class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\Lo
         }
 
         // if we're here for some reason, we didn't actually fork
-        // pretend we did and return 0
+        // pretend we did and return 0, success, we would've caught
+        // any error earlier
         return 0;
     }
 
@@ -302,15 +323,9 @@ class Consumer implements ConsumerInterface, AdapaterAwareInterface, \Psr\Log\Lo
     protected static function fork()
     {
         if (!function_exists('pnctl_fork')) {
-            return false; // fake like we're a child function
+            return -1;
         }
 
-        $pid = pnctl_fork();
-
-        if (-1 === $pid) {
-            return false; // xxx maybe this should fail here?
-        }
-
-        return $pid;
+        return pnctl_fork();
     }
 }

@@ -17,7 +17,7 @@ namespace PMG\Queue;
  * @since   0.1
  * @author  Christopher Davis <chris@pmg.co>
  */
-interface AdapaterAwareInterface
+interface AdapterAwareInterface
 {
     /**
      * Set the adapater.
@@ -27,7 +27,7 @@ interface AdapaterAwareInterface
      * @param   PMG\Queue\Adapater\AdapaterInterface $adpt
      * @return  $this
      */
-    public function setAdapater(\PMG\Queue\Adapater\AdapaterInterface $adpt);
+    public function setAdapter(\PMG\Queue\Adapter\AdapterInterface $adpt);
 
     /**
      * Get the adapater.
@@ -36,5 +36,5 @@ interface AdapaterAwareInterface
      * @access  public
      * @return  PMG\Queue\Adapater\AdapaterInterface
      */
-    public function getAdapater();
+    public function getAdapter();
 }

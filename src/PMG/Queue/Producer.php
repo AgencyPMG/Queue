@@ -11,7 +11,7 @@
 
 namespace PMG\Queue;
 
-class Producer implements ProducerInterface, AdapaterAwareInterface
+class Producer implements ProducerInterface, AdapterAwareInterface
 {
     /**
      * Container for the Adapater (server backend)
@@ -30,7 +30,7 @@ class Producer implements ProducerInterface, AdapaterAwareInterface
      * @param   PMG\Queue\Adapater\AdapterInterface $adpt
      * @return  void
      */
-    public function __construct(\PMG\Queue\Adapater\AdapaterInterface $adpt)
+    public function __construct(\PMG\Queue\Adapter\AdapterInterface $adpt)
     {
         $this->adapater = $adpt;
     }
@@ -44,7 +44,7 @@ class Producer implements ProducerInterface, AdapaterAwareInterface
     {
         $args['__job_name'] = $name;
 
-        return $this->getAdapater()->put($ttr, $args);
+        return $this->getAdapter()->put($ttr, $args);
     }
 
     /**
@@ -52,7 +52,7 @@ class Producer implements ProducerInterface, AdapaterAwareInterface
      *
      * {@inheritdoc}
      */
-    public function setAdapter(\PMG\Queue\Adapater\AdapaterInterface $adpt)
+    public function setAdapter(\PMG\Queue\Adapter\AdapterInterface $adpt)
     {
         $this->adapater = $adpt;
     }
@@ -62,7 +62,7 @@ class Producer implements ProducerInterface, AdapaterAwareInterface
      *
      * {@inheritdoc}
      */
-    public function getAdapater()
+    public function getAdapter()
     {
         return $this->adapater;
     }
