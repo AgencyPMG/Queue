@@ -298,9 +298,9 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
             // parent thread
             $this->dispatch(static::E_POSTFORK, $e);
 
-            pnctl_wait($status);
+            pcntl_wait($status);
 
-            return pnctl_wexitstatus($status);
+            return pcntl_wexitstatus($status);
         }
 
         // if we're here for some reason, we didn't actually fork
@@ -322,10 +322,10 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
 
     protected static function fork()
     {
-        if (!function_exists('pnctl_fork')) {
+        if (!function_exists('pcntl_fork')) {
             return -1;
         }
 
-        return pnctl_fork();
+        return pcntl_fork();
     }
 }
