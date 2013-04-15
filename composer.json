@@ -5,12 +5,13 @@
         { "name": "Christopher Davis", "email": "chris@pmg.co" }
     ],
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=5.3.3",
+        "symfony/event-dispatcher": "2.2.*",
+        "psr/log": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
-        "symfony/event-dispatcher": "2.2.*",
-        "psr/log": "dev-master"
+        "pda/pheanstalk": "2.1.*"
     },
     "autoload": {
         "psr-0": {
