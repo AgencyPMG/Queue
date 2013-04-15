@@ -129,12 +129,16 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
 
         try {
             list($job_name, $args) = $adapter->acquire();
-        } catch (Adapater\Exception\MustQuitException $e) {
+        } catch (Adapter\Exception\MustQuitException $e) {
             $exit_code = $e->getCode();
 
             $this->dispatch(static::E_EXIT_FAIL, new Event\QuitEvent($exit_code));
 
             $this->log(LogLevel::EMERGENCY, "Got Adapater\\Exception\\MustQuitException with status code {$exit_code}, exiting");
+
+            if ($exit_code > 255) {
+                $exit_code = 1;
+            }
 
             exit($exit_code);
         } catch (Exception\QueueException $e) {

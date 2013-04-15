@@ -11,7 +11,7 @@
 
 namespace PMG\Queue\Adapter\Exception;
 
-class NoActiveJobException implements AdapaterException
+class NoActiveJobException extends \RuntimeException implements AdapterException
 {
     // empty
 }

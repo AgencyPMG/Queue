@@ -11,7 +11,14 @@
 
 namespace PMG\Queue\Adapter\Exception;
 
-class TimeoutException extends \RuntimeException implements AdapterException
+/**
+ * Thrown when a client throws an exception that we dont' really know how to
+ * deal with.
+ *
+ * @since   0.1
+ * @author  Christopher Davis <chris@pmg.co>
+ */
+class ClientException extends \RuntimeException implements AdapterException
 {
     // empty
 }

@@ -73,5 +73,5 @@ interface AdapterInterface
      * @throws  PMG\Queue\Adapater\Exception\AdapaterException if something goes wrong.
      * @return  true on success
      */
-    public function put($ttr, array $job_body);
+    public function put(array $job_body, $ttr=null);
 }

@@ -11,7 +11,13 @@
 
 namespace PMG\Queue\Adapter\Exception;
 
-class TimeoutException extends \RuntimeException implements AdapterException
+/**
+ * Thrown when our adapater can't understand the job body.
+ *
+ * @since   0.1
+ * @author  Christopher Davis <chris@pmg.co>
+ */
+class BadJobBodyException extends \RuntimeException implements AdapterException
 {
     // empty
 }

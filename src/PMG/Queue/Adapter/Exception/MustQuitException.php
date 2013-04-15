@@ -18,7 +18,7 @@ namespace PMG\Queue\Adapter\Exception;
  * @since   0.1
  * @author  Christopher Davis <chris@pmg.co>
  */
-class MustQuitException implements AdapaterException
+class MustQuitException extends \RuntimeException implements AdapterException
 {
     // empty
 }

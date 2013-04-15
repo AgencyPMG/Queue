@@ -40,11 +40,11 @@ class Producer implements ProducerInterface, AdapterAwareInterface
      *
      * {@inheritdoc}
      */
-    public function addJob($name, $ttr, array $args=array())
+    public function addJob($name, array $args=array(), $ttr=null)
     {
         $args['__job_name'] = $name;
 
-        return $this->getAdapter()->put($ttr, $args);
+        return $this->getAdapter()->put($args, $ttr);
     }
 
     /**

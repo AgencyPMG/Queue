@@ -111,7 +111,7 @@ class DummyAdapter implements AdapterInterface
      *
      * {@inheritdoc}
      */
-    public function put($ttr, array $job_body)
+    public function put(array $job_body, $ttr=null)
     {
         $this->queue->enqueue($job_body);
     }
