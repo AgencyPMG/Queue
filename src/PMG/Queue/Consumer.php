@@ -83,12 +83,13 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
             $event = new \Symfony\Component\EventDispatcher\EventDispatcher();
         }
 
+        if (!$logger) {
+            $logger = new DummyLogger();
+        }
+
         $this->setAdapter($adpt);
         $this->setEventManager($event);
-
-        if ($logger) {
-            $this->setLogger($logger);
-        }
+        $this->setLogger($logger);
     }
 
     /**
@@ -257,9 +258,7 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
      */
     protected function log($level, $message, array $context=array())
     {
-        if ($this->logger) {
-            $this->logger->log($level, $message, $context);
-        }
+        $this->logger->log($level, $message, $context);
     }
 
     protected function doJob($job_name, $args)
