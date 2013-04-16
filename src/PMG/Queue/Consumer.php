@@ -289,6 +289,18 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
     }
 
     /**
+     * Get the current child process ID (or null)
+     *
+     * @since   0.1
+     * @access  public
+     * @return  int|null
+     */
+    public function getChild()
+    {
+        return $this->child;
+    }
+
+    /**
      * Dispatch an event.
      *
      * @since   0.1
