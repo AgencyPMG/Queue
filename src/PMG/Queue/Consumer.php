@@ -164,21 +164,21 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
                 $exit_code = 1;
             }
 
-            exit($exit_code);
+            throw new Exception\ConsumerException("Got a must quit exception.", $exit_code, $e);
         } catch (Exception\QueueException $e) {
             $this->dispatch(static::E_QUEUE_EXCEPTION, new Event\ExceptionEvent($e));
             $this->log(LogLevel::ERROR, "Caught QueueException, continuing");
-            return;
+            return 1;
         } catch (\Exception $e) {
             $this->dispatch(static::E_EXCEPTION, new Event\ExceptionEvent($e));
             $this->log(LogLevel::ERROR, "Caught unexpected exception, continuing");
-            return;
+            return 1;
         }
 
         if (!isset($this->jobs[$job_name])) {
             $this->dispatch(static::E_NOJOB, new Event\NoJobEvent($job_name, $args));
             $this->log(LogLevel::WARNING, "Got non-whitelisted job {$job_name}, continuing");
-            return;
+            return 1;
         }
 
         $code = $this->doJob($job_name, $args);
