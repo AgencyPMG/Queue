@@ -336,7 +336,7 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
             try {
                 $job->work($args);
             } catch (\Exception $except) {
-                $status = $e->getCode();
+                $status = $except->getCode();
                 if ($status > 255) {
                     $status = 1;
                 }
@@ -345,6 +345,10 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
                 if (0 === $child) {
                     exit($status);
                 }
+
+                // if we're here we didn't fork, return the status to the
+                // runOnce caller to deal with
+                return $status;
             }
 
             // if we forked, child will be zero
