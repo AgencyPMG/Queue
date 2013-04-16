@@ -242,5 +242,7 @@ class PheanstalkAdapter implements AdapterInterface
         } catch (\Pheanstalk_Exception $e) {
             throw new Exception\ClientException("Caught Pheanstalk_Exception", intval($e->getCode()), $e);
         }
+
+        return true;
     }
 }

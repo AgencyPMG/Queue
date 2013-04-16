@@ -116,6 +116,8 @@ class DummyAdapter implements AdapterInterface
         $job_body[static::JOB_NAME] = $job_name;
 
         $this->queue->enqueue($job_body);
+
+        return true;
     }
 
     private function noJob()
