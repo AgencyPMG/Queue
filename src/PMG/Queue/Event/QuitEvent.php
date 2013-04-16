@@ -21,7 +21,7 @@ class QuitEvent extends \Symfony\Component\EventDispatcher\Event
 {
     private $exit_code = 0;
 
-    public function __construct($exit_code=0);
+    public function __construct($exit_code=0)
     {
         $this->setExitCode($exit_code);
     }
