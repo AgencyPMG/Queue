@@ -57,6 +57,15 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
     private $logger;
 
     /**
+     * Process manager.
+     *
+     * @since   0.1
+     * @access  private
+     * @var     PMG\Queue\ProcessManagerInterface
+     */
+    private $pm;
+
+    /**
      * Container for whitelisted jobs
      *
      * @since   0.1
@@ -64,6 +73,15 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
      * @var     array[]
      */
     private $jobs = array();
+
+    /**
+     * The current child process.
+     *
+     * @since   0.1
+     * @access  private
+     * @var     int
+     */
+    private $child = null;
 
     /**
      * Constructor. Set the adapater and event manager.
@@ -77,7 +95,8 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
     public function __construct(
         Adapter\AdapterInterface $adpt,
         \Psr\Log\LoggerInterface $logger=null,
-        \Symfony\Component\EventDispatcher\EventDispatcherInterface $event=null)
+        \Symfony\Component\EventDispatcher\EventDispatcherInterface $event=null,
+        ProcessManagerInterface $pm=null)
     {
         if (!$event) {
             $event = new \Symfony\Component\EventDispatcher\EventDispatcher();
@@ -87,9 +106,14 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
             $logger = new DummyLogger();
         }
 
+        if (!$pm) {
+            $pm = new ProcessManager();
+        }
+
         $this->setAdapter($adpt);
         $this->setEventManager($event);
         $this->setLogger($logger);
+        $this->setProcessManager($pm);
     }
 
     /**
@@ -178,6 +202,8 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
 
             $this->dispatch(static::E_JOB_FAILED, $status_event);
         }
+
+        return $code;
     }
 
     /**
@@ -237,6 +263,32 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
     }
 
     /**
+     * Set the process manager.
+     *
+     * @since   0.1
+     * @access  public
+     * @param   PMG\Queue\ProcessManager
+     * @return  $this
+     */
+    public function setProcessManager(ProcessManagerInterface $pm)
+    {
+        $this->pm = $pm;
+        return $this;
+    }
+
+    /**
+     * Get the process manager.
+     *
+     * @since   0.1
+     * @access  public
+     * @return  PMG\Queue\ProcessManagerInterface
+     */
+    public function getProcessManager()
+    {
+        return $this->pm;
+    }
+
+    /**
      * Dispatch an event.
      *
      * @since   0.1
@@ -273,7 +325,9 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
 
         $this->dispatch(static::E_PREFORK, $e);
 
-        $child = static::fork();
+        $pm = $this->getProcessManager();
+
+        $this->child = $child = $pm->fork();
 
         $status = 0;
 
@@ -301,9 +355,11 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
             // parent thread
             $this->dispatch(static::E_POSTFORK, $e);
 
-            pcntl_wait($status);
+            $status = $pm->wait($child);
 
-            return pcntl_wexitstatus($status);
+            $this->child = null;
+
+            return $pm->getStatus($status);
         }
 
         // if we're here for some reason, we didn't actually fork
@@ -321,14 +377,5 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
         $this->log(LogLevel::DEBUG, "Created job class {$class}");
 
         return $job;
-    }
-
-    protected static function fork()
-    {
-        if (!function_exists('pcntl_fork')) {
-            return -1;
-        }
-
-        return pcntl_fork();
     }
 }
