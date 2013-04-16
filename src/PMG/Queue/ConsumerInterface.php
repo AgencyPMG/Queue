@@ -44,6 +44,7 @@ interface ConsumerInterface
      *          $consumer->run();
      *      } catch (\PMG\Queue\Exception\ConsumerException $e) {
      *          // we had to exit. Try to recover or alert admins or whatever
+     *          exit($e->getCode());
      *      }
      *
      * @since   0.1
@@ -52,4 +53,24 @@ interface ConsumerInterface
      * @return  void
      */
     public function run();
+
+    /**
+     * Do a single job then exit.
+     *
+     * Example:
+     *      $consumer = new Consumer;
+     *      try {
+     *          $consumer->runOnce();
+     *      } catch (\PMG\Queue\Exception\ConsumerException $e) {
+     *          // we had to exit. Try to recover or alert admins or whatever
+     *          exit($e->getCode());
+     *      }
+     *
+     * @since   0.1
+     * @access  public
+     * @throws  PMG\Queue\Exception\ConsumerException
+     * @return  int 0 on success, something other than zero on failure -- mimics
+     *          unix-like exit codes, in other words.
+     */
+    public function runOnce();
 }
