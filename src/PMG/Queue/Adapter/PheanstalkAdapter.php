@@ -150,7 +150,7 @@ class PheanstalkAdapter implements AdapterInterface
             throw new Exception\BadJobBodyException("Could not json_decode job body");
         }
 
-        return array(isset($body['__job_name']) ? $body['__job_name'] : false, $body);
+        return array(isset($body[static::JOB_NAME]) ? $body[static::JOB_NAME] : false, $body);
     }
 
     /**
@@ -227,11 +227,13 @@ class PheanstalkAdapter implements AdapterInterface
      *
      * {@inheritdoc}
      */
-    public function put(array $job_body, $ttr=null)
+    public function put($job_name, array $job_body, $ttr=null)
     {
         if (!$ttr) {
             $ttr = \Pheanstalk_PheanstalkInterface::DEFAULT_TTR;
         }
+
+        $job_body[static::JOB_NAME] = $job_name;
 
         try {
             $this->getConnection()

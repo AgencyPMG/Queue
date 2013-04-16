@@ -58,7 +58,7 @@ class DummyAdapter implements AdapterInterface
     {
         if ($job = $this->queue->dequeue()) {
             $this->current = $job;
-            $job_name = isset($job['__job_name']) ? $job['__job_name'] : false;
+            $job_name = isset($job[static::JOB_NAME]) ? $job[static::JOB_NAME] : false;
             return array($job_name, $job);
         }
 
@@ -111,8 +111,10 @@ class DummyAdapter implements AdapterInterface
      *
      * {@inheritdoc}
      */
-    public function put(array $job_body, $ttr=null)
+    public function put($job_name, array $job_body, $ttr=null)
     {
+        $job_body[static::JOB_NAME] = $job_name;
+
         $this->queue->enqueue($job_body);
     }
 

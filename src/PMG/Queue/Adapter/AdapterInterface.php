@@ -23,6 +23,8 @@ namespace PMG\Queue\Adapter;
  */
 interface AdapterInterface
 {
+    const JOB_NAME = '__job_name';
+
     /**
      * Acquire a job from the queue.
      *
@@ -68,10 +70,11 @@ interface AdapterInterface
      *
      * @since   0.1
      * @access  public
-     * @param   int $ttr The time in seconds the job should be alotted before failing
+     * @param   string $job_name The job's name
      * @param   array $job_body The job's body to `json_encode`
+     * @param   int $ttr The time in seconds the job should be alotted before failing
      * @throws  PMG\Queue\Adapater\Exception\AdapaterException if something goes wrong.
      * @return  true on success
      */
-    public function put(array $job_body, $ttr=null);
+    public function put($job_name, array $job_body, $ttr=null);
 }
