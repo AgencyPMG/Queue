@@ -181,7 +181,7 @@ class PheanstalkAdapter implements AdapterInterface
      *
      * {@inheritdoc}
      */
-    public function punt($ttr=null)
+    public function punt()
     {
         if (!$this->current) {
             throw new Exception\NoActiveJobException('No currently open jobs');
