@@ -56,13 +56,17 @@ class DummyAdapter implements AdapterInterface
      */
     public function acquire()
     {
-        if ($job = $this->queue->dequeue()) {
-            $this->current = $job;
-            $job_name = isset($job[static::JOB_NAME]) ? $job[static::JOB_NAME] : false;
-            return array($job_name, $job);
+        try {
+            $job = $this->queue->dequeue();
+        } catch (\RuntimeException $e) {
+            throw new Exception\TimeoutException("No job available", $e->getCode(), $e);
         }
 
-        throw new Exception\TimeoutException("No job available");
+        $this->current = $job;
+
+        $job_name = isset($job[static::JOB_NAME]) ? $job[static::JOB_NAME] : false;
+
+        return array($job_name, $job);
     }
 
     /**
