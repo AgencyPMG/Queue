@@ -185,6 +185,8 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
 
         $status_event = new Event\JobStatusEvent($job_name);
 
+        $this->log(LogLevel::INFO, "Finished job {$job_name} with exit code {$code}");
+
         if (0 === $code) {
             try {
                 $adapter->finish();
