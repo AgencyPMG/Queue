@@ -148,7 +148,7 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
      */
     public function run()
     {
-        $this->dispatch(static::E_STARTED, new \Symfony\Component\EventDispatcher\Event());
+        $this->dispatch(static::E_STARTED, new Event\ConsumerEvent($this));
 
         while (true) {
             $this->runOnce();
