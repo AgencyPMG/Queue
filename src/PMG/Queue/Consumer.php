@@ -131,6 +131,21 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
      *
      * {@inheritdoc}
      */
+    public function blacklistJob($name)
+    {
+        if (isset($this->jobs[$name])) {
+            unset($this->jobs[$name]);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * From ConsumerInterface
+     *
+     * {@inheritdoc}
+     */
     public function run()
     {
         $this->dispatch(static::E_STARTED, new \Symfony\Component\EventDispatcher\Event());

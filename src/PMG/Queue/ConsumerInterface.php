@@ -36,6 +36,16 @@ interface ConsumerInterface
     public function whitelistJob($name, $job_class);
 
     /**
+     * Remove a job from the whitelist.
+     *
+     * @since   0.1
+     * @access  public
+     * @param   string $name
+     * @return  boolean
+     */
+    public function blacklistJob($name);
+
+    /**
      * Run the consumer.
      *
      * Example:
