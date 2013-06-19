@@ -6,7 +6,7 @@
     ],
     "require": {
         "php": ">=5.3.3",
-        "symfony/event-dispatcher": "2.2.*",
+        "symfony/event-dispatcher": ">=2.2",
         "psr/log": "1.0.0"
     },
     "require-dev": {
