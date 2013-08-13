@@ -238,7 +238,12 @@ class PheanstalkAdapter implements AdapterInterface
         try {
             $this->getConnection()
                 ->useTube($this->getTube())
-                ->put(json_encode($job_body), $ttr);
+                ->put(
+                    json_encode($job_body),
+                    \Pheanstalk_PheanstalkInterface::DEFAULT_PRIORITY,
+                    \Pheanstalk_PheanstalkInterface::DEFAULT_DELAY,
+                    $ttr
+                );
         } catch (\Pheanstalk_Exception $e) {
             throw new Exception\ClientException("Caught Pheanstalk_Exception", intval($e->getCode()), $e);
         }
