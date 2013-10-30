@@ -36,11 +36,11 @@ class ProducerTest extends \PHPUnit_Framework_TestCase
 
         $adapter->expects($this->once())
             ->method('put')
-            ->with('say_hello', array('name' => 'Chris'))
+            ->with('say_hello', array('name' => 'Chris'), 1000, 10)
             ->will($this->returnValue(true));
 
         $producer = new Producer($adapter);
 
-        $this->assertTrue($producer->addJob('say_hello', array('name' => 'Chris')));
+        $this->assertTrue($producer->addJob('say_hello', array('name' => 'Chris'), 1000, 10));
     }
 }
