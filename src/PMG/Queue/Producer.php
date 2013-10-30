@@ -40,9 +40,9 @@ class Producer implements ProducerInterface, AdapterAwareInterface
      *
      * {@inheritdoc}
      */
-    public function addJob($name, array $args=array(), $ttr=null)
+    public function addJob($name, array $args=array(), $ttr=null, $delay=null)
     {
-        return $this->getAdapter()->put($name, $args, $ttr);
+        return $this->getAdapter()->put($name, $args, $ttr, $delay);
     }
 
     /**

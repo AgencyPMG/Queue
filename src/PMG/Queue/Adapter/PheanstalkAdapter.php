@@ -227,11 +227,10 @@ class PheanstalkAdapter implements AdapterInterface
      *
      * {@inheritdoc}
      */
-    public function put($job_name, array $job_body, $ttr=null)
+    public function put($job_name, array $job_body, $ttr=null, $delay=null)
     {
-        if (!$ttr) {
-            $ttr = \Pheanstalk_PheanstalkInterface::DEFAULT_TTR;
-        }
+        $ttr = $ttr ?: \Pheanstalk_PheanstalkInterface::DEFAULT_TTR;
+        $dealy = $delay ?: \Pheanstalk_PheanstalkInterface::DEFAULT_DELAY;
 
         $job_body[static::JOB_NAME] = $job_name;
 
@@ -241,7 +240,7 @@ class PheanstalkAdapter implements AdapterInterface
                 ->put(
                     json_encode($job_body),
                     \Pheanstalk_PheanstalkInterface::DEFAULT_PRIORITY,
-                    \Pheanstalk_PheanstalkInterface::DEFAULT_DELAY,
+                    $delay,
                     $ttr
                 );
         } catch (\Pheanstalk_Exception $e) {

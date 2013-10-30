@@ -73,8 +73,9 @@ interface AdapterInterface
      * @param   string $job_name The job's name
      * @param   array $job_body The job's body to `json_encode`
      * @param   int $ttr The time in seconds the job should be alotted before failing
+     * @param   int $delay How long to delay the job before running it.
      * @throws  PMG\Queue\Adapater\Exception\AdapaterException if something goes wrong.
      * @return  true on success
      */
-    public function put($job_name, array $job_body, $ttr=null);
+    public function put($job_name, array $job_body, $ttr=null, $delay=null);
 }

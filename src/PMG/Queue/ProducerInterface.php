@@ -28,8 +28,9 @@ interface ProducerInterface
      * @param   array $args The args to pass to `JobInterface::work` Anything
      *          that's JsonSerializable will work just fine.
      * @param   int $ttr The allowed time for the job to run
+     * @param   int $delay How long to delay the job in the queue before running it.
      * @throws  PMG\Queue\Exception\AddJobException if something goes wrong
      * @return  boolean True on success
      */
-    public function addJob($name, array $args=array(), $ttr=null);
+    public function addJob($name, array $args=array(), $ttr=null, $delay=null);
 }

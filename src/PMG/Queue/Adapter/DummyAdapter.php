@@ -115,7 +115,7 @@ class DummyAdapter implements AdapterInterface
      *
      * {@inheritdoc}
      */
-    public function put($job_name, array $job_body, $ttr=null)
+    public function put($job_name, array $job_body, $ttr=null, $delay=null)
     {
         $job_body[static::JOB_NAME] = $job_name;
 
