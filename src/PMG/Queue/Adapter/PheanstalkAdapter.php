@@ -230,7 +230,7 @@ class PheanstalkAdapter implements AdapterInterface
     public function put($job_name, array $job_body, $ttr=null, $delay=null)
     {
         $ttr = $ttr ?: \Pheanstalk_PheanstalkInterface::DEFAULT_TTR;
-        $dealy = $delay ?: \Pheanstalk_PheanstalkInterface::DEFAULT_DELAY;
+        $delay = $delay ?: \Pheanstalk_PheanstalkInterface::DEFAULT_DELAY;
 
         $job_body[static::JOB_NAME] = $job_name;
 
