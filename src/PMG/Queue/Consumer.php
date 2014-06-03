@@ -182,7 +182,7 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
             throw new Exception\ConsumerException("Got a must quit exception.", $exit_code, $e);
         } catch (Exception\QueueException $e) {
             $this->dispatch(static::E_QUEUE_EXCEPTION, new Event\ExceptionEvent($e));
-            $this->log(LogLevel::NOTICE, "Caught QueueException, continuing");
+            $this->log(LogLevel::DEBUG, "Caught QueueException, continuing");
             return 1;
         } catch (\Exception $e) {
             $this->dispatch(static::E_EXCEPTION, new Event\ExceptionEvent($e));
@@ -200,7 +200,7 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
 
         $status_event = new Event\JobStatusEvent($job_name);
 
-        $this->log(LogLevel::INFO, "Finished job {$job_name} with exit code {$code}");
+        $this->log(LogLevel::DEBUG, "Finished job {$job_name} with exit code {$code}");
 
         if (0 === $code) {
             try {
