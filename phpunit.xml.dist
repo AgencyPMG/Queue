@@ -12,7 +12,7 @@
          bootstrap="vendor/autoload.php">
     <testsuites>
         <testsuite name="PMGQueue Test Suite">
-            <directory>./src/PMG/Queue/Test</directory>
+            <directory>./src/Test</directory>
         </testsuite>
     </testsuites>
 </phpunit>
