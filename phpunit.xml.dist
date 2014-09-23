@@ -9,10 +9,10 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="vendor/autoload.php">
+         bootstrap="test/bootstrap.php">
     <testsuites>
-        <testsuite name="PMGQueue Test Suite">
-            <directory>./src/Test</directory>
+        <testsuite name="unit">
+            <directory>./test/unit</directory>
         </testsuite>
     </testsuites>
 </phpunit>

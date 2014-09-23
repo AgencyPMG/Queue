@@ -9,9 +9,7 @@
  * @license     http://opensource.org/licenses/MIT MIT
  */
 
-namespace PMG\Queue\Test;
-
-use PMG\Queue\Adapter\DummyAdapter;
+namespace PMG\Queue\Adapter;
 
 class DummyAdapterTest extends \PHPUnit_Framework_TestCase
 {

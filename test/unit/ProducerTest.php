@@ -9,9 +9,7 @@
  * @license     http://opensource.org/licenses/MIT MIT
  */
 
-namespace PMG\Queue\Test;
-
-use PMG\Queue\Producer;
+namespace PMG\Queue;
 
 class ProducerTest extends \PHPUnit_Framework_TestCase
 {

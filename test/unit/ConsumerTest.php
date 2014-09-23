@@ -9,9 +9,7 @@
  * @license     http://opensource.org/licenses/MIT MIT
  */
 
-namespace PMG\Queue\Test;
-
-use PMG\Queue;
+namespace PMG\Queue;
 
 class ConsumerTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,9 +22,9 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
 
         $a->expects($this->once())
             ->method('acquire')
-            ->will($this->throwException(new Queue\Adapter\Exception\MustQuitException()));
+            ->will($this->throwException(new Adapter\Exception\MustQuitException()));
 
-        $consumer = new Queue\Consumer($a);
+        $consumer = new Consumer($a);
 
         $consumer->runOnce();
     }
@@ -37,9 +35,9 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
 
         $a->expects($this->once())
             ->method('acquire')
-            ->will($this->throwException(new Queue\Adapter\Exception\TimeoutException()));
+            ->will($this->throwException(new Adapter\Exception\TimeoutException()));
 
-        $consumer = new Queue\Consumer($a);
+        $consumer = new Consumer($a);
 
         $this->assertEquals(1, $consumer->runOnce());
     }
@@ -52,7 +50,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
             ->method('acquire')
             ->will($this->throwException(new \RuntimeException("Something went wrong")));
 
-        $consumer = new Queue\Consumer($a);
+        $consumer = new Consumer($a);
 
         $this->assertEquals(1, $consumer->runOnce());
     }
@@ -65,7 +63,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
             ->method('acquire')
             ->will($this->returnValue(array('some_job', array())));
 
-        $consumer = new Queue\Consumer($a);
+        $consumer = new Consumer($a);
 
         $this->assertEquals(1, $consumer->runOnce());
     }
@@ -78,7 +76,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
             ->method('acquire')
             ->will($this->returnValue(array('some_job', array())));
 
-        $consumer = new Queue\Consumer($a, null, null, $this->getProcessMock());
+        $consumer = new Consumer($a, null, null, $this->getProcessMock());
 
         $consumer->whitelistJob('some_job', __NAMESPACE__ . '\\StubJob');
 
@@ -93,7 +91,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
             ->method('acquire')
             ->will($this->returnValue(array('some_job', array())));
 
-        $consumer = new Queue\Consumer($a, null, null, $this->getProcessMock());
+        $consumer = new Consumer($a, null, null, $this->getProcessMock());
 
         $consumer->whitelistJob('some_job', __NAMESPACE__ . '\\StubSuccess');
 
@@ -108,7 +106,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
             ->method('acquire')
             ->will($this->returnValue(array('some_job', array())));
 
-        $consumer = new Queue\Consumer($a);
+        $consumer = new Consumer($a);
 
         $consumer->whitelistJob('some_job', __NAMESPACE__ . '\\StubJob');
 
@@ -123,7 +121,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
             ->method('acquire')
             ->will($this->returnValue(array('some_job', array())));
 
-        $consumer = new Queue\Consumer($a);
+        $consumer = new Consumer($a);
 
         $consumer->whitelistJob('some_job', __NAMESPACE__ . '\\StubSuccess');
 
@@ -152,7 +150,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class StubJob implements Queue\JobInterface
+class StubJob implements JobInterface
 {
     const CODE = 101;
 
@@ -162,7 +160,7 @@ class StubJob implements Queue\JobInterface
     }
 }
 
-class StubSuccess implements Queue\JobInterface
+class StubSuccess implements JobInterface
 {
     public function work(array $args=array())
     {

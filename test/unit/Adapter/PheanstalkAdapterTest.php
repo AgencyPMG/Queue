@@ -9,9 +9,7 @@
  * @license     http://opensource.org/licenses/MIT MIT
  */
 
-namespace PMG\Queue\Test;
-
-use PMG\Queue\Adapter\PheanstalkAdapter;
+namespace PMG\Queue\Adapter;
 
 class PheanstalkAdapterTest extends \PHPUnit_Framework_TestCase
 {
@@ -246,7 +244,6 @@ class PheanstalkAdapterTest extends \PHPUnit_Framework_TestCase
 
     private function getJob($id, $body)
     {
-        // xxx probably should use a mock here.
         return new \Pheanstalk_Job($id, $body);
     }
 }
