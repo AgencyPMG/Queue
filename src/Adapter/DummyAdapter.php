@@ -17,7 +17,7 @@ namespace PMG\Queue\Adapter;
  * @since   0.1
  * @author  Christopher Davis <chris@pmg.co>
  */
-class DummyAdapter implements AdapterInterface
+class DummyAdapter implements AdapterInterface, \Countable
 {
     /**
      * The current job.
@@ -122,6 +122,14 @@ class DummyAdapter implements AdapterInterface
         $this->queue->enqueue($job_body);
 
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count()
+    {
+        return count($this->queue);
     }
 
     private function noJob()
