@@ -51,6 +51,22 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
     /**
      * {@inheritdoc}
      */
+    public function ack(Message $message)
+    {
+        // noop
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fail(Message $message)
+    {
+        $this->enqueue($message);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function count()
     {
         return $this->queue->count();

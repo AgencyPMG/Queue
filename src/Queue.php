@@ -34,4 +34,23 @@ interface Queue
      * @return  Message|null A message if one is available, null otherwise.
      */
     public function dequeue();
+
+    /**
+     * Acknowledge a message as completed. $message should be the same instance
+     * given back from the `dequeue`.
+     *
+     * @param   $message The message that's finished
+     * @return  void
+     */
+    public function ack(Message $message);
+
+    /**
+     * Mark a message has having failed it processing. It's up to the queue
+     * implementation to decide what that means.
+     *
+     * @param   $message The message that failed, should be the same instance as
+     *          returned from `dequeue`.
+     * @return  void
+     */
+    public function fail(Message $message);
 }

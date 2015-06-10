@@ -26,6 +26,9 @@ class MemoryQueueTest extends \PMG\Queue\UnitTestCase
         $this->assertCount(1, $q, 'should have one message in the queue');
         $this->assertSame($msg, $q->dequeue());
         $this->assertCount(0, $q, 'should have no messages in the queue');
+
+        $q->fail($msg);
+        $this->assertCount(1, $q, 'the message should have gone back on to the queue');
     }
 
     public function testEmptyQueueReturnsNullWhenNoMessagesAreFound()
