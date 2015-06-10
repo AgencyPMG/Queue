@@ -5,7 +5,7 @@
         { "name": "Christopher Davis", "email": "chris@pmg.co" }
     ],
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.5",
         "symfony/event-dispatcher": ">=2.2",
         "psr/log": "1.0.0"
     },
