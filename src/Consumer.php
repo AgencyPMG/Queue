@@ -180,7 +180,7 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
             }
 
             throw new Exception\ConsumerException("Got a must quit exception.", $exit_code, $e);
-        } catch (Exception\QueueException $e) {
+        } catch (QueueException $e) {
             $this->dispatch(static::E_QUEUE_EXCEPTION, new Event\ExceptionEvent($e));
             $this->log(LogLevel::DEBUG, "Caught QueueException, continuing");
             return 1;
@@ -205,7 +205,7 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
         if (0 === $code) {
             try {
                 $adapter->finish();
-            } catch (Exception\QueueException $except) {
+            } catch (QueueException $except) {
                 $this->dispatch(static::E_QUEUE_EXCEPTION, new Event\ExceptionEvent($except));
             }
 
@@ -213,7 +213,7 @@ class Consumer implements ConsumerInterface, AdapterAwareInterface, \Psr\Log\Log
         } else {
             try {
                 $adapter->punt();
-            } catch (Exception\QueueException $except) {
+            } catch (QueueException $except) {
                 $this->dispatch(static::E_QUEUE_EXCEPTION, new Event\ExceptionEvent($except));
             }
 
