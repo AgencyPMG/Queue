@@ -11,6 +11,8 @@
 
 namespace PMG\Queue\Exception;
 
+use PMG\Queue\QueueException;
+
 /**
  * Thrown when something goes wrong in the consumer and it has to exit.
  *

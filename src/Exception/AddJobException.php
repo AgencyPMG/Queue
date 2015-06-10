@@ -11,6 +11,8 @@
 
 namespace PMG\Queue\Exception;
 
+use PMG\Queue\QueueException;
+
 /**
  * Thrown when there's an error adding the job to a queue.
  *

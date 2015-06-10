@@ -17,7 +17,7 @@ namespace PMG\Queue\Adapter\Exception;
  * @since   0.1
  * @author  Christopher Davis <chris@pmg.co>
  */
-interface AdapterException extends \PMG\Queue\Exception\QueueException
+interface AdapterException extends \PMG\Queue\QueueException
 {
     // empty
 }
