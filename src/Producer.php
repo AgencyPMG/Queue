@@ -13,18 +13,18 @@
 namespace PMG\Queue;
 
 /**
- * Routers map messages to Queue names.
+ * Producers push messages into the queue.
  *
  * @since   2.0
  * @api
  */
-interface Router
+interface Producer
 {
     /**
-     * Look up the queue for a message.
+     * Send a new message into the queue.
      *
-     * @param   $message The message to look up.
-     * @return  string|null The queue name if found or `null` otherwise.
+     * @param   $message The message to send
+     * @return  void
      */
-    public function queueFor(Message $message);
+    public function send(Message $message);
 }
