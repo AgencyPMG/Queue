@@ -37,4 +37,12 @@ interface Envelop
      * @return  Message
      */
     public function unwrap();
+
+    /**
+     * Returns a new envelop with all the same attributes but an incremented
+     * attempt count.
+     *
+     * @return  Envelop
+     */
+    public function retry();
 }

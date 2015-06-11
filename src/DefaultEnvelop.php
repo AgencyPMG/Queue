@@ -19,8 +19,8 @@ namespace PMG\Queue;
  */
 class DefaultEnvelop implements Envelop
 {
-    private $message;
-    private $attemps;
+    protected $message;
+    protected $attemps;
 
     public function __construct(Message $message, $attempts=0)
     {
@@ -42,5 +42,16 @@ class DefaultEnvelop implements Envelop
     public function unwrap()
     {
         return $this->message;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function retry()
+    {
+        $new = clone $this;
+        $new->attempts++;
+
+        return $new;
     }
 }
