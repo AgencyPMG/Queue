@@ -13,18 +13,17 @@
 namespace PMG\Queue;
 
 /**
- * Producers push messages into the queue.
+ * Creates queue objects from names.
  *
  * @since   2.0
- * @api
  */
-interface Producer
+interface QueueFactory
 {
     /**
-     * Send a new message into the queue.
+     * Create a new Queue from a name
      *
-     * @param   $message The message to send
-     * @return  void
+     * @param   string $name The queue's name
+     * @return  Queue
      */
-    public function send(Message $message);
+    public function forName($name);
 }

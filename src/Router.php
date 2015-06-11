@@ -10,14 +10,13 @@
  * @license     http://opensource.org/licenses/MIT MIT
  */
 
-namespace PMG\Queue\Router;
-
-use PMG\Queue\Message;
+namespace PMG\Queue;
 
 /**
  * Routers map messages to Queue names.
  *
  * @since   2.0
+ * @api
  */
 interface Router
 {

@@ -10,21 +10,23 @@
  * @license     http://opensource.org/licenses/MIT MIT
  */
 
-namespace PMG\Queue;
+namespace PMG\Queue\Factory;
+
+use PMG\Queue\QueueFactory;
+use PMG\Queue\Queue\MemoryQueue;
 
 /**
- * Producers push messages into the queue.
+ * Create new memory queues from their names.
  *
  * @since   2.0
- * @api
  */
-interface Producer
+final class MemoryFactory implements QueueFactory
 {
     /**
-     * Send a new message into the queue.
-     *
-     * @param   $message The message to send
-     * @return  void
+     * {@inheritdoc}
      */
-    public function send(Message $message);
+    public function forName($name)
+    {
+        return new MemoryQueue();
+    }
 }
