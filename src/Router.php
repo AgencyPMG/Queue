@@ -10,7 +10,7 @@
  * @license     http://opensource.org/licenses/MIT MIT
  */
 
-namespace PMG\Queue\Router;
+namespace PMG\Queue;
 
 use PMG\Queue\Message;
 

@@ -19,7 +19,7 @@ use PMG\Queue\Message;
  *
  * @since   2.0
  */
-final class SimpleRouter implements Router
+final class SimpleRouter implements \PMG\Queue\Router
 {
     /**
      * The map of class name => queue name values.
