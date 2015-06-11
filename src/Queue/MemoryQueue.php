@@ -14,19 +14,21 @@ namespace PMG\Queue\Queue;
 
 use PMG\Queue\Message;
 use PMG\Queue\DefaultEnvelope;
+use PMG\Queue\RetrySpec;
 
 /**
  * A Queue implementation that only keeps things in memory.
  *
  * @since   2.0
  */
-final class MemoryQueue implements \PMG\Queue\Queue, \Countable
+final class MemoryQueue extends AbstractQueue implements \Countable
 {
     private $queue;
     private $messageToEnvelop;
 
-    public function __construct()
+    public function __construct(RetrySpec $retries=null)
     {
+        parent::__construct($retries);
         $this->queue = new \SplQueue();
         $this->messageToEnvelope = new \SplObjectStorage();
     }
@@ -70,8 +72,12 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
         $env = isset($this->messageToEnvelope[$message]) ?
                 $this->messageToEnvelope[$message] :
                 new DefaultEnvelope($message);
+
         $this->detachMessage($message);
-        $this->queue->enqueue($env);
+
+        if ($this->canRetry($env)) {
+            $this->queue->enqueue($env);
+        }
     }
 
     /**
