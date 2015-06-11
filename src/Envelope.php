@@ -22,7 +22,7 @@ namespace PMG\Queue;
  *
  * @since   2.0
  */
-interface Envelop
+interface Envelope
 {
     /**
      * Get the number of times the message has been attempted.

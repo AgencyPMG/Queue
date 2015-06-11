@@ -17,7 +17,7 @@ namespace PMG\Queue;
  *
  * @since   2.0
  */
-class DefaultEnvelop implements Envelop
+class DefaultEnvelope implements Envelope
 {
     protected $message;
     protected $attemps;

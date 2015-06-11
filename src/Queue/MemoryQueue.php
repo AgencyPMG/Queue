@@ -13,7 +13,7 @@
 namespace PMG\Queue\Queue;
 
 use PMG\Queue\Message;
-use PMG\Queue\DefaultEnvelop;
+use PMG\Queue\DefaultEnvelope;
 
 /**
  * A Queue implementation that only keeps things in memory.
@@ -28,7 +28,7 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
     public function __construct()
     {
         $this->queue = new \SplQueue();
-        $this->messageToEnvelop = new \SplObjectStorage();
+        $this->messageToEnvelope = new \SplObjectStorage();
     }
 
     /**
@@ -36,7 +36,7 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
      */
     public function enqueue(Message $message)
     {
-        $this->queue->enqueue(new DefaultEnvelop($message));
+        $this->queue->enqueue(new DefaultEnvelope($message));
     }
 
     /**
@@ -47,7 +47,7 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
         try {
             $env = $this->queue->dequeue();
             $message = $env->unwrap();
-            $this->messageToEnvelop->attach($message, $env);
+            $this->messageToEnvelope->attach($message, $env);
             return $message;
         } catch (\RuntimeException $e) {
             return null;
@@ -67,9 +67,9 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
      */
     public function fail(Message $message)
     {
-        $env = isset($this->messageToEnvelop[$message]) ?
-                $this->messageToEnvelop[$message] :
-                new DefaultEnvelop($message);
+        $env = isset($this->messageToEnvelope[$message]) ?
+                $this->messageToEnvelope[$message] :
+                new DefaultEnvelope($message);
         $this->detachMessage($message);
         $this->queue->enqueue($env);
     }
@@ -84,6 +84,6 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
 
     private function detachMessage(Message $message)
     {
-        $this->messageToEnvelop->detach($message);
+        $this->messageToEnvelope->detach($message);
     }
 }
