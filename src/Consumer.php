@@ -37,4 +37,11 @@ interface Consumer
      * @return  void
      */
     public function once($queueName);
+
+    /**
+     * Gracefully stop the consumer.
+     *
+     * @return  void
+     */
+    public function stop();
 }
