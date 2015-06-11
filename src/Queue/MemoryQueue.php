@@ -76,7 +76,7 @@ final class MemoryQueue extends AbstractQueue implements \Countable
         $this->detachMessage($message);
 
         if ($this->canRetry($env)) {
-            $this->queue->enqueue($env);
+            $this->queue->enqueue($env->retry());
         }
     }
 
