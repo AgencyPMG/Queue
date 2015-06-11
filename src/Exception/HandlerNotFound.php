@@ -10,19 +10,16 @@
  * @license     http://opensource.org/licenses/MIT MIT
  */
 
-namespace PMG\Queue;
+namespace PMG\Queue\Exception;
+
+use PMG\Queue\QueueException;
 
 /**
- * A marker interface for messages.
+ * Thrown when a handler cannot be found for a given message.
  *
  * @since   2.0
  */
-interface Message
+final class HandlerNotFound extends \RuntimeException implements QueueException
 {
-    /**
-     * Get the name of the message. This is used for routing things to queues.
-     *
-     * @return  string
-     */
-    public function getName();
+
 }

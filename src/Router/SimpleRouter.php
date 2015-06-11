@@ -38,7 +38,7 @@ final class SimpleRouter implements \PMG\Queue\Router
      */
     public function queueFor(Message $message)
     {
-        $cls = get_class($message);
-        return isset($this->map[$cls]) ? $this->map[$cls] : null;
+        $name = $message->getName();
+        return isset($this->map[$name]) ? $this->map[$name] : null;
     }
 }
