@@ -12,11 +12,6 @@
 
 namespace PMG\Queue;
 
-class _ConsumerTestStop extends \Exception implements Exception\MustStop
-{
-    // noop
-}
-
 class DefaultConsumerTest extends UnitTestCase
 {
     const Q = 'TestQueue';
@@ -103,7 +98,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->executor->expects($this->at(2))
             ->method('execute')
             ->with($this->identicalTo($this->message))
-            ->willThrowException(new _ConsumerTestStop('oops'));
+            ->willThrowException(new Exception\SimpleMustStop('oops'));
 
         $this->consumer->run(self::Q);
     }
