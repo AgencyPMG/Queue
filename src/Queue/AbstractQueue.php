@@ -10,35 +10,35 @@
  * @license     http://opensource.org/licenses/MIT MIT
  */
 
-namespace PMG\Queue\Factory;
+namespace PMG\Queue\Queue;
 
-use PMG\Queue\QueueFactory;
-use PMG\Queue\Queue\MemoryQueue;
+use PMG\Queue\Envelope;
 use PMG\Queue\RetrySpec;
 use PMG\Queue\Retry\LimitedSpec;
 
 /**
- * Create new memory queues from their names.
+ * ABC for queues -- provides the retry specification stuff.
  *
  * @since   2.0
  */
-final class MemoryFactory implements QueueFactory
+abstract class AbstractQueue implements \PMG\Queue\Queue
 {
     /**
-     * @var RetrySpec|null
+     * @var RetrySpec
      */
     private $retries;
 
     public function __construct(RetrySpec $retries=null)
     {
-        $this->retries = $retries ?: new LimitedSpec();
+        $this->retries = $retries;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function forName($name)
+    protected function canRetry(Envelope $env)
     {
-        return new MemoryQueue($this->retries);
+        if (null === $this->retries) {
+            $this->retries = new LimitedSpec();
+        }
+
+        return $this->retries->canRetry($env);
     }
 }

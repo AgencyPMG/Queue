@@ -13,19 +13,24 @@
 namespace PMG\Queue\Queue;
 
 use PMG\Queue\Message;
+use PMG\Queue\DefaultEnvelope;
+use PMG\Queue\RetrySpec;
 
 /**
  * A Queue implementation that only keeps things in memory.
  *
  * @since   2.0
  */
-final class MemoryQueue implements \PMG\Queue\Queue, \Countable
+final class MemoryQueue extends AbstractQueue implements \Countable
 {
     private $queue;
+    private $messageToEnvelop;
 
-    public function __construct()
+    public function __construct(RetrySpec $retries=null)
     {
+        parent::__construct($retries);
         $this->queue = new \SplQueue();
+        $this->messageToEnvelope = new \SplObjectStorage();
     }
 
     /**
@@ -33,7 +38,7 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
      */
     public function enqueue(Message $message)
     {
-        $this->queue->enqueue($message);
+        $this->queue->enqueue(new DefaultEnvelope($message));
     }
 
     /**
@@ -42,7 +47,10 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
     public function dequeue()
     {
         try {
-            return $this->queue->dequeue();
+            $env = $this->queue->dequeue();
+            $message = $env->unwrap();
+            $this->messageToEnvelope->attach($message, $env);
+            return $message;
         } catch (\RuntimeException $e) {
             return null;
         }
@@ -53,7 +61,7 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
      */
     public function ack(Message $message)
     {
-        // noop
+        $this->detachMessage($message);
     }
 
     /**
@@ -61,7 +69,15 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
      */
     public function fail(Message $message)
     {
-        $this->enqueue($message);
+        $env = isset($this->messageToEnvelope[$message]) ?
+                $this->messageToEnvelope[$message] :
+                new DefaultEnvelope($message);
+
+        $this->detachMessage($message);
+
+        if ($this->canRetry($env)) {
+            $this->queue->enqueue($env->retry());
+        }
     }
 
     /**
@@ -70,5 +86,10 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
     public function count()
     {
         return $this->queue->count();
+    }
+
+    private function detachMessage(Message $message)
+    {
+        $this->messageToEnvelope->detach($message);
     }
 }
