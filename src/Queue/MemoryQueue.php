@@ -13,6 +13,7 @@
 namespace PMG\Queue\Queue;
 
 use PMG\Queue\Message;
+use PMG\Queue\DefaultEnvelop;
 
 /**
  * A Queue implementation that only keeps things in memory.
@@ -22,10 +23,12 @@ use PMG\Queue\Message;
 final class MemoryQueue implements \PMG\Queue\Queue, \Countable
 {
     private $queue;
+    private $messageToEnvelop;
 
     public function __construct()
     {
         $this->queue = new \SplQueue();
+        $this->messageToEnvelop = new \SplObjectStorage();
     }
 
     /**
@@ -33,7 +36,7 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
      */
     public function enqueue(Message $message)
     {
-        $this->queue->enqueue($message);
+        $this->queue->enqueue(new DefaultEnvelop($message));
     }
 
     /**
@@ -42,7 +45,10 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
     public function dequeue()
     {
         try {
-            return $this->queue->dequeue();
+            $env = $this->queue->dequeue();
+            $message = $env->unwrap();
+            $this->messageToEnvelop->attach($message, $env);
+            return $message;
         } catch (\RuntimeException $e) {
             return null;
         }
@@ -53,7 +59,7 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
      */
     public function ack(Message $message)
     {
-        // noop
+        $this->detachMessage($message);
     }
 
     /**
@@ -61,7 +67,11 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
      */
     public function fail(Message $message)
     {
-        $this->enqueue($message);
+        $env = isset($this->messageToEnvelop[$message]) ?
+                $this->messageToEnvelop[$message] :
+                new DefaultEnvelop($message);
+        $this->detachMessage($message);
+        $this->queue->enqueue($env);
     }
 
     /**
@@ -70,5 +80,10 @@ final class MemoryQueue implements \PMG\Queue\Queue, \Countable
     public function count()
     {
         return $this->queue->count();
+    }
+
+    private function detachMessage(Message $message)
+    {
+        $this->messageToEnvelop->detach($message);
     }
 }
