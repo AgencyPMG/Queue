@@ -14,7 +14,7 @@ namespace PMG\Queue\Router;
 
 class _SimpleRouterMessage implements \PMG\Queue\Message
 {
-    
+    use \PMG\Queue\MessageTrait;
 }
 
 class SimpleRouterTest extends \PMG\Queue\UnitTestCase

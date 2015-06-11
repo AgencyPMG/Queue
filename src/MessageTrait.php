@@ -13,16 +13,17 @@
 namespace PMG\Queue;
 
 /**
- * A marker interface for messages.
+ * ABC for messages, implements `getName` as the class name.
  *
- * @since   2.0
+ * @since   2015-06-11
  */
-interface Message
+trait MessageTrait
 {
     /**
-     * Get the name of the message. This is used for routing things to queues.
-     *
-     * @return  string
+     * @see Message::getName
      */
-    public function getName();
+    public function getName()
+    {
+        return get_class($this);
+    }
 }

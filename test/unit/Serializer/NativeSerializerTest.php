@@ -14,7 +14,7 @@ namespace PMG\Queue\Serializer;
 
 class _NativeSerializerMessage implements \PMG\Queue\Message
 {
-    
+    use \PMG\Queue\MessageTrait;
 }
 
 class NativeSerializerTest extends \PMG\Queue\UnitTestCase
