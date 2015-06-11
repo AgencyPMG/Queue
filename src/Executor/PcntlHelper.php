@@ -9,29 +9,20 @@
  * @license     http://opensource.org/licenses/MIT MIT
  */
 
-namespace PMG\Queue;
+namespace PMG\Queue\Executor;
 
-class ProcessManager implements ProcessManagerInterface
+/**
+ * A simple wrapper around the pcntl extension to help with forking.
+ *
+ * @since   2.0
+ */
+final class PcntlHelper
 {
-    /**
-     * From ProcessManagerInterface
-     *
-     * {@inheritdoc}
-     */
     public function fork()
     {
-        if (!function_exists('pcntl_fork')) {
-            return -1;
-        }
-
         return pcntl_fork();
     }
 
-    /**
-     * From ProcessManagerInterface
-     *
-     * {@inheritdoc}
-     */
     public function wait($pid)
     {
         pcntl_waitpid($pid, $status);
@@ -39,11 +30,6 @@ class ProcessManager implements ProcessManagerInterface
         return $status;
     }
 
-    /**
-     * From ProcessManagerInterface
-     *
-     * {@inheritdoc}
-     */
     public function getStatus($status)
     {
         if (pcntl_wifexited($status)) {
