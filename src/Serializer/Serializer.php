@@ -12,7 +12,7 @@
 
 namespace PMG\Queue\Serializer;
 
-use PMG\Queue\Message;
+use PMG\Queue\Envelope;
 use PMG\Queue\Exception\SerializationError;
 
 /**
@@ -26,18 +26,18 @@ interface Serializer
     /**
      * Serialize a message into a string for sending into a queue.
      *
-     * @param   $message The message to serialize
+     * @param   $env The message envelope to serialize
      * @throws  SerializationError if the message cannot be serialized
      * @return  string
      */
-    public function serialize(Message $message);
+    public function serialize(Envelope $env);
 
     /**
      * Deserialize a string form the queue into a message object.
      *
      * @param   string $message
      * @throws  SerializationError if something goes wrong during unserialization.
-     * @return  Message
+     * @return  Envelope
      */
     public function unserialize($message);
 }

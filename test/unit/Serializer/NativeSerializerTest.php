@@ -12,10 +12,8 @@
 
 namespace PMG\Queue\Serializer;
 
-class _NativeSerializerMessage implements \PMG\Queue\Message
-{
-    use \PMG\Queue\MessageTrait;
-}
+use PMG\Queue\DefaultEnvelope;
+use PMG\Queue\SimpleMessage;
 
 class NativeSerializerTest extends \PMG\Queue\UnitTestCase
 {
@@ -23,9 +21,9 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
 
     public function testSerialzeReturnsASerializedMessageObject()
     {
-        $s = $this->serializer->serialize(new _NativeSerializerMessage());
+        $s = $this->serializer->serialize(new DefaultEnvelope(new SimpleMessage('t')));
         $this->assertInternalType('string', $s);
-        $this->assertInstanceOf(_NativeSerializerMessage::class, unserialize($s));
+        $this->assertInstanceOf(DefaultEnvelope::class, unserialize($s));
     }
 
     /**
@@ -36,7 +34,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
         $this->serializer->unserialize('a:');
     }
 
-    public static function notMessages()
+    public static function notEnvelopes()
     {
         return [
             [1],
@@ -48,23 +46,24 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
     }
 
     /**
-     * @dataProvider notMessages
+     * @dataProvider notEnvelopes
      * @expectedException PMG\Queue\Exception\SerializationError
      */
-    public function testUnserializeErrorsWhenANonMessageIsTheResult($msg)
+    public function testUnserializeErrorsWhenANonMessageIsTheResult($env)
     {
-        $this->serializer->unserialize(serialize($msg));
+        $this->serializer->unserialize(serialize($env));
     }
 
     public function testUnserializeReturnsTheMessageWhenDeserializationIsSuccessful()
     {
-        $res = $this->serializer->unserialize(serialize(new _NativeSerializerMessage()));
+        $res = $this->serializer->unserialize(serialize($this->env));
 
-        $this->assertInstanceOf(_NativeSerializerMessage::class, $res);
+        $this->assertInstanceOf(DefaultEnvelope::class, $res);
     }
 
     protected function setUp()
     {
         $this->serializer = new NativeSerializer();
+        $this->env = new DefaultEnvelope(new SimpleMessage('t'));
     }
 }
