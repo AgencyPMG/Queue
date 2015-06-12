@@ -18,8 +18,9 @@ use PMG\Queue\QueueException;
  * A marker interface for exceptions thrown to indicate the consumer must exit
  * when it's running.
  *
- * For example, if persistent driver has a socket connection that fails, that
- * probably means the consumer should exit.
+ * These are a way to gracefully stop a queue. For example, if you've updated
+ * code, putting a job in the queue that throws a MustStop would be a way to
+ * stop the queue and have its process manager automatically restart it.
  *
  * @since   2.0
  */

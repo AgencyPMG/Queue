@@ -16,12 +16,13 @@ class DefaultConsumerTest extends UnitTestCase
 {
     const Q = 'TestQueue';
 
-    private $queues, $queue, $executor, $consumer;
+    private $driver, $executor, $retries, $consumer;
 
     public function testOnceDoesNothingWhenTheQueueIsEmpty()
     {
-        $this->queue->expects($this->once())
+        $this->driver->expects($this->once())
             ->method('dequeue')
+            ->with(self::Q)
             ->willReturn(null);
         $this->executor->expects($this->never())
             ->method('execute');
@@ -32,9 +33,9 @@ class DefaultConsumerTest extends UnitTestCase
     public function testOnceExecutesTheMessageAndAcknowledgesIt()
     {
         $this->withMessage();
-        $this->queue->expects($this->once())
+        $this->driver->expects($this->once())
             ->method('ack')
-            ->with($this->identicalTo($this->message));
+            ->with(self::Q, $this->identicalTo($this->envelope));
         $this->executor->expects($this->once())
             ->method('execute')
             ->with($this->identicalTo($this->message))
@@ -43,12 +44,29 @@ class DefaultConsumerTest extends UnitTestCase
         $this->consumer->once(self::Q);
     }
 
-    public function testOnceWithAFailedMessagePutsTheMessageBackInTheQueue()
+    public function testOnceWithAFailedMessageAndValidRetryPutsTheMessageBackInTheQueue()
     {
         $this->withMessage();
-        $this->queue->expects($this->once())
-            ->method('fail')
-            ->with($this->identicalTo($this->message));
+        $this->willRetry();
+        $this->driver->expects($this->once())
+            ->method('retry')
+            ->with(self::Q, $this->identicalTo($this->envelope));
+        $this->executor->expects($this->once())
+            ->method('execute')
+            ->with($this->identicalTo($this->message))
+            ->willReturn(false);
+
+        $this->consumer->once(self::Q);
+    }
+
+    public function testFailedMessageThatCannotBeRetriedIsNotPutBackInTheQueue()
+    {
+        $this->withMessage();
+        $this->retries->expects($this->once())
+            ->method('canRetry')
+            ->willReturn(false);
+        $this->driver->expects($this->never())
+            ->method('retry');
         $this->executor->expects($this->once())
             ->method('execute')
             ->with($this->identicalTo($this->message))
@@ -60,12 +78,13 @@ class DefaultConsumerTest extends UnitTestCase
     /**
      * @expectedException PMG\Queue\Exception\MessageFailed
      */
-    public function testOnceWithAExceptionThrownFromExecutorFailsAndRethrows()
+    public function testOnceWithAExceptionThrownFromExecutorAndValidRetryRetriesJobAndThrows()
     {
         $this->withMessage();
-        $this->queue->expects($this->once())
-            ->method('fail')
-            ->with($this->identicalTo($this->message));
+        $this->willRetry();
+        $this->driver->expects($this->once())
+            ->method('retry')
+            ->with(self::Q, $this->identicalTo($this->envelope));
         $this->executor->expects($this->once())
             ->method('execute')
             ->with($this->identicalTo($this->message))
@@ -80,13 +99,12 @@ class DefaultConsumerTest extends UnitTestCase
      */
     public function testRunConsumesMessagesUntilConsumerIsStopped()
     {
-        $this->queue->expects($this->exactly(3))
+        $this->willRetry();
+        $this->driver->expects($this->exactly(3))
             ->method('dequeue')
-            ->willReturn($this->message);
-        $this->queue->expects($this->once())
+            ->willReturn($this->envelope);
+        $this->driver->expects($this->once())
             ->method('ack');
-        $this->queue->expects($this->exactly(2))
-            ->method('fail');
         $this->executor->expects($this->at(0))
             ->method('execute')
             ->with($this->identicalTo($this->message))
@@ -105,22 +123,26 @@ class DefaultConsumerTest extends UnitTestCase
 
     protected function setUp()
     {
-        $this->queue = $this->getMock(Queue::class);
-        $this->queues = $this->getMock(QueueFactory::class);
+        $this->driver = $this->getMock(Driver::class);
         $this->executor = $this->getMock(MessageExecutor::class);
-        $this->consumer = new DefaultConsumer($this->queues, $this->executor);
+        $this->retries = $this->getMock(RetrySpec::class);
+        $this->consumer = new DefaultConsumer($this->driver, $this->executor, $this->retries);
         $this->message = new SimpleMessage('TestMessage');
-
-        $this->queues->expects($this->atLeastOnce())
-            ->method('forName')
-            ->with(self::Q)
-            ->willReturn($this->queue);
+        $this->envelope = new DefaultEnvelope($this->message);
     }
 
     private function withMessage()
     {
-        $this->queue->expects($this->once())
+        $this->driver->expects($this->once())
             ->method('dequeue')
-            ->willReturn($this->message);
+            ->with(self::Q)
+            ->willReturn($this->envelope);
+    }
+
+    private function willRetry()
+    {
+        $this->retries->expects($this->atLeastOnce())
+            ->method('canRetry')
+            ->willReturn(true);
     }
 }

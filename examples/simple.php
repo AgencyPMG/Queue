@@ -5,13 +5,13 @@ use PMG\Queue;
 require __DIR__.'/../vendor/autoload.php';
 require __DIR__.'/StreamLogger.php';
 
+$driver = new Queue\Driver\MemoryDriver();
+
 $router = new Queue\Router\SimpleRouter([
     'TestMessage'   => 'q',
     'TestMessage2'  => 'q',
     'MustStop'      => 'q',
 ]);
-
-$factory = new Queue\Factory\CachingFactory(new Queue\Factory\MemoryFactory());
 
 $resolver = new Queue\Resolver\SimpleResolver([
     'TestMessage'   => function () {
@@ -25,11 +25,12 @@ $resolver = new Queue\Resolver\SimpleResolver([
     },
 ]);
 
-$producer = new Queue\DefaultProducer($router, $factory);
+$producer = new Queue\DefaultProducer($driver, $router);
 
 $consumer = new Queue\DefaultConsumer(
-    $factory,
+    $driver,
     new Queue\Executor\SimpleExecutor($resolver),
+    new Queue\Retry\LimitedSpec(2), // allow two retries
     new StreamLogger()
 );
 

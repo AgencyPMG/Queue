@@ -21,19 +21,19 @@ namespace PMG\Queue;
 final class DefaultProducer implements Producer
 {
     /**
+     * @var Driver
+     */
+    private $driver;
+
+    /**
      * @var Router
      */
     private $router;
 
-    /**
-     * @var QueueFactory
-     */
-    private $queues;
-
-    public function __construct(Router $router, QueueFactory $queues)
+    public function __construct(Driver $driver, Router $router)
     {
+        $this->driver = $driver;
         $this->router = $router;
-        $this->queues = $queues;
     }
 
     /**
@@ -42,6 +42,6 @@ final class DefaultProducer implements Producer
     public function send(Message $message)
     {
         $queueName = $this->router->queueFor($message);
-        $this->queues->forName($queueName)->enqueue($message);
+        $this->driver->enqueue($queueName, $message);
     }
 }
