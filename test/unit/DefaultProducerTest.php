@@ -14,7 +14,7 @@ namespace PMG\Queue;
 
 class DefaultProducerTest extends UnitTestCase
 {
-    private $router, $queue, $factory, $producer;
+    private $router, $driver, $producer;
 
     public function testProducerRoutesMessageAndPutsItIntoAQueue()
     {
@@ -23,13 +23,9 @@ class DefaultProducerTest extends UnitTestCase
             ->method('queueFor')
             ->with($this->identicalTo($msg))
             ->willReturn('testq');
-        $this->factory->expects($this->once())
-            ->method('forName')
-            ->with('testq')
-            ->willReturn($this->queue);
-        $this->queue->expects($this->once())
+        $this->driver->expects($this->once())
             ->method('enqueue')
-            ->with($this->identicalTo($msg));
+            ->with('testq', $this->identicalTo($msg));
 
         $this->producer->send($msg);
     }
@@ -37,8 +33,7 @@ class DefaultProducerTest extends UnitTestCase
     protected function setUp()
     {
         $this->router = $this->getMock(Router::class);
-        $this->queue = $this->getMock(Queue::class);
-        $this->factory = $this->getMock(QueueFactory::class);
-        $this->producer = new DefaultProducer($this->router, $this->factory);
+        $this->driver = $this->getMock(Driver::class);
+        $this->producer = new DefaultProducer($this->driver, $this->router);
     }
 }
