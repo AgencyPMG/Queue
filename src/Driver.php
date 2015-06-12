@@ -1,0 +1,66 @@
+<?php
+/**
+ * This file is part of PMG\Queue
+ *
+ * Copyright (c) PMG <https://www.pmg.com>
+ *
+ * For full copyright information see the LICENSE file distributed
+ * with this source code.
+ *
+ * @license     http://opensource.org/licenses/MIT MIT
+ */
+
+namespace PMG\Queue;
+
+/**
+ * Defines a driver backend for persistant queues.
+ *
+ * Drivers make no promises or guarantees about ordering of messages. Some drivers
+ * will be LIFO others will be FIFO and some have no ordering. Don't build systems
+ * that depend on those charactertistics.
+ *
+ * Additionally, drivers know nothing about configuring a backend. If special steps
+ * are required to create a queue, those should be done elsewhere.
+ *
+ * @since   2.0
+ * @api
+ */
+interface Driver
+{
+    /**
+     * Add a new message to the queue.
+     *
+     * @param   string $queueName The name of the queue to put the message in.
+     * @param   $message The message to add.
+     * @return  Envelope An envelop representing the message in the queue.
+     */
+    public function enqueue($queueName, Message $message);
+
+    /**
+     * Pull a message out of the queue.
+     *
+     * @param   string $queueName The queue from which to pull messages.
+     * @return  Envelope|null An envelope if a message is found, null otherwise
+     */
+    public function dequeue($queueName);
+
+    /**
+     * Acknowledge a message as complete.
+     *
+     * @param   string $queueName The queue from which the message came
+     * @param   $envelope The message envelop -- should be the same instance
+     *          returned by `dequeue`
+     * @return  void
+     */
+    public function ack($queueName, Envelope $envelope);
+
+    /**
+     * Fail a job -- put it back in the queue for retrying.
+     *
+     * @param   string $queueName The queue from whcih the message came
+     * @param   $envelope The message envelope -- should be the same instance
+     *          returned from `dequeue`
+     * @return  Envelope The new envelope for the retried job.
+     */
+    public function retry($queueName, Envelope $envelope);
+}
