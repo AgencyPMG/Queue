@@ -32,6 +32,7 @@ interface Driver
      *
      * @param   string $queueName The name of the queue to put the message in.
      * @param   $message The message to add.
+     * @throws  Exception\DriverError when something goes wrong
      * @return  Envelope An envelop representing the message in the queue.
      */
     public function enqueue($queueName, Message $message);
@@ -40,6 +41,7 @@ interface Driver
      * Pull a message out of the queue.
      *
      * @param   string $queueName The queue from which to pull messages.
+     * @throws  Exception\DriverError when something goes wrong
      * @return  Envelope|null An envelope if a message is found, null otherwise
      */
     public function dequeue($queueName);
@@ -50,6 +52,7 @@ interface Driver
      * @param   string $queueName The queue from which the message came
      * @param   $envelope The message envelop -- should be the same instance
      *          returned by `dequeue`
+     * @throws  Exception\DriverError when something goes wrong
      * @return  void
      */
     public function ack($queueName, Envelope $envelope);
@@ -60,6 +63,7 @@ interface Driver
      * @param   string $queueName The queue from whcih the message came
      * @param   $envelope The message envelope -- should be the same instance
      *          returned from `dequeue`
+     * @throws  Exception\DriverError when something goes wrong
      * @return  Envelope The new envelope for the retried job.
      */
     public function retry($queueName, Envelope $envelope);
