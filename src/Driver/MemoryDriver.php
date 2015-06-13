@@ -68,6 +68,14 @@ final class MemoryDriver implements \PMG\Queue\Driver
         return $e;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function fail($queueName, Envelope $envelope)
+    {
+        // noop
+    }
+
     private function enqueueEnvelope($queueName, Envelope $envelope)
     {
         $this->getQueue($queueName)->enqueue($envelope);

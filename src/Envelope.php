@@ -13,12 +13,10 @@
 namespace PMG\Queue;
 
 /**
- * Envelops wrap up messages and retry counts. End users never see Envelop
- * implementations. This is an interface because drivers may have specific
- * needs for thier own evelops, but the queue and retry strategies only care
- * about a few things.
+ * Envelopes wrap up messages and retry counts. End users never see Envelope
+ * implementations.
  *
- * This is very much a "header" interface.
+ * Envelope implementations are closely tied to their drivers.
  *
  * @since   2.0
  */

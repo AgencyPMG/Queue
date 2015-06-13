@@ -12,7 +12,7 @@
 
 namespace PMG\Queue\Serializer;
 
-use PMG\Queue\Message;
+use PMG\Queue\Envelope;
 use PMG\Queue\Exception\SerializationError;
 
 /**
@@ -25,9 +25,9 @@ final class NativeSerializer implements Serializer
     /**
      * {@inheritdoc}
      */
-    public function serialize(Message $message)
+    public function serialize(Envelope $env)
     {
-        return serialize($message);
+        return serialize($env);
     }
 
     /**
@@ -44,10 +44,10 @@ final class NativeSerializer implements Serializer
             ));
         }
 
-        if (!$m instanceof Message) {
+        if (!$m instanceof Envelope) {
             throw new SerializationError(sprintf(
                 'Expected an instance of "%s" got "%s"',
-                Message::class,
+                Envelope::class,
                 is_object($m) ? get_class($m) : gettype($m)
             ));
         }

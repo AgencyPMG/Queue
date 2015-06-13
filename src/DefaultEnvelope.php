@@ -20,7 +20,7 @@ namespace PMG\Queue;
 class DefaultEnvelope implements Envelope
 {
     protected $message;
-    protected $attemps;
+    protected $attempts;
 
     public function __construct(Message $message, $attempts=0)
     {
