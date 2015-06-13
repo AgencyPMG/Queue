@@ -121,7 +121,7 @@ final class DefaultConsumer implements Consumer
                 'cls' => get_class($e),
                 'msg' => $e->getMessage(),
             ]);
-            $this->stop();
+            throw $e;
         } catch (Exception\MustStop $e) {
             $this->logger->warning('Caught a must stop exception, exiting: {msg}', [
                 'msg'   => $e->getMessage(),

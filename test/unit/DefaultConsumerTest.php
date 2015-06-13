@@ -12,6 +12,11 @@
 
 namespace PMG\Queue;
 
+class _ConsumerDriverError extends \Exception implements Exception\DriverError
+{
+
+}
+
 class DefaultConsumerTest extends UnitTestCase
 {
     const Q = 'TestQueue';
@@ -117,6 +122,19 @@ class DefaultConsumerTest extends UnitTestCase
             ->method('execute')
             ->with($this->identicalTo($this->message))
             ->willThrowException(new Exception\SimpleMustStop('oops'));
+
+        $this->consumer->run(self::Q);
+    }
+
+    /**
+     * @expectedException PMG\Queue\_ConsumerDriverError
+     */
+    public function testRunStopsWhenADriverErrorIsThrown()
+    {
+        $this->driver->expects($this->once())
+            ->method('dequeue')
+            ->with(self::Q)
+            ->willThrowException(new _ConsumerDriverError('broke'));
 
         $this->consumer->run(self::Q);
     }
