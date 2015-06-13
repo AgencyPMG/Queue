@@ -10,6 +10,7 @@
          stopOnFailure="false"
          syntaxCheck="false"
          bootstrap="test/bootstrap.php">
+
     <testsuites>
         <testsuite name="unit">
             <directory>./test/unit</directory>
@@ -18,4 +19,15 @@
             <directory>./test/integration</directory>
         </testsuite>
     </testsuites>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src</directory>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-text" target="php://stdout" />
+    </logging>
+
 </phpunit>
