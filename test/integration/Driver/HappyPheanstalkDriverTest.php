@@ -13,36 +13,14 @@
 namespace PMG\Queue\Driver;
 
 use PMG\Queue\SimpleMessage;
-use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\Driver\Pheanstalk\PheanstalkEnvelope;
 
-class PheanstalkDriverTest extends \PMG\Queue\IntegrationTestCase
+/**
+ * Tests all the "happy" paths of the pheanstalk driver: no exceptions
+ */
+class HappyPheanstalkDriverTest extends \PMG\Queue\IntegrationTestCase
 {
     private $conn, $driver, $seenTubes = [];
-
-    /**
-     * @expectedException PMG\Queue\Exception\InvalidEnvelope
-     */
-    public function testAckCannotBeCalledWithABadEnvelope()
-    {
-        $this->driver->ack($this->randomTube(), new DefaultEnvelope(new SimpleMessage('t')));
-    }
-
-    /**
-     * @expectedException PMG\Queue\Exception\InvalidEnvelope
-     */
-    public function testRetryCannotBeCalledWithABadEnvelope()
-    {
-        $this->driver->retry($this->randomTube(), new DefaultEnvelope(new SimpleMessage('t')));
-    }
-
-    /**
-     * @expectedException PMG\Queue\Exception\InvalidEnvelope
-     */
-    public function testFailCannotBeCalledWithABadEnvelope()
-    {
-        $this->driver->fail($this->randomTube(), new DefaultEnvelope(new SimpleMessage('t')));
-    }
 
     public function testDequeueReturnsNullWhenNoJobsAreFound()
     {
@@ -111,10 +89,9 @@ class PheanstalkDriverTest extends \PMG\Queue\IntegrationTestCase
 
     protected function setUp()
     {
-        $this->conn = new \Pheanstalk\Pheanstalk(
-            getenv('PMG_QUEUE_HOST') ?: 'localhost',
-            getenv('PMG_QUEUE_PORT') ?: \Pheanstalk\PheanstalkInterface::DEFAULT_PORT
-        );
+        $host = getenv('PMG_QUEUE_HOST') ?: 'localhost';
+        $port = intval(getenv('PMG_QUEUE_PORT') ?: \Pheanstalk\PheanstalkInterface::DEFAULT_PORT);
+        $this->conn = new \Pheanstalk\Pheanstalk($host, $port);
         $this->driver = new PheanstalkDriver($this->conn, [
             'reserve-timeout'   => 1,
         ]);
@@ -122,7 +99,7 @@ class PheanstalkDriverTest extends \PMG\Queue\IntegrationTestCase
         try {
             $this->seenTubes = array_fill_keys($this->conn->listTubes(), true);
         } catch (\Pheanstalk\Exception\ConnectionException $e) {
-            $this->markTestSkipped('Beanstalkd Server is Not Running');
+            $this->markTestSkipped(sprintf('Beanstalkd server is not running on %s:%d', $host, $port));
         }
     }
 
