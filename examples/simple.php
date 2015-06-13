@@ -7,11 +7,7 @@ require __DIR__.'/StreamLogger.php';
 
 $driver = new Queue\Driver\MemoryDriver();
 
-$router = new Queue\Router\MappingRouter([
-    'TestMessage'   => 'q',
-    'TestMessage2'  => 'q',
-    'MustStop'      => 'q',
-]);
+$router = new Queue\Router\SimpleRouter('q');
 
 $resolver = new Queue\Resolver\SimpleResolver([
     'TestMessage'   => function () {
