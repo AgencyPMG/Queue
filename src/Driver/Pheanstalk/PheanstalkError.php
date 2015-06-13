@@ -19,7 +19,7 @@ use PMG\Queue\Exception\DriverError;
  *
  * @since   2.0
  */
-final class PheanstalkError extends \RuntimeException implements DriverException
+final class PheanstalkError extends \RuntimeException implements DriverError
 {
     public static function fromException(\Pheanstalk\Exception $e)
     {
