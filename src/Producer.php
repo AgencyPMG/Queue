@@ -24,6 +24,9 @@ interface Producer
      * Send a new message into the queue.
      *
      * @param   $message The message to send
+     * @throws  Exception\DriverError if something goes wrong with the
+     *          queue backend.
+     * @throws  Exception\QueueNotFound if the router fails to find a queue.
      * @return  void
      */
     public function send(Message $message);

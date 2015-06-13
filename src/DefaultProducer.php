@@ -42,6 +42,10 @@ final class DefaultProducer implements Producer
     public function send(Message $message)
     {
         $queueName = $this->router->queueFor($message);
+        if (!$queueName) {
+            throw new Exception\QueueNotFound(sprintf('Could not find a queue for "%s"', $message->getName()));
+        }
+
         $this->driver->enqueue($queueName, $message);
     }
 }

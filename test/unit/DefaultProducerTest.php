@@ -30,6 +30,22 @@ class DefaultProducerTest extends UnitTestCase
         $this->producer->send($msg);
     }
 
+    /**
+     * @expectedException PMG\Queue\Exception\QueueNotFound
+     */
+    public function testProducerErrorsWhenNoQueueIsFound()
+    {
+        $msg = $this->getMock(Message::class);
+        $this->router->expects($this->once())
+            ->method('queueFor')
+            ->with($this->identicalTo($msg))
+            ->willReturn(null);
+        $this->driver->expects($this->never())
+            ->method('enqueue');
+
+        $this->producer->send($msg);
+    }
+
     protected function setUp()
     {
         $this->router = $this->getMock(Router::class);
