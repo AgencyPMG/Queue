@@ -86,11 +86,6 @@ final class DefaultConsumer implements Consumer
             $this->logger->debug('Executing message {msg}', ['msg' => $message->getName()]);
             $result = $this->executor->execute($message);
             $this->logger->debug('Executed message {msg}', ['msg' => $message->getName()]);
-        } catch (Exception\DriverError $e) {
-            // MustStop errors mean something is wrong with the queue's
-            // underlying drivers, so we always retry.
-            $this->driver->retry($queueName, $envelope);
-            throw $e;
         } catch (Exception\MustStop $e) {
             // MustStop exceptions are thrown by handlers to indicate a
             // graceful stop is required. So we don't wrapped them. Just rethrow
