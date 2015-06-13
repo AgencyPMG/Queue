@@ -1,6 +1,5 @@
 /vendor*
 /coverage*
-/composer.lock
 
 # archives and other useless files
 *.swp
