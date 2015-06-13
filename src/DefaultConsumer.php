@@ -48,6 +48,11 @@ final class DefaultConsumer implements Consumer
      */
     private $running = false;
 
+    /**
+     * @var int
+     */
+    private $exitCode = 0;
+
     public function __construct(
         Driver $driver,
         MessageExecutor $executor,
@@ -69,6 +74,8 @@ final class DefaultConsumer implements Consumer
         while ($this->running) {
             $this->safeOnce($queueName);
         }
+
+        return $this->exitCode;
     }
 
     /**
@@ -127,6 +134,7 @@ final class DefaultConsumer implements Consumer
                 'msg'   => $e->getMessage(),
             ]);
             $this->stop();
+            $this->exitCode = $e->getCode();
         } catch (Exception\MessageFailed $e) {
             $this->logger->critical('Unexpected {cls} exception handling {name} message: {msg}', [
                 'cls'   => get_class($e->getPrevious()),

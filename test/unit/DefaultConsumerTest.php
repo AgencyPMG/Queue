@@ -121,9 +121,9 @@ class DefaultConsumerTest extends UnitTestCase
         $this->executor->expects($this->at(2))
             ->method('execute')
             ->with($this->identicalTo($this->message))
-            ->willThrowException(new Exception\SimpleMustStop('oops'));
+            ->willThrowException(new Exception\SimpleMustStop('oops', 1));
 
-        $this->consumer->run(self::Q);
+        $this->assertEquals(1, $this->consumer->run(self::Q));
     }
 
     /**

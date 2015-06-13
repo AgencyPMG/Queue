@@ -38,4 +38,4 @@ $producer->send(new Queue\SimpleMessage('TestMessage'));
 $producer->send(new Queue\SimpleMessage('TestMessage2'));
 $producer->send(new Queue\SimpleMessage('MustStop'));
 
-$consumer->run('q');
+exit($consumer->run('q'));
