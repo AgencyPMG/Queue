@@ -7,7 +7,7 @@ require __DIR__.'/StreamLogger.php';
 
 $driver = new Queue\Driver\PheanstalkDriver(new \Pheanstalk\Pheanstalk('localhost'));
 
-$router = new Queue\Router\SimpleRouter([
+$router = new Queue\Router\MappingRouter([
     'TestMessage'   => 'q',
     'TestMessage2'  => 'q',
     'MustStop'      => 'q',
