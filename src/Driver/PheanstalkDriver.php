@@ -52,6 +52,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
             'ttr'               => null,
             'retry-priority'    => null,
             'retry-delay'       => null,
+            'retry-ttr'         => null,
             'reserve-timeout'   => 10,
         ], $options ?: []);
     }
@@ -129,14 +130,25 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
             ));
         }
 
+        $e = $env->retry();
+        $data = $this->serialize($e);
+
+        // since we need to update the job payload here, we have to delete
+        // it and re-add it manually. This isn't transational, so there's
+        // a (very real) possiblity of data loss.
         try {
-            $this->conn->release(
-                $env->getJob(),
+            $this->conn->delete($env->getJob());
+            $id = $this->conn->putInTube(
+                $queueName,
+                $data,
                 $this->options['retry-priority'],
-                $this->options['retry-delay']
+                $this->options['retry-delay'],
+                $this->options['retry-ttr']
             );
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
         }
+
+        return new PheanstalkEnvelope(new Job($id, $data), $e);
     }
 }

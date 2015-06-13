@@ -76,12 +76,10 @@ class PheanstalkDriverTest extends \PMG\Queue\IntegrationTestCase
 
         $this->assertEquals($env->getJobId(), $env2->getJobId());
 
-        $this->driver->retry($tube, $env2);
+        $env3 = $this->driver->retry($tube, $env2);
 
-        $stats = $this->conn->statsJob($env2->getJob());
-
-        $this->assertArrayHasKey('releases', $stats);
-        $this->assertEquals(1, $stats['releases'], 'job should have been released once');
+        // just to make sure we put the job in
+        $this->conn->statsJob($env3->getJob());
     }
 
     protected function setUp()
