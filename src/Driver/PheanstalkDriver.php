@@ -47,12 +47,13 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         parent::__construct($serializer);
         $this->conn = $conn;
         $this->options = array_replace([
-            'priority'          => null,
-            'delay'             => null,
-            'ttr'               => null,
-            'retry-priority'    => null,
-            'retry-delay'       => null,
-            'retry-ttr'         => null,
+            'priority'          => PheanstalkInterface::DEFAULT_PRIORITY,
+            'delay'             => PheanstalkInterface::DEFAULT_DELAY,
+            'ttr'               => PheanstalkInterface::DEFAULT_TTR,
+            'retry-priority'    => PheanstalkInterface::DEFAULT_PRIORITY,
+            'retry-delay'       => PheanstalkInterface::DEFAULT_DELAY,
+            'retry-ttr'         => PheanstalkInterface::DEFAULT_TTR,
+            'fail-priority'     => PheanstalkInterface::DEFAULT_PRIORITY,
             'reserve-timeout'   => 10,
         ], $options ?: []);
     }
@@ -150,5 +151,26 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         }
 
         return new PheanstalkEnvelope(new Job($id, $data), $e);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fail($queueName, Envelope $env)
+    {
+        if (!$env instanceof PheanstalkEnvelope) {
+            throw new InvalidEnvelope(sprintf(
+                '%s requires that envelopes be instances of "%s", got "%s"',
+                __CLASS__,
+                PheanstalkEnvelope::class,
+                get_class($env)
+            ));
+        }
+
+        try {
+            $this->conn->bury($env->getJob(), $this->options['fail-priority']);
+        } catch (\Pheanstalk\Exception $e) {
+            throw PheanstalkError::fromException($e);
+        }
     }
 }

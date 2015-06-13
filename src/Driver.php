@@ -58,7 +58,7 @@ interface Driver
     public function ack($queueName, Envelope $envelope);
 
     /**
-     * Fail a job -- put it back in the queue for retrying.
+     * Retry a job -- put it back in the queue for retrying.
      *
      * @param   string $queueName The queue from whcih the message came
      * @param   $envelope The message envelope -- should be the same instance
@@ -67,4 +67,15 @@ interface Driver
      * @return  Envelope The new envelope for the retried job.
      */
     public function retry($queueName, Envelope $envelope);
+
+    /**
+     * Fail a job -- this called when no more retries can be attempted.
+     *
+     * @param   string $queueName The queue from whcih the message came
+     * @param   $envelope The message envelope -- should be the same instance
+     *          returned from `dequeue`
+     * @throws  Exception\DriverError when something goes wrong
+     * @return  Envelope The new envelope for the retried job.
+     */
+    public function fail($queueName, Envelope $envelope);
 }

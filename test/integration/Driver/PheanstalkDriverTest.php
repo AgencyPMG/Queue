@@ -36,6 +36,14 @@ class PheanstalkDriverTest extends \PMG\Queue\IntegrationTestCase
         $this->driver->retry($this->randomTube(), new DefaultEnvelope(new SimpleMessage('t')));
     }
 
+    /**
+     * @expectedException PMG\Queue\Exception\InvalidEnvelope
+     */
+    public function testFailCannotBeCalledWithABadEnvelope()
+    {
+        $this->driver->fail($this->randomTube(), new DefaultEnvelope(new SimpleMessage('t')));
+    }
+
     public function testDequeueReturnsNullWhenNoJobsAreFound()
     {
         $this->assertNull($this->driver->dequeue($this->randomTube()));
@@ -80,6 +88,25 @@ class PheanstalkDriverTest extends \PMG\Queue\IntegrationTestCase
 
         // just to make sure we put the job in
         $this->conn->statsJob($env3->getJob());
+    }
+
+    public function testJobsAreBuriedWithRetry()
+    {
+        $tube = $this->randomTube();
+
+        $env = $this->driver->enqueue($tube, new SimpleMessage('TestMessage'));
+        $this->assertEnvelope($env);
+
+        $env2 = $this->driver->dequeue($tube);
+        $this->assertEnvelope($env2);
+
+        $this->assertEquals($env->getJobId(), $env2->getJobId());
+
+        $this->driver->fail($tube, $env2);
+
+        $res = $this->conn->statsJob($env2->getJob());
+        $this->assertArrayHasKey('state', $res);
+        $this->assertEquals('buried', $res['state']);
     }
 
     protected function setUp()

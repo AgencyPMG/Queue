@@ -96,7 +96,7 @@ final class DefaultConsumer implements Consumer
             // graceful stop is required. So we don't wrapped them. Just rethrow
             throw $e;
         } catch (\Exception $e) {
-            $this->maybeRetry($queueName, $envelope);
+            $this->failed($queueName, $envelope);
             throw new Exception\MessageFailed($e, $message);
         }
 
@@ -104,7 +104,7 @@ final class DefaultConsumer implements Consumer
             $this->driver->ack($queueName, $envelope);
             $this->logger->debug('Acknowledged message {msg}', ['msg' => $message->getName()]);
         } else {
-            $this->maybeRetry($queueName, $envelope);
+            $this->failed($queueName, $envelope);
             $this->logger->debug('Failed message {msg}', ['msg' => $message->getName()]);
         }
     }
@@ -141,10 +141,12 @@ final class DefaultConsumer implements Consumer
         }
     }
 
-    private function maybeRetry($queueName, Envelope $env)
+    private function failed($queueName, Envelope $env)
     {
         if ($this->retries->canRetry($env)) {
             $this->driver->retry($queueName, $env);
+        } else {
+            $this->driver->fail($queueName, $env);
         }
     }
 }
