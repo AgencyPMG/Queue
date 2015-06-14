@@ -378,3 +378,22 @@ $retry = new NeverSpec();
 // $executor instanceof PMG\Queue\MessageExecutor
 $consumer = new DefaultConsumer($driver, $executor, $retry);
 ```
+
+## Logging
+
+`DefaultConsumer` includes support for logging via PSR 3 logger
+(`Psr\Log\LoggerInterface`). By default that's a `Psr\Log\NullLogger`, but any
+other logger can be used by passing it in as the last argument to
+`DefaultConsumer`'s constructor.
+
+```php
+use PMG\Queue\DefaultConsumer;
+use PMG\Queue\Retry\NeverSpec;
+
+$logger = getTheLoggerSomeHow();
+
+// $driver instanceof PMG\Queue\Driver
+// $executor instanceof PMG\Queue\MessageExecutor
+// $retry instanceof PMG\Queue\RetrySpec
+$consumer = new DefaultConsumer($driver, $executor, $retry, $logger);
+```
