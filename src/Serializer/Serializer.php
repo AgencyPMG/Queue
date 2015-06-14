@@ -28,14 +28,14 @@ interface Serializer
      *
      * @param   $env The message envelope to serialize
      * @throws  SerializationError if the message cannot be serialized
-     * @return  string
+     * @return  string A base 64 encoded string of the serialized envelope
      */
     public function serialize(Envelope $env);
 
     /**
      * Deserialize a string form the queue into a message object.
      *
-     * @param   string $message
+     * @param   string $message a base 64 encoded string of the serialed envelope
      * @throws  SerializationError if something goes wrong during unserialization.
      * @return  Envelope
      */

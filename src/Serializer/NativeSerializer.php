@@ -27,7 +27,7 @@ final class NativeSerializer implements Serializer
      */
     public function serialize(Envelope $env)
     {
-        return serialize($env);
+        return base64_encode(serialize($env));
     }
 
     /**
@@ -35,12 +35,12 @@ final class NativeSerializer implements Serializer
      */
     public function unserialize($message)
     {
-        $m = @unserialize($message);
+        $m = @unserialize(base64_decode($message));
         if (false === $m) {
             $err = error_get_last();
             throw new SerializationError(sprintf(
                 'Error unserializing message: %s', 
-                isset($err['message']) ? $err['message'] : 'unknown error'
+                $err && isset($err['message']) ? $err['message'] : 'unknown error'
             ));
         }
 

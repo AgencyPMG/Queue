@@ -23,7 +23,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
     {
         $s = $this->serializer->serialize(new DefaultEnvelope(new SimpleMessage('t')));
         $this->assertInternalType('string', $s);
-        $this->assertInstanceOf(DefaultEnvelope::class, unserialize($s));
+        $this->assertInstanceOf(DefaultEnvelope::class, unserialize(base64_decode($s)));
     }
 
     /**
@@ -31,7 +31,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
      */
     public function testUnserializeErrorsWhenABadSerializeStringIsGiven()
     {
-        $this->serializer->unserialize('a:');
+        $this->serializer->unserialize(base64_encode('a:'));
     }
 
     public static function notEnvelopes()
@@ -51,12 +51,12 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
      */
     public function testUnserializeErrorsWhenANonMessageIsTheResult($env)
     {
-        $this->serializer->unserialize(serialize($env));
+        $this->serializer->unserialize(base64_encode(serialize($env)));
     }
 
     public function testUnserializeReturnsTheMessageWhenDeserializationIsSuccessful()
     {
-        $res = $this->serializer->unserialize(serialize($this->env));
+        $res = $this->serializer->unserialize(base64_encode(serialize($this->env)));
 
         $this->assertInstanceOf(DefaultEnvelope::class, $res);
     }
