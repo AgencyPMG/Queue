@@ -21,6 +21,8 @@ namespace PMG\Queue;
  */
 interface HandlerResolver
 {
+    const NOT_FOUND = null;
+
     /**
      * Get the handler for a single message.
      *

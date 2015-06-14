@@ -14,23 +14,31 @@ namespace PMG\Queue\Resolver;
 
 use PMG\Queue\HandlerResolver;
 use PMG\Queue\Message;
-use PMG\Queue\Exception\HandlerNotFound;
 use PMG\Queue\Exception\InvalidHandler;
+use PMG\Queue\Exception\InvalidArgumentException;
 
 /**
- * A simple resolver that maps messages => handlers via an array.
+ * A simple resolver that maps messages => handlers via an array or ArrayAccess.
  *
  * @since   2.0
  */
-final class SimpleResolver implements HandlerResolver
+final class MappingResolver implements HandlerResolver
 {
     /**
-     * @var array
+     * @var array|ArrayAccess
      */
     private $handlers;
 
-    public function __construct(array $handlers)
+    public function __construct($handlers)
     {
+        if (!is_array($handlers) && !$handlers instanceof \ArrayAccess) {
+            throw new InvalidArgumentException(sprintf(
+                '%s expects $handers to be an array or ArrayAccess implementation, got "%s"',
+                __METHOD__,
+                is_object($handlers) ? get_class($handlers) : gettype($handlers)
+            ));
+        }
+
         $this->handlers = $handlers;
     }
 
@@ -42,11 +50,7 @@ final class SimpleResolver implements HandlerResolver
         $name = $message->getName();
         $handler = isset($this->handlers[$name]) ? $this->handlers[$name] : null;
 
-        if (!$handler) {
-            throw new HandlerNotFound(sprintf('No handler found for "%s"', $name));
-        }
-
-        if (!is_callable($handler)) {
+        if ($handler && !is_callable($handler)) {
             throw new InvalidHandler(sprintf('Handler for "%s" is not callable', $name));
         }
 
