@@ -20,4 +20,4 @@ before_install:
 
 install: composer install
 
-script: make
+script: make travis
