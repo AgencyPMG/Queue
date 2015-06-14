@@ -39,7 +39,12 @@ final class ForkingExecutor extends AbstractExecutor
      */
     private $pcntl;
 
-    public function __construct(HandlerResolver $resolver)
+    /**
+     * @var callable
+     */
+    private $errorCallback;
+
+    public function __construct(HandlerResolver $resolver, callable $errorCallback=null)
     {
         if (!function_exists('pcntl_fork')) {
             // we throw a non queue exception here because we want to be sure
@@ -49,6 +54,7 @@ final class ForkingExecutor extends AbstractExecutor
 
         parent::__construct($resolver);
         $this->pcntl = new PcntlHelper();
+        $this->errorCallback = $errorCallback ?: [__CLASS__, 'errorCallback'];
     }
 
     /**
@@ -65,6 +71,7 @@ final class ForkingExecutor extends AbstractExecutor
                 // the default "code" is 0, so at least make
                 // sure to exit unsuccessfully if that happens.
                 $status = $e->getCode() ?: 1;
+                call_user_func($this->errorCallback, $e);
             }
 
             exit($status < 255 ? $status : 255);
@@ -73,5 +80,16 @@ final class ForkingExecutor extends AbstractExecutor
         $status = $this->pcntl->wait($child);
 
         return $this->pcntl->getStatus($status) < 1;
+    }
+
+    public static function errorCallback(\Exception $e)
+    {
+        error_log(sprintf(
+            "Uncaught %s(%s): %s\n%s",
+            get_class($e),
+            $e->getCode(),
+            $e->getMessage(),
+            $e->getTraceAsString()
+        ));
     }
 }
