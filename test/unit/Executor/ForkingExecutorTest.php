@@ -24,9 +24,9 @@ class ForkingExecutorTest extends \PMG\Queue\UnitTestCase
 
     public function testExecutorReturnsTrueWhenTheChildProcessExitsSuccessfully()
     {
-        $resolver = new SimpleResolver([
-            'TestMessage' => function () { },
-        ]);
+        $resolver = new SimpleResolver(function () {
+            // noop;
+        });
         $exec = new ForkingExecutor($resolver);
 
         $this->assertTrue($exec->execute(new SimpleMessage('TestMessage')));
@@ -34,11 +34,9 @@ class ForkingExecutorTest extends \PMG\Queue\UnitTestCase
 
     public function testExecutorReturnsFalsWhenTheChildProcessExistUnsuccessfully()
     {
-        $resolver = new SimpleResolver([
-            'TestMessage' => function () {
-                exit(1);
-            },
-        ]);
+        $resolver = new SimpleResolver(function () {
+            exit(1);
+        });
         $exec = new ForkingExecutor($resolver);
 
         $this->assertFalse($exec->execute(new SimpleMessage('TestMessage')));
