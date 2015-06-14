@@ -5,20 +5,22 @@ use PMG\Queue;
 require __DIR__.'/../vendor/autoload.php';
 require __DIR__.'/StreamLogger.php';
 
+$conn = new \Pheanstalk\Pheanstalk('localhost');
+$tubes = $conn->listTubes();
+do {
+    $queueName = uniqid('example_');
+} while (in_array($queueName, $tubes, true));
+
 $serializer = new Queue\Serializer\SigningSerializer(
     new Queue\Serializer\NativeSerializer(),
     "sshhhh, it's a secret"
 );
-$driver = new Queue\Driver\PheanstalkDriver(
-    new \Pheanstalk\Pheanstalk('localhost'),
-    [],
-    $serializer
-);
+$driver = new Queue\Driver\PheanstalkDriver($conn, [], $serializer);
 
 $router = new Queue\Router\MappingRouter([
-    'TestMessage'   => 'q',
-    'TestMessage2'  => 'q',
-    'MustStop'      => 'q',
+    'TestMessage'   => $queueName,
+    'TestMessage2'  => $queueName,
+    'MustStop'      => $queueName,
 ]);
 
 $resolver = new Queue\Resolver\MappingResolver([
@@ -46,4 +48,4 @@ $producer->send(new Queue\SimpleMessage('TestMessage'));
 $producer->send(new Queue\SimpleMessage('TestMessage2'));
 $producer->send(new Queue\SimpleMessage('MustStop'));
 
-exit($consumer->run('q'));
+exit($consumer->run($queueName));
