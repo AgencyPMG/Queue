@@ -1,4 +1,4 @@
-.PHONY: test testnocov simpleexample pheanstalkexample
+.PHONY: test testnocov simpleexample pheanstalkexample retryexample
 
 testnocov:
 	php vendor/bin/phpunit
@@ -12,6 +12,9 @@ simpleexample:
 pheanstalkexample:
 	php examples/pheanstalk.php
 
-examples: simpleexample pheanstalkexample
+retryexample:
+	php examples/retrying.php
+
+examples: simpleexample pheanstalkexample retryexample
 
 travis: test examples
