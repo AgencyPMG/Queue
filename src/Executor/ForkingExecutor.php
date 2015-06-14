@@ -54,10 +54,8 @@ final class ForkingExecutor extends AbstractExecutor
     /**
      * {@inheritdoc}
      */
-    public function execute(Message $message)
+    public function executeInternal(Message $message, callable $handler)
     {
-        $handler = $this->handlerFor($message);
-
         $child = $this->pcntl->fork();
         if ($child < 1) {
             call_user_func($handler, $message);

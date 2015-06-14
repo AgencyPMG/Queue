@@ -15,6 +15,7 @@ namespace PMG\Queue\Executor;
 use PMG\Queue\HandlerResolver;
 use PMG\Queue\Message;
 use PMG\Queue\MessageExecutor;
+use PMG\Queue\Exception\HandlerNotFound;
 
 /**
  * ABC for executors -- all of them share the need of a `HandlerResolver`.
@@ -32,6 +33,28 @@ abstract class AbstractExecutor implements MessageExecutor
     {
         $this->resolver = $resolver;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function execute(Message $message)
+    {
+        $handler = $this->handlerFor($message);
+        if (!$handler) {
+            throw new HandlerNotFound(sprintf('No handler found for "%s"', $message->getName()));
+        }
+
+        return $this->executeInternal($message, $handler);
+    }
+
+    /**
+     * This actually executes the handler according to the executors implementation.
+     *
+     * @param   $message The message to be executed
+     * @param   $handler The handler
+     * @return  boolean True is the handler succeeds.
+     */
+    abstract protected function executeInternal(Message $message, callable $handler);
 
     protected function handlerFor(Message $message)
     {

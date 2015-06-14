@@ -24,9 +24,9 @@ final class SimpleExecutor extends AbstractExecutor
     /**
      * {@inheritdoc}
      */
-    public function execute(Message $message)
+    protected function executeInternal(Message $message, callable $handler)
     {
-        call_user_func($this->handlerFor($message), $message);
+        call_user_func($handler, $message);
         return true;
     }
 }
