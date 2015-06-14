@@ -9,7 +9,7 @@ $driver = new Queue\Driver\MemoryDriver();
 
 $router = new Queue\Router\SimpleRouter('q');
 
-$resolver = new Queue\Resolver\SimpleResolver([
+$resolver = new Queue\Resolver\MappingResolver([
     'TestMessage'   => function () {
         // noop
     },

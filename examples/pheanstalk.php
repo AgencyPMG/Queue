@@ -13,7 +13,7 @@ $router = new Queue\Router\MappingRouter([
     'MustStop'      => 'q',
 ]);
 
-$resolver = new Queue\Resolver\SimpleResolver([
+$resolver = new Queue\Resolver\MappingResolver([
     'TestMessage'   => function () {
         // noop
     },
