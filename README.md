@@ -23,7 +23,10 @@ useful including automatic retries and multi-queue support.
 - A **handler** is a callable that does the work defined by a message.
 - **handler resolvers** find handlers based on the *message* name.
 
-## Example
+## Examples?
+
+See the [`examples`](https://github.com/AgencyPMG/Queue/tree/master/examples)
+directory.
 
 ## Messages
 
@@ -85,6 +88,10 @@ $message = new SendAlert($userId);
 $queueProducer->send($message);
 ```
 
+The default producer sends messages via a *driver* and a *router*.
+
+## Routers
+
 `pmg/queue` supports multiple queues and messages are routed to a queue via
 implementations of `PMG\Queue\Router`.
 
@@ -140,4 +147,195 @@ $producer = new DefaultProducer($driver, new FallbackRouter($router, 'FallbackQu
 
 // `DoStuff` message goes into `FallbackQueue`.
 $producer->send(new SimpleMessage('DoStuff'));
+```
+
+## Consumers
+
+Consumers pull messages out a queue backend via a *driver* and handle them. The
+default `PMG\Queue\Consumer` implementation accomplishes that with an
+*hander resolvers*, *handlers*, and *executors*.
+
+## Handlers & Resolvers
+
+Handlers are callables that take a single argument: the message put into the
+queue. When a message comes out of the queue, it's match to its hander via a
+*handler resolver*.
+
+### Matching a Handler Based on Name
+
+`MappingResolver` matches messages (via their name) to handlers.
+
+```php
+use PMG\Queue\Resolver\MappingResolver;
+
+$resolver = new MappingResolver([
+    // The `SendAlert` class from above
+    SendAlert::class => function (SendAlert $message) {
+        // this is called by the consumer
+    },
+]);
+```
+
+### Using a Single Handler for Everything
+
+`SimpleResolver` always returns the same handler for every job. This is useful
+if you're doing something like sending messages from the queue through a
+[command bus](http://tactician.thephpleague.com/).
+
+```php
+use PMG\Queue\Message;
+use PMG\Queue\Resolver\SimpleResolver;
+
+$resolver = new SimpleResolver(function (Message $message) {
+    // called for everything message
+});
+```
+
+## Executors
+
+Handler resolver are used with executors to handle messages. Executors seem like
+a bit of a ridiculous concept -- `SimpleExecutor` is just a wrapper around
+`call_user_func` -- but its helpful to pull out the code that runs the handler
+callbacks so it can be swapped out with something more complex (like
+`ForkingExecutor`). All executor implement `PMG\Queue\MessageExecutor`.
+
+### Handling the Message in the Same Thread
+
+`SimpleExecutor` just calls the handler, if found, with `call_user_func` in the
+same thread.
+
+```php
+use PMG\Queue\DefaultConsumer;
+use PMG\Queue\Message;
+use PMG\Queue\Executor\SimpleExecutor;
+use PMG\Queue\Resolver\SimpleResolver;
+
+$resolver = new SimpleResolver(function (Message $message) {
+    // called for everything message
+});
+
+$executor = new SimpleExecutor($resolver);
+
+// $driver instanceof PMG\Queue\Driver
+$consumer = new DefaultConsumer($driver, $executor);
+```
+
+### Handling Messages with a Fork
+
+`ForkingExecutor` calls `pcntl_fork` and runs the handler in a child thread.
+This is useful if your handlers can eat a lot of memory or are otherwise
+resource intensive and you want to clean things up completely. `ForkingExecutor`
+takes a second argument, a callable, that throw execeptions are passed into.
+Keep in mind that this happens in a child thread, so resources like files
+and database connections may no longer be available. The default error callback
+invokes [`error_log`](http://php.net/manual/en/function.error-log.php).
+
+
+```php
+use PMG\Queue\DefaultConsumer;
+use PMG\Queue\Message;
+use PMG\Queue\Executor\ForkingExecutor;
+use PMG\Queue\Resolver\SimpleResolver;
+
+$resolver = new SimpleResolver(function (Message $message) {
+    // called for everything message
+});
+
+$executor = new ForkingExecutor($resolver, function (\Exception $e) {
+    $logger = createYourLoggerSomehow();
+    $logger->critical(/* log exception somehow */);
+});
+
+// $driver instanceof PMG\Queue\Driver
+$consumer = new DefaultConsumer($driver, $executor);
+```
+
+## Drivers
+
+Drivers are the queue backend hidden behind the `PMG\Queue\Driver` interface.
+`pmg/queue` comes with two drivers built in: *memory* and *pheanstalk*
+(beanstalkd).
+
+### The Memory Driver
+
+The memory driver is provided to make prototyping easy. It uses `SplQueue`
+instances and only keep messages in memory.
+
+
+```php
+use PMG\Queue\DefaultConsumer;
+use PMG\Queue\Driver\MemoryDriver;
+
+// ...
+
+$driver = new MemoryDriver();
+
+// $executor instanceof PMG\Queue\MessageExecutor
+$consumer = new DefaultConsumer($driver, $executor);
+```
+
+### Serializers and Persistant Backends
+
+Queues drivers that persist longer than a single request (or script run) require
+some sort of serialization of messages. That happens via `PMG\Queue\Serializer\Serializer`
+implementations. By default, `PheanstalkDriver` will use use `PMG\Queue\Serializer\NativeSerializer`
+which simply calls `serialize` and `unserialize` and runs the output `base64_encode`
+and `base64_decode` respectively.
+
+You can (and **should**) consider wrapping the native serializer with
+`SignedSerializer` which will prepend an HMAC to the serialized message to help
+verify integrity when unserializing.
+
+### Using Beanstalkd and Pheanstalk
+
+[Pheanstalk](https://github.com/pda/pheanstalk) is a PHP library for interacting
+with [Beanstalkd](http://kr.github.io/beanstalkd/). `PheanstalkDriver` lets you
+take advantage of Beanstalkd as a queue backend.
+
+
+```php
+use Pheanstalk\Pheanstalk;
+use PMG\Queue\DefaultConsumer;
+use PMG\Queue\Driver\PheanstalkDriver;
+use PMG\Queue\Serializer\NativeSerializer;
+use PMG\Queue\Serializer\SignignSerializer;
+
+// ...
+
+$serilizer = new SigningSerializer(
+    new NativeSerializer(),
+    'this is the secret key'
+);
+
+$driver = new PheanstalkDriver(new \Pheanstalk('localhost'), [
+    // how long easy message has to execute in seconds
+    'ttr'               => 100,
+
+    // the "priority" of the message. High priority messages are
+    // consumed first.
+    'priority'          => 1024,
+
+    // The delay between inserting the message and when it
+    // becomes available for consumption
+    'delay'             => 0,
+
+    // The ttr for retries jobs
+    'retry-ttr'         => 100,
+
+    // the priority for retried jobs
+    'retry-priority'    => 1024,
+
+    // the delay for retried jobs
+    'retry-delay'       => 0,
+
+    // When jobs fail, they are "burieds" in beanstalkd with this priority
+    'fail-priority'     => 1024,
+
+    // A call to `dequeue` blocks for this number of seconds. A zero or
+    // falsy value will block until a job becomes available
+    'reserve-timeout'   => 10,
+], $serializer);
+
+// $executor instanceof PMG\Queue\MessageExecutor
+$consumer = new DefaultConsumer($driver, $executor);
 ```
