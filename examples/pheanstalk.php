@@ -5,7 +5,15 @@ use PMG\Queue;
 require __DIR__.'/../vendor/autoload.php';
 require __DIR__.'/StreamLogger.php';
 
-$driver = new Queue\Driver\PheanstalkDriver(new \Pheanstalk\Pheanstalk('localhost'));
+$serializer = new Queue\Serializer\SigningSerializer(
+    new Queue\Serializer\NativeSerializer(),
+    "sshhhh, it's a secret"
+);
+$driver = new Queue\Driver\PheanstalkDriver(
+    new \Pheanstalk\Pheanstalk('localhost'),
+    [],
+    $serializer
+);
 
 $router = new Queue\Router\MappingRouter([
     'TestMessage'   => 'q',
