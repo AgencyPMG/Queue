@@ -339,3 +339,42 @@ $driver = new PheanstalkDriver(new \Pheanstalk('localhost'), [
 // $executor instanceof PMG\Queue\MessageExecutor
 $consumer = new DefaultConsumer($driver, $executor);
 ```
+
+## Retrying Failed Messages
+
+*Consumers* will attempt to handle a message 5 times by default. This is defined
+by a `RetrySpec`, which is passed as the third argument to consumers.
+
+
+### Limiting Attemps
+
+`LimitedSpec` will limit the attempts on a message to the value passed into
+the constructor.
+
+```php
+use PMG\Queue\DefaultConsumer;
+use PMG\Queue\Retry\LimitedSpec;
+
+// allow a single retry
+$retry = new LimitedSpec(1);
+
+// $driver instanceof PMG\Queue\Driver
+// $executor instanceof PMG\Queue\MessageExecutor
+$consumer = new DefaultConsumer($driver, $executor, $retry);
+```
+
+### Never Retry a Message
+
+`NeverSpec` will not allow retries of a message.
+
+```php
+use PMG\Queue\DefaultConsumer;
+use PMG\Queue\Retry\NeverSpec;
+
+// allow a single retry
+$retry = new NeverSpec();
+
+// $driver instanceof PMG\Queue\Driver
+// $executor instanceof PMG\Queue\MessageExecutor
+$consumer = new DefaultConsumer($driver, $executor, $retry);
+```
