@@ -40,7 +40,7 @@ $producer = new Queue\DefaultProducer($driver, $router);
 $consumer = new Queue\DefaultConsumer(
     $driver,
     new Queue\Executor\SimpleExecutor($resolver),
-    new Queue\Retry\LimitedSpec(2), // allow two retries
+    new Queue\Retry\NeverSpec(),
     new StreamLogger()
 );
 
