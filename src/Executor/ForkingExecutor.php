@@ -58,8 +58,16 @@ final class ForkingExecutor extends AbstractExecutor
     {
         $child = $this->pcntl->fork();
         if ($child < 1) {
-            call_user_func($handler, $message);
-            exit(0);
+            $status = 0;
+            try {
+                call_user_func($handler, $message);
+            } catch (\Exception $e) {
+                // the default "code" is 0, so at least make
+                // sure to exit unsuccessfully if that happens.
+                $status = $e->getCode() ?: 1;
+            }
+
+            exit($status < 255 ? $status : 255);
         }
         
         $status = $this->pcntl->wait($child);

@@ -41,4 +41,14 @@ class ForkingExecutorTest extends \PMG\Queue\UnitTestCase
 
         $this->assertFalse($exec->execute(new SimpleMessage('TestMessage')));
     }
+
+    public function testExecutorReturnsFalseWhenAnExceptionIsThrownInTheHandler()
+    {
+        $resolver = new SimpleResolver(function () {
+            throw new \Exception('oops');
+        });
+        $exec = new ForkingExecutor($resolver);
+
+        $this->assertFalse($exec->execute(new SimpleMessage('TestMessage')));
+    }
 }
