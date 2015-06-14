@@ -274,7 +274,7 @@ $driver = new MemoryDriver();
 $consumer = new DefaultConsumer($driver, $executor);
 ```
 
-### Serializers and Persistant Backends
+### Serializers and Persistent Backends
 
 Queues drivers that persist longer than a single request (or script run) require
 some sort of serialization of messages. That happens via `PMG\Queue\Serializer\Serializer`
