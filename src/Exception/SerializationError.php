@@ -19,7 +19,7 @@ use PMG\Queue\QueueException;
  *
  * @since   2.0
  */
-final class SerializationError extends \RuntimeException implements QueueException
+final class SerializationError extends \RuntimeException implements DriverError
 {
 
 }

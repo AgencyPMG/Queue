@@ -12,11 +12,6 @@
 
 namespace PMG\Queue;
 
-class _ConsumerDriverError extends \Exception implements Exception\DriverError
-{
-
-}
-
 class DefaultConsumerTest extends UnitTestCase
 {
     const Q = 'TestQueue';
@@ -127,14 +122,14 @@ class DefaultConsumerTest extends UnitTestCase
     }
 
     /**
-     * @expectedException PMG\Queue\_ConsumerDriverError
+     * @expectedException PMG\Queue\Exception\SerializationError
      */
     public function testRunStopsWhenADriverErrorIsThrown()
     {
         $this->driver->expects($this->once())
             ->method('dequeue')
             ->with(self::Q)
-            ->willThrowException(new _ConsumerDriverError('broke'));
+            ->willThrowException(new Exception\SerializationError('broke'));
 
         $this->consumer->run(self::Q);
     }
