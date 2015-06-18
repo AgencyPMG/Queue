@@ -6,7 +6,7 @@
  *
  * @package     PMGQueue
  * @copyright   2014 PMG Worldwide
- * @license     http://opensource.org/licenses/MIT MIT
+ * @license     http://opensource.org/licenses/Apache-2.0 Apache-2.0
  */
 
 $loader = require __DIR__.'/../vendor/autoload.php';

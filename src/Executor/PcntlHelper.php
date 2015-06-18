@@ -6,7 +6,7 @@
  *
  * @package     PMGQueue
  * @copyright   2013 PMG Worldwide
- * @license     http://opensource.org/licenses/MIT MIT
+ * @license     http://opensource.org/licenses/Apache-2.0 Apache-2.0
  */
 
 namespace PMG\Queue\Executor;
