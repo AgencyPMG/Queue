@@ -1,5 +1,28 @@
 # Changelog
 
+## 2.0.2
+
+Simple license update.
+
+BC Breaks:
+
+- None
+
+Bug Fixes:
+
+- None
+
+## 2.0.1
+
+BC Breaks:
+
+- None
+
+Bug Fixes:
+
+- `SerializationError` is now treated as a `DriverError` since that's where
+  those errors originate.
+
 ## 2.0.0
 
 BC Breaks:
