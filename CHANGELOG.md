@@ -1,6 +1,20 @@
 # Changelog
 
 
+## 2.1.1
+
+BC Breaks:
+
+- None
+
+Bug Fixes:
+
+- Broadcast jobs get a higher priority as intended (but forgotten) in 2.1.0
+
+New Features:
+
+- None
+
 ## 2.1.0
 
 BC Breaks:
