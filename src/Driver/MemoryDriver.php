@@ -35,7 +35,9 @@ final class MemoryDriver implements \PMG\Queue\Driver
     {
         $results = [];
         foreach ($this->queues as $name => $_) {
-            $results[] = $this->enqueue($name, $message);
+            $e = new DefaultEnvelope($message);
+            $this->enqueueEnvelope($name, $e, true);
+            $results[] = $e;
         }
 
         return $results;
@@ -99,9 +101,14 @@ final class MemoryDriver implements \PMG\Queue\Driver
         return isset($this->queues[$queueName]) ? iterator_to_array($this->queues[$queueName]) : [];
     }
 
-    private function enqueueEnvelope($queueName, Envelope $envelope)
+    private function enqueueEnvelope($queueName, Envelope $envelope, $prio=false)
     {
-        $this->getQueue($queueName)->enqueue($envelope);
+        $q = $this->getQueue($queueName);
+        if ($prio) {
+            $q->unshift($envelope);
+        } else {
+            $q->enqueue($envelope);
+        }
     }
 
     private function getQueue($queueName)

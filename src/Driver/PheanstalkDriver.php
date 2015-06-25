@@ -47,14 +47,17 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         parent::__construct($serializer);
         $this->conn = $conn;
         $this->options = array_replace([
-            'priority'          => PheanstalkInterface::DEFAULT_PRIORITY,
-            'delay'             => PheanstalkInterface::DEFAULT_DELAY,
-            'ttr'               => PheanstalkInterface::DEFAULT_TTR,
-            'retry-priority'    => PheanstalkInterface::DEFAULT_PRIORITY,
-            'retry-delay'       => PheanstalkInterface::DEFAULT_DELAY,
-            'retry-ttr'         => PheanstalkInterface::DEFAULT_TTR,
-            'fail-priority'     => PheanstalkInterface::DEFAULT_PRIORITY,
-            'reserve-timeout'   => 10,
+            'priority'              => PheanstalkInterface::DEFAULT_PRIORITY,
+            'delay'                 => PheanstalkInterface::DEFAULT_DELAY,
+            'ttr'                   => PheanstalkInterface::DEFAULT_TTR,
+            'retry-priority'        => PheanstalkInterface::DEFAULT_PRIORITY,
+            'retry-delay'           => PheanstalkInterface::DEFAULT_DELAY,
+            'retry-ttr'             => PheanstalkInterface::DEFAULT_TTR,
+            'broadcast-priority'    => PheanstalkInterface::DEFAULT_PRIORITY - 1,
+            'broadcast-delay'       => PheanstalkInterface::DEFAULT_DELAY,
+            'broadcast-ttr'         => PheanstalkInterface::DEFAULT_TTR,
+            'fail-priority'         => PheanstalkInterface::DEFAULT_PRIORITY,
+            'reserve-timeout'       => 10,
         ], $options ?: []);
     }
 
@@ -65,7 +68,13 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     {
         $results = [];
         foreach ($this->conn->listTubes() as $queueName) {
-            $results[] = $this->enqueue($queueName, $message);
+            $results[] = $this->doEnqueue(
+                $queueName,
+                $message,
+                $this->options['broadcast-priority'],
+                $this->options['broadcast-delay'],
+                $this->options['broadcast-ttr']
+            );
         }
 
         return $results;
@@ -76,22 +85,13 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
      */
     public function enqueue($queueName, Message $message)
     {
-        $env = new DefaultEnvelope($message);
-        $data = $this->serialize($env);
-
-        try {
-            $id = $this->conn->putInTube(
-                $queueName,
-                $data,
-                $this->options['priority'],
-                $this->options['delay'],
-                $this->options['ttr']
-            );
-        } catch (\Pheanstalk\Exception $e) {
-            throw PheanstalkError::fromException($e);
-        }
-
-        return new PheanstalkEnvelope(new Job($id, $data), $env);
+        return $this->doEnqueue(
+            $queueName,
+            $message,
+            $this->options['priority'],
+            $this->options['delay'],
+            $this->options['ttr']
+        );
     }
 
     /**
@@ -185,5 +185,19 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
         }
+    }
+
+    private function doEnqueue($queueName, Message $message, $prio, $delay, $ttr)
+    {
+        $env = new DefaultEnvelope($message);
+        $data = $this->serialize($env);
+
+        try {
+            $id = $this->conn->putInTube($queueName, $data, $prio, $delay, $ttr);
+        } catch (\Pheanstalk\Exception $e) {
+            throw PheanstalkError::fromException($e);
+        }
+
+        return new PheanstalkEnvelope(new Job($id, $data), $env);
     }
 }
