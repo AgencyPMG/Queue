@@ -40,6 +40,19 @@ class MemoryDriverTest extends \PMG\Queue\UnitTestCase
         $this->assertSame($m, $e->unwrap());
     }
 
+    public function testMessagesBroadcastedMessagesAreSentToAllQueues()
+    {
+        // add some queues...
+        $m = new SimpleMessage('test');
+        $this->assertInstanceOf(Envelope::class, $this->driver->enqueue(self::Q, $m));
+        $this->assertInstanceOf(Envelope::class, $this->driver->enqueue(self::Q.'2', $m));
+
+        $this->driver->broadcast(new SimpleMessage('broadcast'));
+
+        $this->assertCount(2, $this->driver->getMessages(self::Q));
+        $this->assertCount(2, $this->driver->getMessages(self::Q.'2'));
+    }
+
     protected function setUp()
     {
         $this->driver = new MemoryDriver();
