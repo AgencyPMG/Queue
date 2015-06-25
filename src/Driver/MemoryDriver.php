@@ -31,6 +31,19 @@ final class MemoryDriver implements \PMG\Queue\Driver
     /**
      * {@inheritdoc}
      */
+    public function broadcast(Message $message)
+    {
+        $results = [];
+        foreach ($this->queues as $name => $_) {
+            $results[] = $this->enqueue($name, $message);
+        }
+
+        return $results;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function enqueue($queueName, Message $message)
     {
         $e = new DefaultEnvelope($message);
@@ -74,6 +87,16 @@ final class MemoryDriver implements \PMG\Queue\Driver
     public function fail($queueName, Envelope $envelope)
     {
         // noop
+    }
+
+    /**
+     * Fetch the jobs for a given queue.
+     *
+     * @return  Envelope[]
+     */
+    public function getMessages($queueName)
+    {
+        return isset($this->queues[$queueName]) ? iterator_to_array($this->queues[$queueName]) : [];
     }
 
     private function enqueueEnvelope($queueName, Envelope $envelope)

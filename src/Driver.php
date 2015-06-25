@@ -28,6 +28,14 @@ namespace PMG\Queue;
 interface Driver
 {
     /**
+     * Broadcast a message to all queues.
+     *
+     * @param   $message The message to broadcast
+     * @return  Envelope[] A set of envelopes, one from each queue
+     */
+    public function broadcast(Message $message);
+
+    /**
      * Add a new message to the queue.
      *
      * @param   string $queueName The name of the queue to put the message in.

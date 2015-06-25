@@ -87,6 +87,16 @@ class HappyPheanstalkDriverTest extends \PMG\Queue\IntegrationTestCase
         $this->assertEquals('buried', $res['state']);
     }
 
+    public function testBroadcastedJobsAreSentToAllTubes()
+    {
+        $this->driver->broadcast(new SimpleMessage('broadcast'));
+
+        // this is the only time we use `default`, should be relatively safe
+        $env = $this->driver->dequeue('default');
+
+        $this->assertEquals('broadcast', $env->unwrap()->getName());
+    }
+
     protected function setUp()
     {
         $host = getenv('PMG_QUEUE_HOST') ?: 'localhost';

@@ -61,6 +61,19 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
+    public function broadcast(Message $message)
+    {
+        $results = [];
+        foreach ($this->conn->listTubes() as $queueName) {
+            $results[] = $this->enqueue($queueName, $message);
+        }
+
+        return $results;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function enqueue($queueName, Message $message)
     {
         $env = new DefaultEnvelope($message);
