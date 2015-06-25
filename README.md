@@ -80,7 +80,7 @@ $message = new \PMG\Queue\SimpleMessage('SendAlert', [
 ## Producers & Routers
 
 Producers send messages into the queue backend via a driver. All producers
-implement `PMG\Queue\Producer` which has a single method: `send`.
+implement `PMG\Queue\Producer` which has two methods: `send` and `broadcast`.
 
 ```php
 $message = new SendAlert($userId);
@@ -89,6 +89,9 @@ $queueProducer->send($message);
 ```
 
 The default producer sends messages via a *driver* and a *router*.
+
+When a message is put through `send`, it goes into a single queue. A message
+going into `broadcast` goes into all queues with a higher priority.
 
 ## Routers
 
@@ -148,6 +151,22 @@ $producer = new DefaultProducer($driver, new FallbackRouter($router, 'FallbackQu
 // `DoStuff` message goes into `FallbackQueue`.
 $producer->send(new SimpleMessage('DoStuff'));
 ```
+
+### What is Broadcasting Good For?
+
+It was designed for things that (1) should take priority over other jobs and (2)
+are meant to be system wide. The best use case is implementing a graceful
+restart.
+
+```php
+$message = new StopQueue();
+// $producer instanceof PMG\Queue\Producer
+$producer->broadcast($message);
+```
+
+The example above would have the *handler* for stop queue throw an exception
+that implement `PMG\Queue\Exception\MustStop` and the queue would exit
+gracefully with whatever status code was passed to the exception.
 
 ## Consumers
 
