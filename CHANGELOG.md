@@ -1,5 +1,20 @@
 # Changelog
 
+
+## 2.1.0
+
+BC Breaks:
+
+- Added the `broadcast` method to `PMG\Queue\Driver` and `PMG\Queue\Producer`
+
+Bug Fixes:
+
+- None
+
+New Features:
+
+- Added the ability to *broadcast* messages to all queues.
+
 ## 2.0.2
 
 Simple license update.
