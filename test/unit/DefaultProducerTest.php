@@ -46,6 +46,16 @@ class DefaultProducerTest extends UnitTestCase
         $this->producer->send($msg);
     }
 
+    public function testBroadcastDispatchesToDriverDirectly()
+    {
+        $msg = $this->getMock(Message::class);
+        $this->driver->expects($this->once())
+            ->method('broadcast')
+            ->with($this->identicalTo($msg));
+
+        $this->producer->broadcast($msg);
+    }
+
     protected function setUp()
     {
         $this->router = $this->getMock(Router::class);

@@ -30,4 +30,13 @@ interface Producer
      * @return  void
      */
     public function send(Message $message);
+
+    /**
+     * Broadcast a message to the queue.
+     *
+     * @throws  Exception\DriverError if something goes wrong with the
+     *          queue backend.
+     * @return  void
+     */
+    public function broadcast(Message $message);
 }

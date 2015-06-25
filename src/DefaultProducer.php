@@ -48,4 +48,12 @@ final class DefaultProducer implements Producer
 
         $this->driver->enqueue($queueName, $message);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function broadcast(Message $message)
+    {
+        $this->driver->broadcast($message);
+    }
 }
