@@ -15,6 +15,9 @@ pheanstalkexample:
 retryexample:
 	php examples/retrying.php
 
-examples: simpleexample pheanstalkexample retryexample
+broadcastexample:
+	php examples/broadcast.php
+
+examples: simpleexample pheanstalkexample retryexample broadcastexample
 
 travis: test examples

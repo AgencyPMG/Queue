@@ -46,6 +46,6 @@ $consumer = new Queue\DefaultConsumer(
 
 $producer->send(new Queue\SimpleMessage('TestMessage'));
 $producer->send(new Queue\SimpleMessage('TestMessage2'));
-$producer->broadcast(new Queue\SimpleMessage('MustStop'));
+$producer->send(new Queue\SimpleMessage('MustStop'));
 
 exit($consumer->run($queueName));

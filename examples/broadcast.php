@@ -17,7 +17,7 @@ $resolver = new Queue\Resolver\MappingResolver([
         throw new \Exception('oops');
     },
     'MustStop'      => function () {
-        throw new Queue\Exception\SimpleMustStop('stopit');
+        throw new Queue\Exception\SimpleMustStop('this was a broadcast message');
     },
 ]);
 
@@ -26,12 +26,15 @@ $producer = new Queue\DefaultProducer($driver, $router);
 $consumer = new Queue\DefaultConsumer(
     $driver,
     new Queue\Executor\SimpleExecutor($resolver),
-    new Queue\Retry\LimitedSpec(2), // allow two retries
+    new Queue\Retry\LimitedSpec(2),
     new StreamLogger()
 );
 
+// these two jobs will never be seen, because...
 $producer->send(new Queue\SimpleMessage('TestMessage'));
 $producer->send(new Queue\SimpleMessage('TestMessage2'));
-$producer->send(new Queue\SimpleMessage('MustStop'));
+
+// broadcast messages are given high priority and go first
+$producer->broadcast(new Queue\SimpleMessage('MustStop'));
 
 exit($consumer->run('q'));
