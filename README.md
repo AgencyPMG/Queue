@@ -39,7 +39,7 @@ returns the class name from `getName`.
 ```php
 class MyMessage implements \PMG\Queue\Message
 {
-    use \PMG\Queue\Message;
+    use \PMG\Queue\MessageTrait;
 
     // ...
 }
@@ -52,7 +52,7 @@ might be good to include the user's identifier in your message.
 ```php
 class SendAlert implemetns \PMG\Queue\Message
 {
-    use \PMG\Queue\Message;
+    use \PMG\Queue\MessageTrait;
 
     private $userId;
 
