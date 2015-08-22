@@ -101,17 +101,8 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
      */
     public function ack($queueName, Envelope $env)
     {
-        if (!$env instanceof PheanstalkEnvelope) {
-            throw new InvalidEnvelope(sprintf(
-                '%s requires that envelopes be instances of "%s", got "%s"',
-                __CLASS__,
-                PheanstalkEnvelope::class,
-                get_class($env)
-            ));
-        }
-
         try {
-            $this->conn->delete($env->getJob());
+            $this->conn->delete($this->assurePheanstalkEnvelope($env)->getJob());
         } catch (\Pheanstalk\Exception $e) {
             throw PheanstalkError::fromException($e);
         }
@@ -122,16 +113,7 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
      */
     public function retry($queueName, Envelope $env)
     {
-        if (!$env instanceof PheanstalkEnvelope) {
-            throw new InvalidEnvelope(sprintf(
-                '%s requires that envelopes be instances of "%s", got "%s"',
-                __CLASS__,
-                PheanstalkEnvelope::class,
-                get_class($env)
-            ));
-        }
-
-        $e = $env->retry();
+        $e = $this->assurePheanstalkEnvelope($env)->retry();
         $data = $this->serialize($e);
 
         // since we need to update the job payload here, we have to delete
@@ -158,6 +140,18 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
      */
     public function fail($queueName, Envelope $env)
     {
+        try {
+            $this->conn->bury(
+                $this->assurePheanstalkEnvelope($env)->getJob(),
+                $this->options['fail-priority']
+            );
+        } catch (\Pheanstalk\Exception $e) {
+            throw PheanstalkError::fromException($e);
+        }
+    }
+
+    private function assurePheanstalkEnvelope(Envelope $env)
+    {
         if (!$env instanceof PheanstalkEnvelope) {
             throw new InvalidEnvelope(sprintf(
                 '%s requires that envelopes be instances of "%s", got "%s"',
@@ -167,10 +161,6 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
             ));
         }
 
-        try {
-            $this->conn->bury($env->getJob(), $this->options['fail-priority']);
-        } catch (\Pheanstalk\Exception $e) {
-            throw PheanstalkError::fromException($e);
-        }
+        return $env;
     }
 }
