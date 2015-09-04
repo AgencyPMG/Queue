@@ -371,7 +371,7 @@ $consumer = new DefaultConsumer($driver, $executor, $retry);
 use PMG\Queue\DefaultConsumer;
 use PMG\Queue\Retry\NeverSpec;
 
-// allow a single retry
+// never retry, each job is only run once
 $retry = new NeverSpec();
 
 // $driver instanceof PMG\Queue\Driver
