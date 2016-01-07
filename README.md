@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/AgencyPMG/Queue.svg?branch=master)](https://travis-ci.org/AgencyPMG/Queue)
+
 # PMG\Queue
 
 `pmg/queue` is a production ready queue framework that powers many internal
