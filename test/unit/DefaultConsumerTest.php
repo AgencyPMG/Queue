@@ -97,49 +97,6 @@ class DefaultConsumerTest extends UnitTestCase
         $this->assertContains('TestMessage', $messages[0]);
     }
 
-    /**
-     * This is a bad test: lots of stuff going on, but because we 
-     * don't want to block forever, it's the best we have.
-     */
-    public function testRunConsumesMessagesUntilConsumerIsStopped()
-    {
-        $this->willRetry();
-        $this->driver->expects($this->exactly(3))
-            ->method('dequeue')
-            ->willReturn($this->envelope);
-        $this->driver->expects($this->once())
-            ->method('ack');
-        $this->executor->expects($this->at(0))
-            ->method('execute')
-            ->with($this->identicalTo($this->message))
-            ->willReturn(true);
-        $this->executor->expects($this->at(1))
-            ->method('execute')
-            ->with($this->identicalTo($this->message))
-            ->willThrowException(new \RuntimeException('oops'));
-        $this->executor->expects($this->at(2))
-            ->method('execute')
-            ->with($this->identicalTo($this->message))
-            ->willThrowException(new Exception\SimpleMustStop('oops', 1));
-
-        $this->assertEquals(1, $this->consumer->run(self::Q));
-    }
-
-    public function testRunStopsWhenADriverErrorIsThrown()
-    {
-        $this->driver->expects($this->once())
-            ->method('dequeue')
-            ->with(self::Q)
-            ->willThrowException(new Exception\SerializationError('broke'));
-
-        $result = $this->consumer->run(self::Q);
-        $messages = $this->logger->getMessages(LogLevel::EMERGENCY);
-
-        $this->assertEquals(DefaultConsumer::EXIT_ERROR, $result);
-        $this->assertCount(1, $messages);
-        $this->assertContains('broke', $messages[0]);
-    }
-
     protected function setUp()
     {
         $this->driver = $this->getMock(Driver::class);

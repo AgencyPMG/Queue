@@ -21,7 +21,8 @@ n/a
 
 ### Added
 
-n/a
+- An `AbstractConsumer` class that provides the `run` and `stop` methods for
+  consumers without tying them to a specific implementation of `once`.
 
 ## 2.0.2
 
