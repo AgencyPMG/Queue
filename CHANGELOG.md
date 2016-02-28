@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   exceptions unless it's a must stop or an exception thrown from a driver. All
   other exceptions are logged, but not fatal. The idea here is to make consumers
   safe to decorate without having to duplicate the error handling logic.
+- `Consumer` has docblocks that reflect its actual return values now.
 
 ### Fixed
 
