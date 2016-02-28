@@ -7,7 +7,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- PHP version requirement was bumped to 5.6 (BC BREAK)
+- [BC BREAK] PHP version requirement was bumped to 5.6
+- [BC BREAK] `DefaultConsumer::once` (and the `Consumer` interface) have been
+  changed to make `once` safe to run in a loop. In other words, it never throws
+  exceptions unless it's a must stop or an exception thrown from a driver. All
+  other exceptions are logged, but not fatal. The idea here is to make consumers
+  safe to decorate without having to duplicate the error handling logic.
 
 ### Fixed
 
