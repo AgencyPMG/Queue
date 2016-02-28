@@ -15,8 +15,12 @@
     },
     "autoload": {
         "psr-4": {
-            "PMG\\Queue\\": "src/",
-            "PMG\\Queue\\Test\\": "test/"
+            "PMG\\Queue\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0.x-dev"
         }
     }
 }
