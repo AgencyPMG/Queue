@@ -12,6 +12,8 @@
 
 namespace PMG\Queue;
 
+use Psr\Log\LogLevel;
+
 class DefaultConsumerTest extends UnitTestCase
 {
     const Q = 'TestQueue';
@@ -27,7 +29,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->executor->expects($this->never())
             ->method('execute');
 
-        $this->consumer->once(self::Q);
+        $this->assertNull($this->consumer->once(self::Q));
     }
 
     public function testOnceExecutesTheMessageAndAcknowledgesIt()
@@ -41,7 +43,7 @@ class DefaultConsumerTest extends UnitTestCase
             ->with($this->identicalTo($this->message))
             ->willReturn(true);
 
-        $this->consumer->once(self::Q);
+        $this->assertTrue($this->consumer->once(self::Q));
     }
 
     public function testOnceWithAFailedMessageAndValidRetryPutsTheMessageBackInTheQueue()
@@ -56,7 +58,7 @@ class DefaultConsumerTest extends UnitTestCase
             ->with($this->identicalTo($this->message))
             ->willReturn(false);
 
-        $this->consumer->once(self::Q);
+        $this->assertFalse($this->consumer->once(self::Q));
     }
 
     public function testFailedMessageThatCannotBeRetriedIsNotPutBackInTheQueue()
@@ -72,12 +74,9 @@ class DefaultConsumerTest extends UnitTestCase
             ->with($this->identicalTo($this->message))
             ->willReturn(false);
 
-        $this->consumer->once(self::Q);
+        $this->assertFalse($this->consumer->once(self::Q));
     }
 
-    /**
-     * @expectedException PMG\Queue\Exception\MessageFailed
-     */
     public function testOnceWithAExceptionThrownFromExecutorAndValidRetryRetriesJobAndThrows()
     {
         $this->withMessage();
@@ -90,48 +89,12 @@ class DefaultConsumerTest extends UnitTestCase
             ->with($this->identicalTo($this->message))
             ->willThrowException(new \Exception('oops'));
 
-        $this->consumer->once(self::Q);
-    }
+        $this->assertFalse($this->consumer->once(self::Q));
+        $messages = $this->logger->getMessages(LogLevel::CRITICAL);
 
-    /**
-     * This is a bad test: lots of stuff going on, but because we 
-     * don't want to block forever, it's the best we have.
-     */
-    public function testRunConsumesMessagesUntilConsumerIsStopped()
-    {
-        $this->willRetry();
-        $this->driver->expects($this->exactly(3))
-            ->method('dequeue')
-            ->willReturn($this->envelope);
-        $this->driver->expects($this->once())
-            ->method('ack');
-        $this->executor->expects($this->at(0))
-            ->method('execute')
-            ->with($this->identicalTo($this->message))
-            ->willReturn(true);
-        $this->executor->expects($this->at(1))
-            ->method('execute')
-            ->with($this->identicalTo($this->message))
-            ->willThrowException(new \RuntimeException('oops'));
-        $this->executor->expects($this->at(2))
-            ->method('execute')
-            ->with($this->identicalTo($this->message))
-            ->willThrowException(new Exception\SimpleMustStop('oops', 1));
-
-        $this->assertEquals(1, $this->consumer->run(self::Q));
-    }
-
-    /**
-     * @expectedException PMG\Queue\Exception\SerializationError
-     */
-    public function testRunStopsWhenADriverErrorIsThrown()
-    {
-        $this->driver->expects($this->once())
-            ->method('dequeue')
-            ->with(self::Q)
-            ->willThrowException(new Exception\SerializationError('broke'));
-
-        $this->consumer->run(self::Q);
+        $this->assertCount(1, $messages);
+        $this->assertContains('oops', $messages[0]);
+        $this->assertContains('TestMessage', $messages[0]);
     }
 
     protected function setUp()
@@ -139,7 +102,8 @@ class DefaultConsumerTest extends UnitTestCase
         $this->driver = $this->getMock(Driver::class);
         $this->executor = $this->getMock(MessageExecutor::class);
         $this->retries = $this->getMock(RetrySpec::class);
-        $this->consumer = new DefaultConsumer($this->driver, $this->executor, $this->retries);
+        $this->logger = new CollectingLogger();
+        $this->consumer = new DefaultConsumer($this->driver, $this->executor, $this->retries, $this->logger);
         $this->message = new SimpleMessage('TestMessage');
         $this->envelope = new DefaultEnvelope($this->message);
     }

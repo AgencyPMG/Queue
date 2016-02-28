@@ -13,7 +13,6 @@
 namespace PMG\Queue;
 
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * A default implementation of `Consumer`. Runs jobs via an executor.
@@ -21,8 +20,9 @@ use Psr\Log\NullLogger;
  * @since   2.0
  * @api
  */
-final class DefaultConsumer implements Consumer
+final class DefaultConsumer extends AbstractConsumer
 {
+
     /**
      * @var Driver
      */
@@ -38,44 +38,16 @@ final class DefaultConsumer implements Consumer
      */
     private $retries;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var boolean
-     */
-    private $running = false;
-
-    /**
-     * @var int
-     */
-    private $exitCode = 0;
-
     public function __construct(
         Driver $driver,
         MessageExecutor $executor,
         RetrySpec $retries=null,
         LoggerInterface $logger=null
     ) {
+        parent::__construct($logger);
         $this->driver = $driver;
         $this->executor = $executor;
         $this->retries = $retries ?: new Retry\LimitedSpec();
-        $this->logger = $logger ?: new NullLogger();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function run($queueName)
-    {
-        $this->running = true;
-        while ($this->running) {
-            $this->safeOnce($queueName);
-        }
-
-        return $this->exitCode;
     }
 
     /**
@@ -85,63 +57,25 @@ final class DefaultConsumer implements Consumer
     {
         $envelope = $this->driver->dequeue($queueName);
         if (!$envelope) {
-            return;
+            return null;
         }
 
+        $result = false;
         $message = $envelope->unwrap();
-        try {
-            $this->logger->debug('Executing message {msg}', ['msg' => $message->getName()]);
-            $result = $this->executor->execute($message);
-            $this->logger->debug('Executed message {msg}', ['msg' => $message->getName()]);
-        } catch (Exception\MustStop $e) {
-            // MustStop exceptions are thrown by handlers to indicate a
-            // graceful stop is required. So we don't wrapped them. Just rethrow
-            throw $e;
-        } catch (\Exception $e) {
-            $this->failed($queueName, $envelope);
-            throw new Exception\MessageFailed($e, $message);
-        }
+
+        $this->getLogger()->debug('Executing message {msg}', ['msg' => $message->getName()]);
+        $result = $this->executeMessage($message);
+        $this->getLogger()->debug('Executed message {msg}', ['msg' => $message->getName()]);
 
         if ($result) {
             $this->driver->ack($queueName, $envelope);
-            $this->logger->debug('Acknowledged message {msg}', ['msg' => $message->getName()]);
+            $this->getLogger()->debug('Acknowledged message {msg}', ['msg' => $message->getName()]);
         } else {
             $this->failed($queueName, $envelope);
-            $this->logger->debug('Failed message {msg}', ['msg' => $message->getName()]);
+            $this->getLogger()->debug('Failed message {msg}', ['msg' => $message->getName()]);
         }
-    }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function stop()
-    {
-        $this->running = false;
-    }
-
-    private function safeOnce($queueName)
-    {
-        try {
-            $this->once($queueName);
-        } catch (Exception\DriverError $e) {
-            $this->logger->critical('Caught a {cls} Driver Error, exiting: {msg}', [
-                'cls' => get_class($e),
-                'msg' => $e->getMessage(),
-            ]);
-            throw $e;
-        } catch (Exception\MustStop $e) {
-            $this->logger->warning('Caught a must stop exception, exiting: {msg}', [
-                'msg'   => $e->getMessage(),
-            ]);
-            $this->stop();
-            $this->exitCode = $e->getCode();
-        } catch (Exception\MessageFailed $e) {
-            $this->logger->critical('Unexpected {cls} exception handling {name} message: {msg}', [
-                'cls'   => get_class($e->getPrevious()),
-                'name'  => $e->getQueueMessage()->getName(),
-                'msg'   => $e->getMessage()
-            ]);
-        }
+        return $result;
     }
 
     private function failed($queueName, Envelope $env)
@@ -150,6 +84,28 @@ final class DefaultConsumer implements Consumer
             $this->driver->retry($queueName, $env);
         } else {
             $this->driver->fail($queueName, $env);
+        }
+    }
+
+    private function executeMessage(Message $message)
+    {
+        try {
+            return $this->executor->execute($message);
+        } catch (Exception\MustStop $e) {
+            // MustStop exceptions are thrown by handlers to indicate a
+            // graceful stop is required. So we don't wrap them. Just rethrow
+            throw $e;
+        } catch (\Exception $e) {
+            // any other exception is simply logged. We and marked as failed
+            // below. We only log here because we can't make guarantees about
+            // the implementation of the executor and whether or not it actually
+            // throws exceptions on failure (see ForkingExecutor).
+            $this->getLogger()->critical('Unexpected {cls} exception handling {name} message: {msg}', [
+                'cls'   => get_class($e),
+                'name'  => $message->getName(),
+                'msg'   => $e->getMessage()
+            ]);
+            return false;
         }
     }
 }
