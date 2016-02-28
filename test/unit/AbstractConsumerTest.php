@@ -55,6 +55,19 @@ class AbstractConsumerTest extends UnitTestCase
         $this->assertContains('broke', $messages[0]);
     }
 
+    public function testConsumerWithoutLoggerPassedInCreatesANullLoggerOnDemand()
+    {
+        $consumer = $this->getMockForAbstractClass(AbstractConsumer::class);
+        $consumer->expects($this->once())
+            ->method('once')
+            ->with(self::Q)
+            ->willThrowException(new Exception\SerializationError('broke'));
+
+        $result = $consumer->run(self::Q);
+
+        $this->assertEquals(DefaultConsumer::EXIT_ERROR, $result);
+    }
+
     protected function setUp()
     {
         $this->logger = new CollectingLogger();

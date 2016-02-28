@@ -42,7 +42,7 @@ abstract class AbstractConsumer implements Consumer
 
     public function __construct(LoggerInterface $logger=null)
     {
-        $this->logger = $logger ?: new NullLogger();
+        $this->logger = $logger;
     }
 
     /**
@@ -55,14 +55,14 @@ abstract class AbstractConsumer implements Consumer
             try {
                 $this->once($queueName);
             } catch (Exception\MustStop $e) {
-                $this->logger->warning('Caught a must stop exception, exiting: {msg}', [
+                $this->getLogger()->warning('Caught a must stop exception, exiting: {msg}', [
                     'msg'   => $e->getMessage(),
                 ]);
                 $this->stop();
                 $this->exitCode = $e->getCode();
             } catch (\Exception $e)  {
                 // likely means means something went wrong with the driver
-                $this->logger->emergency('Caught an unexpected {cls} exception, exiting: {msg}', [
+                $this->getLogger()->emergency('Caught an unexpected {cls} exception, exiting: {msg}', [
                     'cls' => get_class($e),
                     'msg' => $e->getMessage(),
                 ]);
@@ -84,6 +84,10 @@ abstract class AbstractConsumer implements Consumer
 
     protected function getLogger()
     {
+        if (!$this->logger) {
+            $this->logger = new NullLogger();
+        }
+
         return $this->logger;
     }
 }
