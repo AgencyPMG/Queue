@@ -12,6 +12,9 @@
     "require-dev": {
         "phpunit/phpunit": "~5.0"
     },
+    "suggest": {
+        "pmg/queue-pheanstalk": "Power pmg/queue with Beanstalkd"
+    },
     "autoload": {
         "psr-4": {
             "PMG\\Queue\\": "src/"
