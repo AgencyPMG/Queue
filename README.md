@@ -16,9 +16,9 @@ useful including automatic retries and multi-queue support.
   *router*.
 - A **consumer** pulls messages out of the queue via *driver* and executes them
   with *handlers* and *executors*.
-- A **driver** is PHP representation of the queue backend. There are two built
-  in: memory and [beanstalkd](http://kr.github.io/beanstalkd/). Drivers
-  implement `PMG\Queue\Driver`.
+- A **driver** is PHP representation of the queue backend. There is an in memory
+  driver included in this library as an example, and an implementation of a
+  [beanstalkd](http://kr.github.io/beanstalkd/) driver [available](https://github.com/AgencyPMG/queue-pheanstalk).
 - A **router** looks up the correct queue name for a message based on its name.
 - An **executor** runs the message *handler*. This is a simple abstraction to
   allow folks to fork and run jobs if they desire.
@@ -289,67 +289,13 @@ $consumer = new DefaultConsumer($driver, $executor);
 
 Queues drivers that persist longer than a single request (or script run) require
 some sort of serialization of messages. That happens via `PMG\Queue\Serializer\Serializer`
-implementations. By default, `PheanstalkDriver` will use use `PMG\Queue\Serializer\NativeSerializer`
-which simply calls `serialize` and `unserialize` and runs the output `base64_encode`
-and `base64_decode` respectively.
+implementations. By default, [`PheanstalkDriver`](https://github.com/AgencyPMG/queue-pheanstalk)
+will use use `PMG\Queue\Serializer\NativeSerializer` which simply calls `serialize`
+and `unserialize` and runs the output `base64_encode` and `base64_decode` respectively.
 
 You can (and **should**) consider wrapping the native serializer with
-`SignedSerializer` which will prepend an HMAC to the serialized message to help
+`SigningSerializer` which will prepend an HMAC to the serialized message to help
 verify integrity when unserializing.
-
-### Using Beanstalkd and Pheanstalk
-
-[Pheanstalk](https://github.com/pda/pheanstalk) is a PHP library for interacting
-with [Beanstalkd](http://kr.github.io/beanstalkd/). `PheanstalkDriver` lets you
-take advantage of Beanstalkd as a queue backend.
-
-
-```php
-use Pheanstalk\Pheanstalk;
-use PMG\Queue\DefaultConsumer;
-use PMG\Queue\Driver\PheanstalkDriver;
-use PMG\Queue\Serializer\NativeSerializer;
-use PMG\Queue\Serializer\SignignSerializer;
-
-// ...
-
-$serilizer = new SigningSerializer(
-    new NativeSerializer(),
-    'this is the secret key'
-);
-
-$driver = new PheanstalkDriver(new \Pheanstalk('localhost'), [
-    // how long easy message has to execute in seconds
-    'ttr'               => 100,
-
-    // the "priority" of the message. High priority messages are
-    // consumed first.
-    'priority'          => 1024,
-
-    // The delay between inserting the message and when it
-    // becomes available for consumption
-    'delay'             => 0,
-
-    // The ttr for retries jobs
-    'retry-ttr'         => 100,
-
-    // the priority for retried jobs
-    'retry-priority'    => 1024,
-
-    // the delay for retried jobs
-    'retry-delay'       => 0,
-
-    // When jobs fail, they are "burieds" in beanstalkd with this priority
-    'fail-priority'     => 1024,
-
-    // A call to `dequeue` blocks for this number of seconds. A zero or
-    // falsy value will block until a job becomes available
-    'reserve-timeout'   => 10,
-], $serializer);
-
-// $executor instanceof PMG\Queue\MessageExecutor
-$consumer = new DefaultConsumer($driver, $executor);
-```
 
 ## Retrying Failed Messages
 
