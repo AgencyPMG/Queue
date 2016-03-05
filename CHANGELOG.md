@@ -14,6 +14,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   other exceptions are logged, but not fatal. The idea here is to make consumers
   safe to decorate without having to duplicate the error handling logic.
 - `Consumer` has docblocks that reflect its actual return values now.
+- `PheanstalkDriver` is no longer part of the core. Instead of requiring
+   `pmg/queue` directly in your `composer.json`, require `pmg/queue-pheanstalk`
+   (or any other driver implementation).
 
 ### Fixed
 

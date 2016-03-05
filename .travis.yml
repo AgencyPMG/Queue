@@ -11,13 +11,6 @@ notifications:
     on_success: change
     on_failure: always
 
-before_install:
-    - curl -L https://github.com/kr/beanstalkd/archive/v1.10.tar.gz | tar -xz -C /tmp
-    - cd /tmp/beanstalkd-1.10
-    - make
-    - ./beanstalkd &
-    - cd $TRAVIS_BUILD_DIR
-
 install: composer install
 
 script: make travis

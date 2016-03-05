@@ -25,10 +25,19 @@ useful including automatic retries and multi-queue support.
 - A **handler** is a callable that does the work defined by a message.
 - **handler resolvers** find handlers based on the *message* name.
 
-## Examples?
+## Installation & Getting Started
+
+First up: you shouldn't require this library directly. This only includes an in
+memory driver. Instead require a persistant queue driver like
+`pmg/queue-pheanstalk`.
+
+```
+composer require pmg/queue-pheanstalk:~1.0
+```
 
 See the [`examples`](https://github.com/AgencyPMG/Queue/tree/master/examples)
-directory.
+directory for some help on how everything gets glued together or read on to
+learn more about the core concepts.
 
 ## Messages
 
