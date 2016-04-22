@@ -27,6 +27,21 @@ n/a
 - An `AbstractConsumer` class that provides the `run` and `stop` methods for
   consumers without tying them to a specific implementation of `once`.
 
+## 2.1.0
+
+BC Breaks:
+
+- None
+
+Bug Fixes:
+
+- None
+
+New Features:
+
+- Support for `allowed_classes` in PHP 7's `unserialize` function for
+  `NativeSerializer`
+
 ## 2.0.2
 
 Simple license update.
