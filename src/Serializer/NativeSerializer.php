@@ -23,6 +23,27 @@ use PMG\Queue\Exception\SerializationError;
 final class NativeSerializer implements Serializer
 {
     /**
+     * Only applicable to PHP 7+. This is a set of allowed classes passed
+     * to the second argument of `unserialize`.
+     *
+     * @var string[]
+     */
+    private $allowedClasses;
+
+    public function __construct(array $allowedClasses=null)
+    {
+        if ($allowedClasses && !self::isPhp7()) {
+            throw new \RuntimeException(sprintf(
+                '$allowedClasses in %s only worked on PHP 7.0+, you are using PHP %s.',
+                __METHOD__,
+                PHP_VERSION
+            ));
+        }
+
+        $this->allowedClasses = $allowedClasses;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function serialize(Envelope $env)
@@ -35,15 +56,7 @@ final class NativeSerializer implements Serializer
      */
     public function unserialize($message)
     {
-        $m = @unserialize(base64_decode($message));
-        if (false === $m) {
-            $err = error_get_last();
-            throw new SerializationError(sprintf(
-                'Error unserializing message: %s', 
-                $err && isset($err['message']) ? $err['message'] : 'unknown error'
-            ));
-        }
-
+        $m = $this->doUnserialize(base64_decode($message));
         if (!$m instanceof Envelope) {
             throw new SerializationError(sprintf(
                 'Expected an instance of "%s" got "%s"',
@@ -53,5 +66,34 @@ final class NativeSerializer implements Serializer
         }
 
         return $m;
+    }
+
+    /**
+     * Small wrapper around `unserialize` so we can pass in `$allowedClasses`
+     * if the PHP verison 7+
+     *
+     * @param string $str the string to unserialize
+     * @return object|false
+     */
+    private function doUnserialize($str)
+    {
+        $m = self::isPhp7() && $this->allowedClasses ? @unserialize($str, [
+            'allowed_classes' => $this->allowedClasses,
+        ]) : @unserialize($str);
+
+        if (false === $m) {
+            $err = error_get_last();
+            throw new SerializationError(sprintf(
+                'Error unserializing message: %s', 
+                $err && isset($err['message']) ? $err['message'] : 'unknown error'
+            ));
+        }
+
+        return $m;
+    }
+
+    private static function isPhp7()
+    {
+        return PHP_VERSION_ID >= 70000;
     }
 }
