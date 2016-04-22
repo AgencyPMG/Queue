@@ -293,6 +293,22 @@ implementations. By default, [`PheanstalkDriver`](https://github.com/AgencyPMG/q
 will use use `PMG\Queue\Serializer\NativeSerializer` which simply calls `serialize`
 and `unserialize` and runs the output `base64_encode` and `base64_decode` respectively.
 
+`NativeSerializer` supports allowed classes in PHP 7+, just give it an array of
+classes you want to be unserialized. Be sure to include `DefaultEnvelope` and
+whatever `Envelope` implemenation your driver uses.
+
+```php
+use PMG\Queue;
+
+$serializer = new NativeSerializer([
+  SomeMessage::class,
+
+  // include the queue envelope classes
+  Queue\DefaultEnvelope::class,
+  Queue\Driver\Pheanstalk\PheanstalkEnvelope::class,
+]);
+```
+
 You can (and **should**) consider wrapping the native serializer with
 `SigningSerializer` which will prepend an HMAC to the serialized message to help
 verify integrity when unserializing.

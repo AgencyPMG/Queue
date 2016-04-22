@@ -61,9 +61,53 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
         $this->assertInstanceOf(DefaultEnvelope::class, $res);
     }
 
+    /**
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage $allowedClasses
+     */
+    public function testPhpLessThanSevenErrorsIfAllowedClassesAreGivenToTheSerializer()
+    {
+        $this->skipIfPhp7();
+
+        new NativeSerializer(['stdClass']);
+    }
+
+    /**
+     * @expectedException PMG\Queue\Exception\SerializationError
+     * @expectedExceptionMessage unserialized with an instance of PMG\Queue\Message
+     */
+    public function testAllowedClassesUnserializesClassesNotInWhitelistToIncompleteClass()
+    {
+        $this->skipIfPhp5();
+
+        $s = new NativeSerializer([DefaultEnvelope::class]);
+        $env = $s->unserialize(base64_encode(serialize($this->env)));
+
+        $this->assertInstanceOf(DefaultEnvelope::class, $env);
+    }
+
     protected function setUp()
     {
         $this->serializer = new NativeSerializer();
         $this->env = new DefaultEnvelope(new SimpleMessage('t'));
+    }
+
+    private function skipIfPhp7()
+    {
+        if (self::isPhp7()) {
+            $this->markTestSkipped(sprintf('PHP < 7.X is required, have %s', PHP_VERSION));
+        }
+    }
+
+    private function skipIfPhp5()
+    {
+        if (!self::isPhp7()) {
+            $this->markTestSkipped(sprintf('PHP 5.X is required, have %s', PHP_VERSION));
+        }
+    }
+
+    private static function isPhp7()
+    {
+        return PHP_VERSION_ID >= 70000;
     }
 }

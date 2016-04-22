@@ -54,4 +54,23 @@ class DefaultEnvelope implements Envelope
 
         return $new;
     }
+
+    /**
+     * checks to make sure the `$message` property is really a message. Serializes
+     * may (optionally) whitelist classes. If we don't get a message back the 
+     * envelope is kind of ****ed.
+     *
+     * @return void
+     */
+    public function __wakeup()
+    {
+        if (!$this->message instanceof Message) {
+            throw new Exception\SerializationError(sprintf(
+                '%s expected its message property to be unserialized with an instance of %s, got "%s"',
+                __CLASS__,
+                Message::class,
+                get_class($this->message)
+            ));
+        }
+    }
 }
