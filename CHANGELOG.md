@@ -29,13 +29,16 @@ n/a
 
 ## 2.1.0
 
+This will be the last release in the 2.X series.
+
 BC Breaks:
 
 - None
 
 Bug Fixes:
 
-- None
+- `SigningSerializer` now uses `hash_equals` instead of strict equality. PHP 5.5
+  users will fallback on the Symfony 5.6 polyfill.
 
 New Features:
 
