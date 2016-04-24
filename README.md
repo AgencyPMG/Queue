@@ -24,6 +24,9 @@ useful including automatic retries and multi-queue support.
   allow folks to fork and run jobs if they desire.
 - A **handler** is a callable that does the work defined by a message.
 - **handler resolvers** find handlers based on the *message* name.
+- An **envelope** is used internally to wrap up messages with retry information
+  as well as metadata specific to drivers. Users need not worry about this
+  unless they are implementing their own *driver*.
 
 ## Installation & Getting Started
 
@@ -294,19 +297,19 @@ will use use `PMG\Queue\Serializer\NativeSerializer` which simply calls `seriali
 and `unserialize` and runs the output `base64_encode` and `base64_decode` respectively.
 
 `NativeSerializer` supports allowed classes in PHP 7+, just give it an array of
-classes you want to be unserialized. Be sure to include `DefaultEnvelope` and
-whatever `Envelope` implemenation your driver uses.
+classes you want to be unserialized. Drivers that use `NativeSerializer` will
+have their own set of allowed classes that must be registerd. Use the provided
+`allowedClasses` static method to fetch them.
 
 ```php
-use PMG\Queue;
+use PMG\Queue\Serializer\NativeSerializer;
+use PMG\Queue\Driver\PheanstalkDriver;
 
-$serializer = new NativeSerializer([
-  SomeMessage::class,
-
-  // include the queue envelope classes
-  Queue\DefaultEnvelope::class,
-  Queue\Driver\Pheanstalk\PheanstalkEnvelope::class,
-]);
+$serializer = new NativeSerializer(array_merge([
+    // your message classes
+    SomeMessage::class,
+    OtherMessage::class,
+], PheanstalkDriver::allowedClasses()));
 ```
 
 You can (and **should**) consider wrapping the native serializer with
