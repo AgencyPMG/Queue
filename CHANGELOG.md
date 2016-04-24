@@ -8,7 +8,8 @@ BC Breaks:
 
 Bug Fixes:
 
-- None
+- `SigningSerializer` now uses `hash_equals` instead of strict equality. PHP 5.5
+  users will fallback on the Symfony 5.6 polyfill.
 
 New Features:
 
