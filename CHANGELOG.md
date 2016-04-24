@@ -1,6 +1,8 @@
 # Changelog
 
-## 2.1.0 (unreleased)
+## 2.1.0
+
+This will be the last release in the 2.X series.
 
 BC Breaks:
 
