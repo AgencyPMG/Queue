@@ -67,7 +67,7 @@ final class SigningSerializer implements Serializer
         }
 
         list($sig, $env) = explode('|', $data, 2);
-        if ($this->hmac($env) !== $sig) {
+        if (!hash_equals($this->hmac($env), $sig)) {
             throw new SerializationError('HMAC signature does not match');
         }
 
