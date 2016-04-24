@@ -13,6 +13,7 @@
 namespace PMG\Queue\Driver;
 
 use PMG\Queue\Envelope;
+use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\Serializer\Serializer;
 use PMG\Queue\Serializer\NativeSerializer;
 
@@ -32,6 +33,28 @@ abstract class AbstractPersistanceDriver implements \PMG\Queue\Driver
     public function __construct(Serializer $serializer=null)
     {
         $this->serializer = $serializer;
+    }
+
+    /**
+     * Returns a set of allowed classes for the serializer. This may not be used:
+     * it depends on what serializer the end user decided on. The idea here
+     * is that the envelope class names remain opaque to the user (because they
+     * should not care about them: envelopes are internal to drivers and the queue
+     * only).
+     *
+     * Example (with `NativeSerializer` and `PheanstalkDriver`):
+     *
+     *   $serializer = new NativeSerializer(array_merge([
+     *      SomeMessage::class,
+     *   ], PheanstalkDriver::allowedClasses()));
+     *
+     * @return string[]
+     */
+    public static function allowedClasses()
+    {
+        return [
+            DefaultEnvelope::class,
+        ];
     }
 
     protected function serialize(Envelope $env)

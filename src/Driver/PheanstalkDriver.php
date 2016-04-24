@@ -61,6 +61,17 @@ final class PheanstalkDriver extends AbstractPersistanceDriver
     /**
      * {@inheritdoc}
      */
+    public static function allowedClasses()
+    {
+        $cls = parent::allowedClasses();
+        $cls[] = PheanstalkEnvelope::class;
+
+        return $cls;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function enqueue($queueName, Message $message)
     {
         $env = new DefaultEnvelope($message);
