@@ -31,7 +31,7 @@ abstract class AbstractPersistanceDriver implements \PMG\Queue\Driver
 
     public function __construct(Serializer $serializer=null)
     {
-        $this->serializer = $serializer ?: static::createDefaultSerializer();
+        $this->serializer = $serializer;
     }
 
     protected function serialize(Envelope $env)
@@ -46,11 +46,10 @@ abstract class AbstractPersistanceDriver implements \PMG\Queue\Driver
 
     protected function getSerializer()
     {
-        return $this->serializer;
-    }
+        if (!$this->serializer) {
+            $this->serializer = new NativeSerializer();
+        }
 
-    protected static function createDefaultSerializer()
-    {
-        return new NativeSerializer();
+        return $this->serializer;
     }
 }
