@@ -13,6 +13,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   exceptions unless it's a must stop or an exception thrown from a driver. All
   other exceptions are logged, but not fatal. The idea here is to make consumers
   safe to decorate without having to duplicate the error handling logic.
+- [BC BREAK] `PMG\Queue\Serializer\SigningSerializer` has been merged into
+  `NativeSerializer` and removed. Pass your key as the first argument to
+  `NativeSerializer`'s constructor.
 - `Consumer` has docblocks that reflect its actual return values now.
 - `PheanstalkDriver` is no longer part of the core. Instead of requiring
    `pmg/queue` directly in your `composer.json`, require `pmg/queue-pheanstalk`
