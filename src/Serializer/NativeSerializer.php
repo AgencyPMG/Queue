@@ -22,6 +22,8 @@ use PMG\Queue\Exception\SerializationError;
  */
 final class NativeSerializer implements Serializer
 {
+    const HMAC_ALGO = 'sha256';
+
     /**
      * Only applicable to PHP 7+. This is a set of allowed classes passed
      * to the second argument of `unserialize`.
@@ -30,16 +32,33 @@ final class NativeSerializer implements Serializer
      */
     private $allowedClasses;
 
-    public function __construct(array $allowedClasses=null)
+    /**
+     * @var string
+     */
+    private $key;
+
+    public function __construct($key, array $allowedClasses=null)
     {
+        if (!is_string($key)) {
+            throw new \InvalidArgumentException(sprintf(
+                '$key must be a string, got "%s"',
+                is_object($key) ? get_class($key) : gettype($key)
+            ));
+        }
+
+        if (empty($key)) {
+            throw new \InvalidArgumentException('$key cannot be empty');
+        }
+
         if ($allowedClasses && !self::isPhp7()) {
             throw new \RuntimeException(sprintf(
-                '$allowedClasses in %s only worked on PHP 7.0+, you are using PHP %s.',
+                '$allowedClasses in %s only works on PHP 7.0+, you are using PHP %s.',
                 __METHOD__,
                 PHP_VERSION
             ));
         }
 
+        $this->key = $key;
         $this->allowedClasses = $allowedClasses;
     }
 
@@ -48,7 +67,8 @@ final class NativeSerializer implements Serializer
      */
     public function serialize(Envelope $env)
     {
-        return base64_encode(serialize($env));
+        $str = base64_encode(serialize($env));
+        return sprintf('%s|%s', $this->hmac($str), $str);
     }
 
     /**
@@ -56,7 +76,9 @@ final class NativeSerializer implements Serializer
      */
     public function unserialize($message)
     {
-        $m = $this->doUnserialize(base64_decode($message));
+        $env = $this->verifySignature($message);
+
+        $m = $this->doUnserialize(base64_decode($env));
         if (!$m instanceof Envelope) {
             throw new SerializationError(sprintf(
                 'Expected an instance of "%s" got "%s"',
@@ -66,6 +88,20 @@ final class NativeSerializer implements Serializer
         }
 
         return $m;
+    }
+
+    private function verifySignature($message)
+    {
+        if (substr_count($message, '|') !== 1) {
+            throw new SerializationError('Data to unserialize does not have a signature');
+        }
+
+        list($sig, $env) = explode('|', $message, 2);
+        if (!hash_equals($this->hmac($env), $sig)) {
+            throw new SerializationError('Invalid HMAC Signature');
+        }
+
+        return $env;
     }
 
     /**
@@ -90,6 +126,11 @@ final class NativeSerializer implements Serializer
         }
 
         return $m;
+    }
+
+    private function hmac($data)
+    {
+        return hash_hmac(self::HMAC_ALGO, $data, $this->key, false);
     }
 
     private static function isPhp7()

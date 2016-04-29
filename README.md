@@ -293,8 +293,11 @@ $consumer = new DefaultConsumer($driver, $executor);
 Queues drivers that persist longer than a single request (or script run) require
 some sort of serialization of messages. That happens via `PMG\Queue\Serializer\Serializer`
 implementations. By default, [`PheanstalkDriver`](https://github.com/AgencyPMG/queue-pheanstalk)
-will use use `PMG\Queue\Serializer\NativeSerializer` which simply calls `serialize`
-and `unserialize` and runs the output `base64_encode` and `base64_decode` respectively.
+will use use `PMG\Queue\Serializer\NativeSerializer` which calls `serialize`
+and `unserialize` and runs the output `base64_encode` and `base64_decode`
+respectively. Serialized messages are signed with [HMAC signature](https://en.wikipedia.org/wiki/Hash-based_message_authentication_code)
+which is verified when the message is unserialized. This prevents the messages
+from being tampered with while they are in flight to a consumer.
 
 `NativeSerializer` supports allowed classes in PHP 7+, just give it an array of
 classes you want to be unserialized. Drivers that use `NativeSerializer` will
@@ -305,16 +308,12 @@ have their own set of allowed classes that must be registerd. Use the provided
 use PMG\Queue\Serializer\NativeSerializer;
 use PMG\Queue\Driver\PheanstalkDriver;
 
-$serializer = new NativeSerializer(array_merge([
+$serializer = new NativeSerializer('YourSecretKeyHere', array_merge([
     // your message classes
     SomeMessage::class,
     OtherMessage::class,
 ], PheanstalkDriver::allowedClasses()));
 ```
-
-You can (and **should**) consider wrapping the native serializer with
-`SigningSerializer` which will prepend an HMAC to the serialized message to help
-verify integrity when unserializing.
 
 ## Retrying Failed Messages
 
