@@ -82,6 +82,18 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
         ));
     }
 
+    public function testUnserializeErrorsWhenTheSerializedStringIsInvalid()
+    {
+        $this->expectException(SerializationError::class);
+        $this->expectExceptionMessage('Error unserializing message:');
+        $env = base64_encode('a:');
+        $this->serializer->unserialize(sprintf(
+            '%s|%s',
+            hash_hmac(NativeSerializer::HMAC_ALGO, $env, self::KEY, false),
+            $env
+        ));
+    }
+
     public function testPhpLessThanSevenErrorsIfAllowedClassesAreGivenToTheSerializer()
     {
         $this->skipIfPhp7();
