@@ -109,7 +109,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
         $this->expectException(SerializationError::class);
         $this->expectExceptionMessage('expected its message property to be unserialized with an instance of PMG\Queue\Message');
 
-        $s = new NativeSerializer([DefaultEnvelope::class]);
+        $s = new NativeSerializer(self::KEY,  [DefaultEnvelope::class]);
         $env = $s->unserialize(base64_encode(serialize($this->env)));
 
         $this->assertInstanceOf(DefaultEnvelope::class, $env);
