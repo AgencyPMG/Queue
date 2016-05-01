@@ -30,7 +30,7 @@ abstract class AbstractPersistanceDriver implements \PMG\Queue\Driver
      */
     private $serializer;
 
-    public function __construct(Serializer $serializer=null)
+    public function __construct(Serializer $serializer)
     {
         $this->serializer = $serializer;
     }
@@ -59,18 +59,21 @@ abstract class AbstractPersistanceDriver implements \PMG\Queue\Driver
 
     protected function serialize(Envelope $env)
     {
-        return $this->getSerializer()->serialize($env);
+        return $this->assureSerializer()->serialize($env);
     }
 
     protected function unserialize($data)
     {
-        return $this->getSerializer()->unserialize($data);
+        return $this->assureSerializer()->unserialize($data);
     }
 
-    protected function getSerializer()
+    protected function assureSerializer()
     {
         if (!$this->serializer) {
-            $this->serializer = new NativeSerializer();
+            throw new \RuntimeException(sprintf(
+                '%s does not have a serializer set, did you forget to call parent::__construct($serializer) in its constructor?',
+                get_class($this)
+            ));
         }
 
         return $this->serializer;

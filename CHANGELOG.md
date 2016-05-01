@@ -16,6 +16,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [BC BREAK] `PMG\Queue\Serializer\SigningSerializer` has been merged into
   `NativeSerializer` and removed. Pass your key as the first argument to
   `NativeSerializer`'s constructor.
+- [BC BREAK] `AbstractPersistanceDriver::getSerializer` was removed, use
+  `AbstractPersistanceDriver::assureSerializer` instead.
 - `Consumer` has docblocks that reflect its actual return values now.
 - `PheanstalkDriver` is no longer part of the core. Instead of requiring
    `pmg/queue` directly in your `composer.json`, require `pmg/queue-pheanstalk`
