@@ -165,23 +165,4 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
         $this->serializer = new NativeSerializer(self::KEY);
         $this->env = new DefaultEnvelope(new SimpleMessage('t'));
     }
-
-    private function skipIfPhp7()
-    {
-        if (self::isPhp7()) {
-            $this->markTestSkipped(sprintf('PHP < 7.X is required, have %s', PHP_VERSION));
-        }
-    }
-
-    private function skipIfPhp5()
-    {
-        if (!self::isPhp7()) {
-            $this->markTestSkipped(sprintf('PHP 5.X is required, have %s', PHP_VERSION));
-        }
-    }
-
-    private static function isPhp7()
-    {
-        return PHP_VERSION_ID >= 70000;
-    }
 }

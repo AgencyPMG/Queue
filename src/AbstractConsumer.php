@@ -59,12 +59,10 @@ abstract class AbstractConsumer implements Consumer
                 $this->stop($e->getCode());
             } catch (\Exception $e)  {
                 // likely means means something went wrong with the driver
-                $this->getLogger()->emergency('Caught an unexpected {cls} exception, exiting: {msg}', [
-                    'cls' => get_class($e),
-                    'msg' => $e->getMessage(),
-                ]);
-                $this->stop();
-                $this->exitCode = self::EXIT_ERROR;
+                $this->logFatalAndStop($e);
+            } catch (\Throwable $e) {
+                // an `Error` exception, etc
+                $this->logFatalAndStop($e);
             }
         }
 
@@ -87,5 +85,14 @@ abstract class AbstractConsumer implements Consumer
         }
 
         return $this->logger;
+    }
+
+    protected function logFatalAndStop($exception)
+    {
+        $this->getLogger()->emergency('Caught an unexpected {cls} exception, exiting: {msg}', [
+            'cls' => get_class($exception),
+            'msg' => $exception->getMessage(),
+        ]);
+        $this->stop(self::EXIT_ERROR);
     }
 }
