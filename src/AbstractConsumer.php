@@ -23,8 +23,6 @@ use Psr\Log\NullLogger;
  */
 abstract class AbstractConsumer implements Consumer
 {
-    const EXIT_ERROR = 2;
-
     /**
      * @var LoggerInterface
      */
@@ -38,7 +36,7 @@ abstract class AbstractConsumer implements Consumer
     /**
      * @var int
      */
-    private $exitCode = 0;
+    private $exitCode = self::EXIT_SUCCESS;
 
     public function __construct(LoggerInterface $logger=null)
     {
@@ -58,8 +56,7 @@ abstract class AbstractConsumer implements Consumer
                 $this->getLogger()->warning('Caught a must stop exception, exiting: {msg}', [
                     'msg'   => $e->getMessage(),
                 ]);
-                $this->stop();
-                $this->exitCode = $e->getCode();
+                $this->stop($e->getCode());
             } catch (\Exception $e)  {
                 // likely means means something went wrong with the driver
                 $this->getLogger()->emergency('Caught an unexpected {cls} exception, exiting: {msg}', [
@@ -77,9 +74,10 @@ abstract class AbstractConsumer implements Consumer
     /**
      * {@inheritdoc}
      */
-    public function stop()
+    public function stop($code=null)
     {
         $this->running = false;
+        $this->exitCode = null === $code ? self::EXIT_SUCCESS : intval($code);
     }
 
     protected function getLogger()
