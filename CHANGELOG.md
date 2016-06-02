@@ -20,6 +20,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   `AbstractPersistanceDriver::assureSerializer` instead.
 - [BC BREAK] `Consumer::stop` now takes an optional exit code. Only really
   relevant for implementors or the `Consumer` interface.
+- [BC BREAK] `MessageExecutor`, `HandlerResolver`, and their implementations
+  have been removed. See `UPGRADE-3.0.md` for some info on migration.
 - `Consumer` has docblocks that reflect its actual return values now.
 - `PheanstalkDriver` is no longer part of the core. Instead of requiring
    `pmg/queue` directly in your `composer.json`, require `pmg/queue-pheanstalk`
