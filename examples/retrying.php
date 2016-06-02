@@ -8,8 +8,9 @@ require __DIR__.'/StreamLogger.php';
 $driver = new Queue\Driver\MemoryDriver();
 
 $router = new Queue\Router\SimpleRouter('q');
+$producer = new Queue\DefaultProducer($driver, $router);
 
-$resolver = new Queue\Resolver\SimpleResolver(function () {
+$handler = new Queue\Handler\CallableHandler(function () {
     static $calls = 0;
 
     if ($calls >= 5) {
@@ -21,12 +22,11 @@ $resolver = new Queue\Resolver\SimpleResolver(function () {
     throw new \Exception('broken');
 });
 
-$producer = new Queue\DefaultProducer($driver, $router);
 
 $consumer = new Queue\DefaultConsumer(
     $driver,
-    new Queue\Executor\SimpleExecutor($resolver),
-    new Queue\Retry\LimitedSpec(5), // allow two retries
+    $handler,
+    new Queue\Retry\LimitedSpec(5), // allow five retries
     new StreamLogger()
 );
 
