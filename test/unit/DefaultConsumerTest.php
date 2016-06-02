@@ -18,7 +18,7 @@ class DefaultConsumerTest extends UnitTestCase
 {
     const Q = 'TestQueue';
 
-    private $driver, $executor, $retries, $consumer;
+    private $driver, $handler, $retries, $consumer;
 
     public function testOnceDoesNothingWhenTheQueueIsEmpty()
     {
@@ -26,8 +26,8 @@ class DefaultConsumerTest extends UnitTestCase
             ->method('dequeue')
             ->with(self::Q)
             ->willReturn(null);
-        $this->executor->expects($this->never())
-            ->method('execute');
+        $this->handler->expects($this->never())
+            ->method('handle');
 
         $this->assertNull($this->consumer->once(self::Q));
     }
@@ -38,8 +38,8 @@ class DefaultConsumerTest extends UnitTestCase
         $this->driver->expects($this->once())
             ->method('ack')
             ->with(self::Q, $this->identicalTo($this->envelope));
-        $this->executor->expects($this->once())
-            ->method('execute')
+        $this->handler->expects($this->once())
+            ->method('handle')
             ->with($this->identicalTo($this->message))
             ->willReturn(true);
 
@@ -53,8 +53,8 @@ class DefaultConsumerTest extends UnitTestCase
         $this->driver->expects($this->once())
             ->method('retry')
             ->with(self::Q, $this->identicalTo($this->envelope));
-        $this->executor->expects($this->once())
-            ->method('execute')
+        $this->handler->expects($this->once())
+            ->method('handle')
             ->with($this->identicalTo($this->message))
             ->willReturn(false);
 
@@ -69,8 +69,8 @@ class DefaultConsumerTest extends UnitTestCase
             ->willReturn(false);
         $this->driver->expects($this->never())
             ->method('retry');
-        $this->executor->expects($this->once())
-            ->method('execute')
+        $this->handler->expects($this->once())
+            ->method('handle')
             ->with($this->identicalTo($this->message))
             ->willReturn(false);
 
@@ -84,8 +84,8 @@ class DefaultConsumerTest extends UnitTestCase
         $this->driver->expects($this->once())
             ->method('retry')
             ->with(self::Q, $this->identicalTo($this->envelope));
-        $this->executor->expects($this->once())
-            ->method('execute')
+        $this->handler->expects($this->once())
+            ->method('handle')
             ->with($this->identicalTo($this->message))
             ->willThrowException(new \Exception('oops'));
 
@@ -100,10 +100,10 @@ class DefaultConsumerTest extends UnitTestCase
     protected function setUp()
     {
         $this->driver = $this->getMock(Driver::class);
-        $this->executor = $this->getMock(MessageExecutor::class);
+        $this->handler = $this->getMock(MessageHandler::class);
         $this->retries = $this->getMock(RetrySpec::class);
         $this->logger = new CollectingLogger();
-        $this->consumer = new DefaultConsumer($this->driver, $this->executor, $this->retries, $this->logger);
+        $this->consumer = new DefaultConsumer($this->driver, $this->handler, $this->retries, $this->logger);
         $this->message = new SimpleMessage('TestMessage');
         $this->envelope = new DefaultEnvelope($this->message);
     }
