@@ -84,3 +84,32 @@ $consumer = new Q\DefaultConsumer(
     ])
 );
 ```
+
+## NativeSerializer & SigningSerializer Were Merged
+
+`PMG\Queue\Serializer\NativeSerializer` now requires a key argument to its
+constructor that it uses to sign messages.
+
+### 2.X
+
+```php
+use PMG\Queue\Serializer\NativeSerializer;
+use PMG\Queue\Serializer\SigningSerializer;
+
+$serializer = new SigningSerializer(
+    new NativeSerializer(),
+    'your super secret key'
+);
+
+$driver = new WhateverDriver(/*...*/, $serializer);
+```
+
+### 3.X
+
+```php
+use PMG\Queue\Serializer\NativeSerializer;
+
+$serializer = new NativeSerializer('your super secret key');
+
+$driver = new WhateverDriver(/*...*/, $serializer);
+```
