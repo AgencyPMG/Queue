@@ -63,6 +63,8 @@ The script to run your consumer might look something like this. Check out the
 
     exit($consumer->run(isset($argv[1]) ? $argv[1] : 'defaultQueue'));
 
+.. _retrying:
+
 Retrying Messages
 -----------------
 
