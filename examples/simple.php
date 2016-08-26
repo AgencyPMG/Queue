@@ -8,25 +8,27 @@ require __DIR__.'/StreamLogger.php';
 $driver = new Queue\Driver\MemoryDriver();
 
 $router = new Queue\Router\SimpleRouter('q');
-
-$resolver = new Queue\Resolver\MappingResolver([
-    'TestMessage'   => function () {
-        // noop
-    },
-    'TestMessage2'  => function () {
-        throw new \Exception('oops');
-    },
-    'MustStop'      => function () {
-        throw new Queue\Exception\SimpleMustStop('stopit');
-    },
-]);
-
 $producer = new Queue\DefaultProducer($driver, $router);
 
+// an example callback handler. If you're doing something like this in your
+// own application consider using `pmg/queue-mapping-handler`
+$handler = new Queue\Handler\CallableHandler(function (Queue\Message $msg) {
+    switch ($msg->getName()) {
+        case 'TestMessage':
+            // noop
+            break;
+        case 'TestMessage2':
+            throw new \Exception('oops');
+            break;
+        case 'MustStop':
+            throw new Queue\Exception\SimpleMustStop('stopit');
+            break;
+    }
+});
 $consumer = new Queue\DefaultConsumer(
     $driver,
-    new Queue\Executor\SimpleExecutor($resolver),
-    new Queue\Retry\LimitedSpec(2), // allow two retries
+    $handler,
+    new Queue\Retry\NeverSpec(), // allow never retry messages
     new StreamLogger()
 );
 

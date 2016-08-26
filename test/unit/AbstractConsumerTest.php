@@ -55,6 +55,31 @@ class AbstractConsumerTest extends UnitTestCase
         $this->assertContains('broke', $messages[0]);
     }
 
+    /**
+     * @group https://github.com/AgencyPMG/Queue/issues/31
+     */
+    public function testRunStopsWhenAThrowableisCaught()
+    {
+        $this->skipIfPhp5();
+        $this->consumer->expects($this->at(0))
+            ->method('once')
+            ->with(self::Q);
+        $this->consumer->expects($this->at(1))
+            ->method('once')
+            ->with(self::Q)
+            ->willReturnCallback(function () {
+                // phpunit can't take an `Error` class in `willThrowException`
+                throw new \Error('oops');
+            });
+
+        $result = $this->consumer->run(self::Q);
+        $messages = $this->logger->getMessages(LogLevel::EMERGENCY);
+
+        $this->assertEquals(DefaultConsumer::EXIT_ERROR, $result);
+        $this->assertCount(1, $messages);
+        $this->assertContains('oops', $messages[0]);
+    }
+
     public function testConsumerWithoutLoggerPassedInCreatesANullLoggerOnDemand()
     {
         $consumer = $this->getMockForAbstractClass(AbstractConsumer::class);

@@ -20,6 +20,9 @@ namespace PMG\Queue;
  */
 interface Consumer
 {
+    const EXIT_SUCCESS = 0;
+    const EXIT_ERROR = 2;
+
     /**
      * Run the consumer for a given queue. This will block.
      *
@@ -44,9 +47,10 @@ interface Consumer
     public function once($queueName);
 
     /**
-     * Gracefully stop the consumer.
+     * Gracefully stop the consumer with the given exit code.
      *
-     * @return  void
+     * @param int $code The exit code passed to `exit`. If null `EXIT_SUCCESS` is used.
+     * @return void
      */
-    public function stop();
+    public function stop($code=null);
 }
