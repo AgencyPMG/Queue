@@ -20,9 +20,8 @@ use Psr\Log\LoggerInterface;
  * @since   2.0
  * @api
  */
-final class DefaultConsumer extends AbstractConsumer
+class DefaultConsumer extends AbstractConsumer
 {
-
     /**
      * @var Driver
      */
@@ -37,6 +36,11 @@ final class DefaultConsumer extends AbstractConsumer
      * @var RetrySpec
      */
     private $retries;
+
+    /**
+     * @var array
+     */
+    private $handlerOptions = [];
 
     public function __construct(
         Driver $driver,
@@ -78,19 +82,19 @@ final class DefaultConsumer extends AbstractConsumer
         return $result;
     }
 
-    private function failed($queueName, Envelope $env)
+    protected function failed($queueName, Envelope $env)
     {
-        if ($this->retries->canRetry($env)) {
-            $this->driver->retry($queueName, $env);
+        if ($this->canRetry($env)) {
+            $this->getDriver()->retry($queueName, $env);
         } else {
-            $this->driver->fail($queueName, $env);
+            $this->getDriver()->fail($queueName, $env);
         }
     }
 
-    private function handleMessage(Message $message)
+    protected function handleMessage(Message $message)
     {
         try {
-            return $this->handler->handle($message);
+            return $this->getHandler()->handle($message, $this->getHandlerOptions());
         } catch (Exception\MustStop $e) {
             // MustStop exceptions are thrown by handlers to indicate a
             // graceful stop is required. So we don't wrap them. Just rethrow
@@ -107,5 +111,36 @@ final class DefaultConsumer extends AbstractConsumer
             ]);
             return false;
         }
+    }
+
+    protected function canRetry(Envelope $env)
+    {
+        return $this->retries->canRetry($env);
+    }
+
+    protected function getHandler()
+    {
+        return $this->handler;
+    }
+
+    protected function getDriver()
+    {
+        return $this->driver;
+    }
+
+    /**
+     * Replace all the handler options.
+     *
+     * @param $newOptions The options to set
+     * @return void
+     */
+    protected function setHandlerOptions(array $newOptions)
+    {
+        $this->handlerOptions = $newOptions;
+    }
+
+    protected function getHandlerOptions()
+    {
+        return $this->handlerOptions;
     }
 }

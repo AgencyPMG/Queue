@@ -24,11 +24,13 @@ interface MessageHandler
      * probably means interact with the user's system based on the given message.
      *
      * @param $message That message to process.
+     * @param array $options A freeform set of options that may be passed from the
+     *        consumer.
      * @return boolean True if the message was handled successfully. False otherwise.
      *         we return a value here so message handlers aren't limited to processing
      *         in the same thread/process. Eg. a handler could fork and fail a message
      *         but the exception thrown in a child process wouldn't make it to the
      *         parent.
      */
-    public function handle(Message $message);
+    public function handle(Message $message, array $options=[]);
 }

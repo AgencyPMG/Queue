@@ -55,6 +55,17 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
         $this->assertFalse($handler->handle($this->message));
     }
 
+    public function testChildProcessIsPassedTheOptionsFromTheHandler()
+    {
+        $handler = $this->createHandler(function ($msg, $options) {
+            // will cause an unsuccessful exit if it fails.
+            $this->assertEquals($options, ['one' => true]);
+            return true;
+        });
+
+        $this->assertTrue($handler->handle($this->message, ['one' => true]));
+    }
+
     protected function setUp()
     {
         $this->message = new SimpleMessage(self::NAME);
