@@ -20,6 +20,7 @@ Contents
    :maxdepth: 2
 
    messages
+   handlers
    drivers
 
 Installation & Examples

@@ -58,8 +58,8 @@ keeps messages in memory.
 
     $driver = new MemoryDriver();
 
-    // $executor instanceof PMG\Queue\MessageExecutor
-    $consumer = new DefaultConsumer($driver, $executor);
+    // $handler instanceof PMG\Queue\MessageHandler
+    $consumer = new DefaultConsumer($driver, $handler);
 
 The memory driver isn't extrodinary useful outside of testing. For instance,
 while doing end to end tests, you may want to switch out your producers library
