@@ -112,6 +112,12 @@ Using Tactician to Handle Messages
 `Tactician <https://tactician.thephpleague.com/>`_ is a command bus from The PHP
 League. You can use it to do message handling with the queue.
 
+.. code-block:: bash
+
+    composer install pmg/queue-tactician
+
+Use the same command bus with each message.
+
 .. code-block:: php
 
     <?php
@@ -124,6 +130,27 @@ League. You can use it to do message handling with the queue.
 
     /** @var PMG\Queue\Driver $driver */
     $consumer = new DefaultConsumer($driver, $handler);
+
+Alternative, you can create a new command bus to handle each message with
+`CreatingTacticianHandler`. This is useful if you're using
+:ref:`forking child processes <forking_handler>` to handle messages.
+
+.. code-block:: php
+
+    <?php
+
+    use League\Tactician\CommandBus;
+    use PMG\Queue\DefaultConsumer;
+    use PMG\Queue\Handler\CreatingTaticianHandler;
+
+    $handler = new TacticianHandler(function () {
+        return new CommandBus(/* ... */);
+    });
+
+    /** @var PMG\Queue\Driver $driver */
+    $consumer = new DefaultConsumer($driver, $handler);
+
+.. _forking_handler:
 
 Handling Messages in Separate Processes
 ---------------------------------------
