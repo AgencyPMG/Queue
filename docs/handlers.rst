@@ -8,6 +8,18 @@ accepts a message and a set of options from the the consumer as its arguments.
 Every single message goes through a single handler. It's up to that handler to
 figure out how to deal with each message appropriately.
 
+.. php:interface:: MessageHandler
+
+    :namespace: PMG\\Queue
+
+    An object that can handle (process or act upon) a single message.
+
+    .. php:method:: handle(PMG\\Queue\\Message $handle, array $options=[])
+
+        :param $handle: The message to handle.
+        :param $options: A set of options from the consumer.
+
+
 Callable Handler
 ----------------
 
@@ -42,7 +54,7 @@ Multiple Handlers with Mapping Handler
 The above `switch` statement is a lot of boilerplaint, so PMG provies a
 `mapping handler <https://github.com/AgencyPMG/queue-mapping-handler>`_
 that looks up callables for a message based on its name. For example,
-here's a callable for the :ref:`send alert message <send-alert-message>`.
+here's a callable for the :ref:`send alert message <example-message>`.
 
 .. code-block:: php
 
