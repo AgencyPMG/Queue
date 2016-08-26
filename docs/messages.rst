@@ -2,7 +2,7 @@ Messages
 ========
 
 Messages are objects that implement the ``PMG\Queue\Message`` interface. These
-objects are meant to be :doc:`serializable <serializers>` and contain everything
+objects are meant to be :ref:`serializable <serializers>` and contain everything
 you need for a :doc:`handler <handlers>` to do its job.
 
 A message to send an alert to a user might look something like this:
