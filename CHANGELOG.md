@@ -26,6 +26,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `PheanstalkDriver` is no longer part of the core. Instead of requiring
    `pmg/queue` directly in your `composer.json`, require `pmg/queue-pheanstalk`
    (or any other driver implementation).
+- `DefaultConsumer` is no longer final, and its private methods are now
+  protected.
 
 ### Fixed
 
