@@ -38,6 +38,11 @@ abstract class AbstractConsumer implements Consumer
      */
     private $exitCode = self::EXIT_SUCCESS;
 
+    /**
+     * @var bool
+     */
+    private $hasPcntl = null;
+
     public function __construct(LoggerInterface $logger=null)
     {
         $this->logger = $logger;
@@ -50,6 +55,8 @@ abstract class AbstractConsumer implements Consumer
     {
         $this->running = true;
         while ($this->running) {
+            $this->maybeCallSignalHandlers();
+
             try {
                 $this->once($queueName);
             } catch (Exception\MustStop $e) {
@@ -94,5 +101,14 @@ abstract class AbstractConsumer implements Consumer
             'msg' => $exception->getMessage(),
         ]);
         $this->stop(self::EXIT_ERROR);
+    }
+
+    protected function maybeCallSignalHandlers()
+    {
+        if (null === $this->hasPcntl) {
+            $this->hasPcntl = function_exists('pcntl_signal_dispatch');
+        }
+
+        return $this->hasPcntl ? pcntl_signal_dispatch() : false;
     }
 }
