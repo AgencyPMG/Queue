@@ -120,15 +120,7 @@ League. You can use it to do message handling with the queue.
     use PMG\Queue\DefaultConsumer;
     use PMG\Queue\Handler\TaticianHandler;
 
-    // use the same commang bus instance each time
-    $handler = TaticianHandler::fromCommandBus(new CommandBus(/*...*/));
-
-    // or you can provide a factory callback to create the command bus
-    // on demand for each handle This is useful if you're using the
-    // `PcntlForkingHandler` to handle messages in separate processes
-    $handler = new TacticianHandler(function (array $optionsPassedToHandle) {
-        return new CommandBus(/*...*/);
-    });
+    $handler = new TacticianHandler(new CommandBus(/* ... */));
 
     /** @var PMG\Queue\Driver $driver */
     $consumer = new DefaultConsumer($driver, $handler);
