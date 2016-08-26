@@ -18,6 +18,8 @@ figure out how to deal with each message appropriately.
 
         :param $handle: The message to handle.
         :param $options: A set of options from the consumer.
+        :return: A boolean indicated whether the message was handled successfully.
+        :rtype: boolean
 
 
 Callable Handler

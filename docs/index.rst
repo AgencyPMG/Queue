@@ -21,6 +21,7 @@ Contents
 
    messages
    producers
+   consumers
    handlers
    drivers
 
