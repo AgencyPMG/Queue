@@ -38,8 +38,8 @@ final class CallableHandler implements MessageHandler
     /**
      * {@inheritdoc}
      */
-    public function handle(Message $message)
+    public function handle(Message $message, array $options=[])
     {
-        return call_user_func($this->callback, $message);
+        return call_user_func($this->callback, $message, $options);
     }
 }

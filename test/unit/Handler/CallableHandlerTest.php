@@ -32,6 +32,18 @@ class CallableHandlerTest extends \PMG\Queue\UnitTestCase
         $this->assertSame($this->message, $calledWith);
     }
 
+    public function testHandlerInvokesTheCallbackWithTheRprovidedOptions()
+    {
+        $calledWith = null;
+        $handler = new CallableHandler(function ($msg, $options) use (&$calledWith) {
+            $calledWith = $options;
+            return true;
+        });
+
+        $this->assertTrue($handler->handle($this->message, ['one' => true]));
+        $this->assertSame($calledWith, ['one' => true]);
+    }
+
     protected function setUp()
     {
         $this->message = new SimpleMessage(self::NAME);

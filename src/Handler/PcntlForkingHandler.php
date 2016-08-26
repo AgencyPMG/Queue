@@ -51,11 +51,11 @@ final class PcntlForkingHandler implements MessageHandler
      * process to return `false` (the message failed). Should you want to do
      * any specialized logging, that should happen in the wrapped `MessageHandler`.
      */
-    public function handle(Message $message)
+    public function handle(Message $message, array $options=[])
     {
         $child = $this->fork();
         if (0 === $child) {
-            $result = $this->wrapped->handle($message);
+            $result = $this->wrapped->handle($message, $options);
             exit($result ? 0 : 1);
         }
 
