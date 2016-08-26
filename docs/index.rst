@@ -20,6 +20,7 @@ Contents
    :maxdepth: 2
 
    messages
+   producers
    handlers
    drivers
 
@@ -39,8 +40,8 @@ on the `pheanstalk examples <https://github.com/AgencyPMG/queue-pheanstalk/tree/
 for some code samples on gluing everything together.
 
 
-Glossary & Core Concepts
-------------------------
+READ THIS: Glossary & Core Concepts
+-----------------------------------
 
 - A **message** is a serializable object that goes into the queue for later
   processing.
