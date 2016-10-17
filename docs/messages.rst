@@ -34,7 +34,7 @@ Example Message
 
 Because messages are serialized to be put in a persistent backend they shouldn't
 include objects that require state. In the example above the message just
-contains a user's identifier rather than the full object. Tlhe :doc:`handler <handlers>`
+contains a user's identifier rather than the full object. The :doc:`handler <handlers>`
 would then look up the user.
 
 See :doc:`consumers` and :doc:`producers` for more information about handlers
