@@ -34,15 +34,15 @@ final class PcntlForkingHandler implements MessageHandler
      */
     private $wrapped;
 
-    public function __construct(MessageHandler $wrapped)
-    {
-        // @codeCoverageIgnoreStart
-        if (!function_exists('pcntl_fork')) {
-            throw new \RuntimeException(sprintf('%s can only be used if the pcntl extension is loaded', __CLASS__));
-        }
-        // @codeCoverageIgnoreEnd
+    /**
+     * @var Pcntl
+     */
+    private $pcntl;
 
+    public function __construct(MessageHandler $wrapped, Pcntl $pcntl=null)
+    {
         $this->wrapped = $wrapped;
+        $this->pcntl = $pcntl ?: new Pcntl();
     }
 
     /**
@@ -57,35 +57,19 @@ final class PcntlForkingHandler implements MessageHandler
         $child = $this->fork();
         if (0 === $child) {
             $result = $this->wrapped->handle($message, $options);
-            exit($result ? 0 : 1);
+            $this->pcntl->quit($result);
         }
 
-        pcntl_waitpid($child, $status, WUNTRACED);
-
-        return $this->wasSuccessfulExit($status);
+        return $this->pcntl->wait($child);
     }
 
-    /**
-     * Fork a new process. If the fork can't happen we assume something has gone
-     * catastrophically wrong and throw a `RuntimeException`. This should exit
-     * the parent `Consumer`.
-     *
-     * @return int
-     */
     private function fork()
     {
-        $child = @pcntl_fork();
-        // @codeCoverageIgnoreStart
+        $child = $this->pcntl->fork();
         if (-1 === $child) {
             throw CouldNotFork::fromLastError();
         }
-        // @codeCoverageIgnoreEnd
 
         return $child;
-    }
-
-    private function wasSuccessfulExit($status)
-    {
-        return pcntl_wifexited($status) ? pcntl_wexitstatus($status) === 0 : false;
     }
 }
