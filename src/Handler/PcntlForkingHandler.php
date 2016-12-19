@@ -14,6 +14,7 @@ namespace PMG\Queue\Handler;
 
 use PMG\Queue\Message;
 use PMG\Queue\MessageHandler;
+use PMG\Queue\Exception\CouldNotFork;
 
 /**
  * A message handler decorator that forks a child process to handle the message.
@@ -76,11 +77,7 @@ final class PcntlForkingHandler implements MessageHandler
         $child = @pcntl_fork();
         // @codeCoverageIgnoreStart
         if (-1 === $child) {
-            $err = error_get_last();
-            throw new \RuntimeException(sprintf(
-                'Could not fork child process to execute message: %s',
-                isset($err['message']) ? $err['message'] : 'Unknown error'
-            ));
+            throw CouldNotFork::fromLastError();
         }
         // @codeCoverageIgnoreEnd
 
