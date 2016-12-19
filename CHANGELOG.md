@@ -6,13 +6,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 3.NEXT (Unreleased)
 
 ### Changed
-n/a
+
+- `PcntlForkingHandler` now throws a `CouldNotFork` exception that causes the
+  consumer to exit unsuccessfully. Since a failure to fork is clearly on level
+  with a driver error -- a system issue, not an application issue -- this is
+  more in line with what *should* happen. The consumer will exit and its process
+  manager can restart it.
 
 ### Fixed
 n/a
 
 ### Added
-n/a
+
+- There is a new `PMG\Queue\Handler\Pcntl` class that acts as a thin wrapper
+  around the `pcntl_*` functions and `exit`. Mostly done for testing purposes.
 
 ## 3.0.0
 
