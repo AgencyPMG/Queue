@@ -88,7 +88,7 @@ class AbstractPersistanceDriverTest extends \PMG\Queue\UnitTestCase
 
     private function createDriver()
     {
-        $serializer = $this->getMock(Serializer::class);
+        $serializer = $this->createMock(Serializer::class);
         $driver = $this->getMockForAbstractClass(_DriverAbc::class, [$serializer]);
 
         return [$serializer, $driver];

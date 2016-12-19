@@ -13,6 +13,7 @@
 namespace PMG\Queue\Handler;
 
 use PMG\Queue\SimpleMessage;
+use PMG\Queue\Exception\CouldNotFork;
 
 /**
  * This uses `CallableHandler` simply because I'm not sure how phpunit mock objects
@@ -66,13 +67,27 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
         $this->assertTrue($handler->handle($this->message, ['one' => true]));
     }
 
+    public function testHandlerErrorsIfAChildProcessCannotFork()
+    {
+        $this->expectException(CouldNotFork::class);
+        $pcntl = $this->createMock(Pcntl::class);
+        $handler = $this->createHandler(function () {
+            // ignored
+        }, $pcntl);
+        $pcntl->expects($this->once())
+            ->method('fork')
+            ->willReturn(-1);
+
+        $handler->handle($this->message);
+    }
+
     protected function setUp()
     {
         $this->message = new SimpleMessage(self::NAME);
     }
 
-    private function createHandler(callable $callback)
+    private function createHandler(callable $callback, Pcntl $pcntl=null)
     {
-        return new PcntlForkingHandler(new CallableHandler($callback));
+        return new PcntlForkingHandler(new CallableHandler($callback), $pcntl);
     }
 }

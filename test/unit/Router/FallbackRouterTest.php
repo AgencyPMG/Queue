@@ -37,7 +37,7 @@ class FallbackRouterTest extends \PMG\Queue\UnitTestCase
 
     protected function setUp()
     {
-        $this->wrapped = $this->getMock(Router::class);
+        $this->wrapped = $this->createMock(Router::class);
         $this->router = new FallbackRouter($this->wrapped, self::FALLBACK);
         $this->message = new SimpleMessage('test');
     }

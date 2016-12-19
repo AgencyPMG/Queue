@@ -177,3 +177,8 @@ Forking is useful for memory management, but requires some consideration. For
 instance, database connections might need to be re-opened in the forked process.
 In such cases, the best bet is to simply create the resources on demand. that's
 why the ``TaticianHandler`` above takes a factory callable by default.
+
+In cases where a process fails to fork, a ``PMG\Queue\Exception\CouldNotFork``
+exception will be thrown and the consumer will exit with an unsuccessful status
+code. Your process manager (supervisord, upstart, systemd, etc) should be
+configured to restart the consumer when that happens.
