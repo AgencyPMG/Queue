@@ -6,6 +6,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 3.NEXT (Unreleased)
 
 ### Changed
+n/a
+
+### Fixed
+n/a
+
+### Added
+n/a
+
+## 3.1.0
+
+### Changed
 
 - `PcntlForkingHandler` now throws a `CouldNotFork` exception that causes the
   consumer to exit unsuccessfully. Since a failure to fork is clearly on level
