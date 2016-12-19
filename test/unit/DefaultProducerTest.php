@@ -18,7 +18,7 @@ class DefaultProducerTest extends UnitTestCase
 
     public function testProducerRoutesMessageAndPutsItIntoAQueue()
     {
-        $msg = $this->getMock(Message::class);
+        $msg = $this->createMock(Message::class);
         $this->router->expects($this->once())
             ->method('queueFor')
             ->with($this->identicalTo($msg))
@@ -35,7 +35,7 @@ class DefaultProducerTest extends UnitTestCase
      */
     public function testProducerErrorsWhenNoQueueIsFound()
     {
-        $msg = $this->getMock(Message::class);
+        $msg = $this->createMock(Message::class);
         $this->router->expects($this->once())
             ->method('queueFor')
             ->with($this->identicalTo($msg))
@@ -48,8 +48,8 @@ class DefaultProducerTest extends UnitTestCase
 
     protected function setUp()
     {
-        $this->router = $this->getMock(Router::class);
-        $this->driver = $this->getMock(Driver::class);
+        $this->router = $this->createMock(Router::class);
+        $this->driver = $this->createMock(Driver::class);
         $this->producer = new DefaultProducer($this->driver, $this->router);
     }
 }

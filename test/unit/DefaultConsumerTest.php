@@ -99,9 +99,9 @@ class DefaultConsumerTest extends UnitTestCase
 
     protected function setUp()
     {
-        $this->driver = $this->getMock(Driver::class);
-        $this->handler = $this->getMock(MessageHandler::class);
-        $this->retries = $this->getMock(RetrySpec::class);
+        $this->driver = $this->createMock(Driver::class);
+        $this->handler = $this->createMock(MessageHandler::class);
+        $this->retries = $this->createMock(RetrySpec::class);
         $this->logger = new CollectingLogger();
         $this->consumer = new DefaultConsumer($this->driver, $this->handler, $this->retries, $this->logger);
         $this->message = new SimpleMessage('TestMessage');
