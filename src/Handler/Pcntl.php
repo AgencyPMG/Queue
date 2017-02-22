@@ -12,6 +12,8 @@
 
 namespace PMG\Queue\Handler;
 
+use PMG\Queue\Exception\AbnormalExit;
+
 /**
  * A very thing wrapper around the the `pcntl_*` functions and `exit` to deal
  * with forking processes. This exists simply so we can mock it and validate that
@@ -44,7 +46,9 @@ class Pcntl
 
     /**
      * Wait for the child process to finish and report wether its exit status
-     * was successful or not.
+     * was successful or not. If the child process exits normally this is
+     * will return a bool. If there was a non-normal exit (like a segfault)
+     * this will throw.
      *
      * @return bool True if the child existed successfully.
      */
@@ -52,7 +56,11 @@ class Pcntl
     {
         pcntl_waitpid($child, $status, WUNTRACED);
 
-        return $this->wasSuccessfulExit($status);
+        if (pcntl_wifexited($status)) {
+            return pcntl_wexitstatus($status) === 0;
+        }
+
+        throw AbnormalExit::fromWaitStatus($status);
     }
 
     /**
@@ -65,10 +73,5 @@ class Pcntl
     public function quit($successful)
     {
         exit($successful ? 0 : 1);
-    }
-
-    private function wasSuccessfulExit($status)
-    {
-        return pcntl_wifexited($status) ? pcntl_wexitstatus($status) === 0 : false;
     }
 }
