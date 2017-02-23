@@ -6,7 +6,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 3.NEXT (Unreleased)
 
 ### Changed
-n/a
+
+- Child processes that exit abnormaly in `PcntlForkingHandler` now throw an
+  `AbnormalExit` exception with some info about what went wrong. Practically
+  this has no impact: the job is still failed and (possibly) retried, but the
+  thrown exception will be logged and hopefully give users a better place to
+  start debugging.
 
 ### Fixed
 n/a
