@@ -36,7 +36,11 @@ class PcntlTest extends \PMG\Queue\UnitTestCase
             try {
                 $this->pcntl->wait($pid);
             } finally {
+                // continue, then kill the stopped process.
+                posix_kill($pid, SIGCONT);
                 posix_kill($pid, SIGTERM);
+                pcntl_waitpid($pid, $status, WUNTRACED);
+                $this->assertTrue(pcntl_wifsignaled($status));
             }
         } else {
             self::waitAndExit(5, 0);
