@@ -33,7 +33,11 @@ class PcntlTest extends \PMG\Queue\UnitTestCase
         $pid = $this->fork();
         if ($pid) {
             posix_kill($pid, SIGSTOP);
-            $this->pcntl->wait($pid);
+            try {
+                $this->pcntl->wait($pid);
+            } finally {
+                posix_kill($pid, SIGTERM);
+            }
         } else {
             self::waitAndExit(5, 0);
         }
