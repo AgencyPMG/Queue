@@ -24,7 +24,7 @@ abstract class UnitTestCase extends \PHPUnit_Framework_TestCase
     protected function skipIfPhp5()
     {
         if (!self::isPhp7()) {
-            $this->markTestSkipped(sprintf('PHP 5.X is required, have %s', PHP_VERSION));
+            $this->markTestSkipped(sprintf('PHP 7.X is required, have %s', PHP_VERSION));
         }
     }
 
