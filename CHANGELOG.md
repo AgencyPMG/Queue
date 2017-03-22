@@ -14,7 +14,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   start debugging.
 
 ### Fixed
-n/a
+- PcntlForkingHandler now always exits, which prevents child processes from
+  turning into extra consumers and forking child processes themselves. See
+  https://github.com/AgencyPMG/Queue/pull/47
 
 ### Added
 n/a
