@@ -56,6 +56,26 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
         $this->assertFalse($handler->handle($this->message));
     }
 
+    public function testChildProcessThatThrowsAnExceptionExitsUnsuccessfully()
+    {
+        $handler = $this->createHandler(function () {
+            throw new \Exception('oh noz');
+        });
+
+        $this->assertFalse($handler->handle($this->message));
+    }
+
+    public function testChildProcessWithErrorExitsUnsuccessfully()
+    {
+        $this->skipIfPhp5();
+
+        $handler = $this->createHandler(function () {
+            throw new \Error('oh noz');
+        });
+
+        $this->assertFalse($handler->handle($this->message));
+    }
+
     public function testChildProcessIsPassedTheOptionsFromTheHandler()
     {
         $handler = $this->createHandler(function ($msg, $options) {
