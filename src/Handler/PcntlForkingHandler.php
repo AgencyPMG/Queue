@@ -47,17 +47,21 @@ final class PcntlForkingHandler implements MessageHandler
 
     /**
      * {@inheritdoc}
-     * This does not catch exceptions. If an exception is thrown, PHP will do its
-     * own logging and exit with a 255 status code (failure) causing the parent
-     * process to return `false` (the message failed). Should you want to do
-     * any specialized logging, that should happen in the wrapped `MessageHandler`.
+     * This does not really deal with or log exceptions. It just swallows them
+     * and makes sure that the child process exits with an error (1). Should
+     * you want to do any specialized logging, that should happen in the wrapped
+     * `MessageHandler`. Just be sure to return `false` (the job failed) so it
+     * can be retried.
      */
     public function handle(Message $message, array $options=[])
     {
         $child = $this->fork();
         if (0 === $child) {
-            $result = $this->wrapped->handle($message, $options);
-            $this->pcntl->quit($result);
+            try {
+                $result = $this->wrapped->handle($message, $options);
+            } finally {
+                $this->pcntl->quit(isset($result) && $result);
+            }
         }
 
         return $this->pcntl->wait($child);
