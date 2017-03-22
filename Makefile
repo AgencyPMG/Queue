@@ -1,10 +1,10 @@
 .PHONY: test testnocov simpleexample retryexample
 
 testnocov:
-	php vendor/bin/phpunit
+	php vendor/bin/phpunit -v
 
 test:
-	php vendor/bin/phpunit --coverage-text
+	php vendor/bin/phpunit --coverage-text -v
 
 simpleexample:
 	php examples/simple.php
