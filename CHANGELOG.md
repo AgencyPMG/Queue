@@ -6,6 +6,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 3.NEXT (Unreleased)
 
 ### Changed
+n/a
+
+### Fixed
+n/a
+
+### Added
+n/a
+
+## 3.2.0
+
+### Changed
+
+n/a
+
+### Fixed
+
+- PcntlForkingHandler now always exits, which prevents child processes from
+  turning into extra consumers and forking child processes themselves. See
+  https://github.com/AgencyPMG/Queue/pull/47
+
+### Added
 
 - Child processes that exit abnormaly in `PcntlForkingHandler` now throw an
   `AbnormalExit` exception with some info about what went wrong. Practically
@@ -13,13 +34,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   thrown exception will be logged and hopefully give users a better place to
   start debugging.
 
-### Fixed
-- PcntlForkingHandler now always exits, which prevents child processes from
-  turning into extra consumers and forking child processes themselves. See
-  https://github.com/AgencyPMG/Queue/pull/47
-
-### Added
-n/a
 
 ## 3.1.0
 
