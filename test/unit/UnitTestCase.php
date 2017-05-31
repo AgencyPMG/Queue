@@ -14,22 +14,5 @@ namespace PMG\Queue;
 
 abstract class UnitTestCase extends \PHPUnit\Framework\TestCase
 {
-    protected function skipIfPhp7()
-    {
-        if (self::isPhp7()) {
-            $this->markTestSkipped(sprintf('PHP < 7.X is required, have %s', PHP_VERSION));
-        }
-    }
-
-    protected function skipIfPhp5()
-    {
-        if (!self::isPhp7()) {
-            $this->markTestSkipped(sprintf('PHP 7.X is required, have %s', PHP_VERSION));
-        }
-    }
-
-    protected static function isPhp7()
-    {
-        return PHP_VERSION_ID >= 70000;
-    }
+    // noop
 }
