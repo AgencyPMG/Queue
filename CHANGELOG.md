@@ -3,10 +3,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 3.NEXT (Unreleased)
+## 4.NEXT (Unreleased)
 
 ### Changed
 n/a
+
+### Fixed
+n/a
+
+### Added
+n/a
+
+## 4.0.0 (Unreleased)
+
+### Changed
+- [BC Break] Dropped support for PHP 5.6
 
 ### Fixed
 n/a
