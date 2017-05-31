@@ -60,7 +60,6 @@ class AbstractConsumerTest extends UnitTestCase
      */
     public function testRunStopsWhenAThrowableisCaught()
     {
-        $this->skipIfPhp5();
         $this->consumer->expects($this->at(0))
             ->method('once')
             ->with(self::Q);
