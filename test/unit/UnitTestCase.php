@@ -12,7 +12,7 @@
 
 namespace PMG\Queue;
 
-abstract class UnitTestCase extends \PHPUnit_Framework_TestCase
+abstract class UnitTestCase extends \PHPUnit\Framework\TestCase
 {
     protected function skipIfPhp7()
     {
