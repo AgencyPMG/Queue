@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * This file is part of PMG\Queue
  *
@@ -94,18 +95,8 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
         ));
     }
 
-    public function testPhpLessThanSevenErrorsIfAllowedClassesAreGivenToTheSerializer()
-    {
-        $this->skipIfPhp7();
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('$allowedClasses');
-
-        new NativeSerializer(self::KEY, ['stdClass']);
-    }
-
     public function testAllowedClassesUnserializesClassesNotInWhitelistToIncompleteClass()
     {
-        $this->skipIfPhp5();
         $this->expectException(SerializationError::class);
         $this->expectExceptionMessage('expected its message property to be unserialized with an instance of PMG\Queue\Message');
 
@@ -115,6 +106,15 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
         // in the unserialization whitelist. This causes the envelope to get an
         // instance of __PHP_Incomplete_Class
         $s->unserialize($s->serialize($this->env));
+    }
+
+    public function testSerializerWithoutAllowedClassesCanUnserializeAnything()
+    {
+        $s = new NativeSerializer(self::KEY);
+
+        $result = $s->unserialize($s->serialize($this->env));
+
+        $this->assertEquals($this->env, $result);
     }
 
     public static function notStrings()
@@ -134,8 +134,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
      */
     public function testSerializersCannotBeCreatedWithANonStringKey($key)
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('$key must be a string');
+        $this->expectException(\TypeError::class);
 
         new NativeSerializer($key);
     }
