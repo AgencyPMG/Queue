@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * This file is part of PMG\Queue
  *
@@ -64,11 +65,8 @@ abstract class AbstractConsumer implements Consumer
                     'msg'   => $e->getMessage(),
                 ]);
                 $this->stop($e->getCode());
-            } catch (\Exception $e)  {
-                // likely means means something went wrong with the driver
-                $this->logFatalAndStop($e);
             } catch (\Throwable $e) {
-                // an `Error` exception, etc
+                // likely means means something went wrong with the driver
                 $this->logFatalAndStop($e);
             }
         }

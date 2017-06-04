@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * This file is part of PMG\Queue
  *
@@ -60,7 +61,6 @@ class AbstractConsumerTest extends UnitTestCase
      */
     public function testRunStopsWhenAThrowableisCaught()
     {
-        $this->skipIfPhp5();
         $this->consumer->expects($this->at(0))
             ->method('once')
             ->with(self::Q);

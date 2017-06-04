@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * This file is part of PMG\Queue
  *
@@ -37,25 +38,10 @@ final class NativeSerializer implements Serializer
      */
     private $key;
 
-    public function __construct($key, array $allowedClasses=null)
+    public function __construct(string $key, array $allowedClasses=null)
     {
-        if (!is_string($key)) {
-            throw new \InvalidArgumentException(sprintf(
-                '$key must be a string, got "%s"',
-                is_object($key) ? get_class($key) : gettype($key)
-            ));
-        }
-
         if (empty($key)) {
             throw new \InvalidArgumentException('$key cannot be empty');
-        }
-
-        if ($allowedClasses && !self::isPhp7()) {
-            throw new \RuntimeException(sprintf(
-                '$allowedClasses in %s only works on PHP 7.0+, you are using PHP %s.',
-                __METHOD__,
-                PHP_VERSION
-            ));
         }
 
         $this->key = $key;
@@ -113,7 +99,7 @@ final class NativeSerializer implements Serializer
      */
     private function doUnserialize($str)
     {
-        $m = self::isPhp7() && $this->allowedClasses ? @unserialize($str, [
+        $m = $this->allowedClasses ? @unserialize($str, [
             'allowed_classes' => $this->allowedClasses,
         ]) : @unserialize($str);
 
@@ -131,10 +117,5 @@ final class NativeSerializer implements Serializer
     private function hmac($data)
     {
         return hash_hmac(self::HMAC_ALGO, $data, $this->key, false);
-    }
-
-    private static function isPhp7()
-    {
-        return PHP_VERSION_ID >= 70000;
     }
 }

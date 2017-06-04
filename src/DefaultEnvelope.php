@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * This file is part of PMG\Queue
  *
@@ -56,7 +57,7 @@ class DefaultEnvelope implements Envelope
     }
 
     /**
-     * checks to make sure the `$message` property is really a message. Serializes
+     * checks to make sure the `$message` property is really a message. Serializers
      * may (optionally) whitelist classes. If we don't get a message back the 
      * envelope is kind of ****ed.
      *
