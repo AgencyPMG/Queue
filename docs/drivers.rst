@@ -61,7 +61,7 @@ keeps messages in memory.
     // $handler instanceof PMG\Queue\MessageHandler
     $consumer = new DefaultConsumer($driver, $handler);
 
-The memory driver isn't extrodinary useful outside of testing. For instance,
+The memory driver is not very useful outside of testing. For instance,
 while doing end to end tests, you may want to switch out your producers library
 to use the memory driver then verify the expected messages when into it.
 
@@ -113,7 +113,7 @@ of ``Pheanstalk\Pheanstalk`` and a :ref:`serializer <serializers>` to its constr
 
     $driver = new PheanstalkDriver(
         new Pheanstalk('localhost', 11300),
-        new NativeSerializer('this is a key used to sign messages')
+        NativeSerializer::fromSigningKey('this is a key used to sign messages')
     );
 
 
@@ -135,16 +135,34 @@ All serializers implements ``PMG\Queue\Serializer\Serializer`` and one
 implementation is provied by default: ``NativeSerializer``.
 
 ``NativeSerializer`` uses PHP's build in ``serialize`` and ``unserialize``
-functions. Serialized envelopes are base64 encoded and signed (via an HMAC) with
-a key given to ``NativeSerializer`` in its constructor. The signature is a way
-to authenticate the message (make sure it came from a source known to use).
+functions. Serialized envelopes are base64 encoded and signed (via a ``Signer``).
+The signature is a way to authenticate the message: make sure it came from a
+known source and hasn't been tampered with
 
 .. code-block:: php
 
     <?php
+    use PMG\Queue\Signer\HmacSha256;
     use PMG\Queue\Serializer\NativeSerializer;
 
-    $serializer = new NativeSerializer('this is the key');
+    $serializer = new NativeSerializer(new HmacSha256('super secret key'));
+    // identical to...
+    $serializer = NativeSerializer::fromSigningKey('super secret key');
+
+    // ...
+
+Should want to use ``ext-libsodium`` or the built in libsodium support in PHP
+7.2+ there is also a ``SodiumCryptoAuth`` signer.
+
+.. code-block:: php
+
+    <?php
+    use PMG\Queue\Signer\SodiumCryptoAuth;
+    use PMG\Queue\Serializer\NativeSerializer;
+
+    $serializer = new NativeSerializer(new SodiumCryptoAuth(
+        'aKeyThatIsExactly32characterLong' // or sodium complains
+    ));
 
     // ...
 
