@@ -14,8 +14,9 @@
 namespace PMG\Queue\Serializer;
 
 use PMG\Queue\Envelope;
-use PMG\Queue\Exception\SerializationError;
+use PMG\Queue\Exception\InvalidSignature;
 use PMG\Queue\Exception\MissingSignature;
+use PMG\Queue\Exception\SerializationError;
 use PMG\Queue\Signer\Signer;
 use PMG\Queue\Signer\HmacSha256;
 
@@ -86,7 +87,7 @@ final class NativeSerializer implements Serializer
 
         list($sig, $env) = explode('|', $message, 2);
         if (!$this->signer->verify($sig, $env)) {
-            throw new SerializationError('Invalid Message Signature');
+            throw new InvalidSignature('Invalid Message Signature');
         }
 
         return $env;

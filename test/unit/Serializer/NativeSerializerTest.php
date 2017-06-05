@@ -16,8 +16,9 @@ namespace PMG\Queue\Serializer;
 use PMG\Queue\Envelope;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\SimpleMessage;
-use PMG\Queue\Exception\SerializationError;
 use PMG\Queue\Exception\MissingSignature;
+use PMG\Queue\Exception\SerializationError;
+use PMG\Queue\Exception\InvalidSignature;
 use PMG\Queue\Signer\Signer;
 
 class NativeSerializerTest extends \PMG\Queue\UnitTestCase
@@ -46,7 +47,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
 
     public function testUnserializeErrorsWhenTheSignatureIsInvalid()
     {
-        $this->expectException(SerializationError::class);
+        $this->expectException(InvalidSignature::class);
         $this->expectExceptionMessage('Invalid Message Signature');
         $this->signer->expects($this->once())
             ->method('verify')
