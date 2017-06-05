@@ -13,6 +13,12 @@
 
 namespace PMG\Queue\Exception;
 
+/**
+ * Thrown when a serializer is asked to unserialize a message that does not have
+ * a signature to authenticate it.
+ *
+ * @since 4.0
+ */
 final class MissingSignature extends SerializationError
 {
     // noop

@@ -13,6 +13,11 @@
 
 namespace PMG\Queue\Exception;
 
+/**
+ * Throw by serializers when the signature of a message cannot be verified.
+ *
+ * @since 4.0
+ */
 final class InvalidSignature extends SerializationError
 {
     // noop

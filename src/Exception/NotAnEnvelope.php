@@ -13,6 +13,13 @@
 
 namespace PMG\Queue\Exception;
 
+/**
+ * Thrown when a serializer unserializes something other than an envelope. This
+ * can happen simply because `unserialize` (which is what `NativeSerializer` uses)
+ * can end up unserializing anything.
+ *
+ * @since 4.0
+ */
 final class NotAnEnvelope extends SerializationError
 {
     // noop
