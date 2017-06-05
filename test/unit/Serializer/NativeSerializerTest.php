@@ -17,6 +17,7 @@ use PMG\Queue\Envelope;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\Exception\SerializationError;
+use PMG\Queue\Exception\MissingSignature;
 use PMG\Queue\Signer\Signer;
 
 class NativeSerializerTest extends \PMG\Queue\UnitTestCase
@@ -37,7 +38,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
 
     public function testUnserializeErrorsWhenTheMessageSignatureIsNotPresent()
     {
-        $this->expectException(SerializationError::class);
+        $this->expectException(MissingSignature::class);
         $this->expectExceptionMessage('does not have a signature');
 
         $this->serializer->unserialize($this->envMessage);

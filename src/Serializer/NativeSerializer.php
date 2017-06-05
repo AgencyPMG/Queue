@@ -15,6 +15,7 @@ namespace PMG\Queue\Serializer;
 
 use PMG\Queue\Envelope;
 use PMG\Queue\Exception\SerializationError;
+use PMG\Queue\Exception\MissingSignature;
 use PMG\Queue\Signer\Signer;
 use PMG\Queue\Signer\HmacSha256;
 
@@ -80,7 +81,7 @@ final class NativeSerializer implements Serializer
     private function verifySignature(string $message) : string
     {
         if (substr_count($message, '|') !== 1) {
-            throw new SerializationError('Data to unserialize does not have a signature');
+            throw new MissingSignature('Data to unserialize does not have a signature');
         }
 
         list($sig, $env) = explode('|', $message, 2);
