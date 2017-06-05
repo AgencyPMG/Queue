@@ -17,70 +17,55 @@ use PMG\Queue\Envelope;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\Exception\SerializationError;
+use PMG\Queue\Signer\Signer;
 
-/**
- * Closer to an integration test than a unit test.
- */
 class NativeSerializerTest extends \PMG\Queue\UnitTestCase
 {
-    const KEY = 'SuperSecretKey';
+    const SIG = 'someHmac';
 
-    private $serializer;
+    private $signer, $serializer, $env, $envMessage;
 
-    public function testSerializeReturnsAStringThatCanBeUnserialized()
+    public function testSerializeNativeSerializersAndSignsTheMessageBeforeReturningIt()
     {
-        $s = $this->serializer->serialize($this->env);
-        $this->assertInternalType('string', $s);
+        $this->willSignMessage($this->envMessage);
 
-        $env = $this->serializer->unserialize($s);
-        $this->assertEquals($this->env, $env);
+        $result = $this->serializer->serialize($this->env);
+
+        $this->assertContains(self::SIG, $result);
+        $this->assertContains($this->envMessage, $result);
     }
 
-    public function testUnserializeErrorsWhenAnUnsignedStringIsGiven()
+    public function testUnserializeErrorsWhenTheMessageSignatureIsNotPresent()
     {
         $this->expectException(SerializationError::class);
         $this->expectExceptionMessage('does not have a signature');
 
-        $this->serializer->unserialize(base64_encode(serialize($this->env)));
+        $this->serializer->unserialize($this->envMessage);
     }
 
-    public function testUnserializeErrorsWhenTheMessageDataHasBeenTamperedWith()
+    public function testUnserializeErrorsWhenTheSignatureIsInvalid()
     {
         $this->expectException(SerializationError::class);
-        $this->expectExceptionMessage('Invalid HMAC Signature');
+        $this->expectExceptionMessage('Invalid Message Signature');
+        $this->signer->expects($this->once())
+            ->method('verify')
+            ->with('invalid', $this->envMessage)
+            ->willReturn(false);
 
-        $s = explode('|', $this->serializer->serialize($this->env), 2);
-        $s[1] = base64_encode(serialize(new \stdClass));
-        $str = implode('|', $s);
-
-        $this->serializer->unserialize($str);
+        $this->serializer->unserialize('invalid|'.$this->envMessage);
     }
 
-
-    public static function notEnvelopes()
-    {
-        return [
-            [1],
-            [1.0],
-            [true],
-            [null],
-            [new \stdClass],
-        ];
-    }
-
-    /**
-     * @dataProvider notEnvelopes
-     */
-    public function testUnserializeErrorsWhenANonMessageIsTheResult($env)
+    public function testUnserializeErrorsWhenTheEnvelopeGetsAnUnexpectedValue()
     {
         $this->expectException(SerializationError::class);
-        $this->expectExceptionMessage(sprintf('an instance of "%s"', Envelope::class));
-        $env = base64_encode(serialize($env));
-        $this->serializer->unserialize(sprintf(
-            '%s|%s',
-            hash_hmac(NativeSerializer::HMAC_ALGO, $env, self::KEY, false),
-            $env
-        ));
+        $this->expectExceptionMessage('expected its message property to be unserialized with an instance of PMG\Queue\Message');
+        $s = new NativeSerializer($this->signer, [DefaultEnvelope::class]);
+        $this->willVerifyMessage($this->envMessage);
+
+        // Causes the error. We can serialize whatever, but `SimpleMessage` isn't
+        // in the unserialization whitelist. This causes the envelope to get an
+        // instance of __PHP_Incomplete_Class
+        $s->unserialize($this->sigMessage);
     }
 
     public function testUnserializeErrorsWhenTheSerializedStringIsInvalid()
@@ -88,80 +73,52 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
         $this->expectException(SerializationError::class);
         $this->expectExceptionMessage('Error unserializing message:');
         $env = base64_encode('a:');
-        $this->serializer->unserialize(sprintf(
-            '%s|%s',
-            hash_hmac(NativeSerializer::HMAC_ALGO, $env, self::KEY, false),
-            $env
-        ));
+        $this->willVerifyMessage($env);
+
+        $this->serializer->unserialize(self::SIG.'|'.$env);
     }
 
-    public function testAllowedClassesUnserializesClassesNotInWhitelistToIncompleteClass()
+    public function testUnserializeErrorsWhenTheClassUnserializeIsNotAnEnvelope()
     {
         $this->expectException(SerializationError::class);
-        $this->expectExceptionMessage('expected its message property to be unserialized with an instance of PMG\Queue\Message');
+        $this->expectExceptionMessage('an instance of');
+        $env = base64_encode(serialize(new \stdClass()));
+        $this->willVerifyMessage($env);
 
-        $s = new NativeSerializer(self::KEY,  [DefaultEnvelope::class]);
-
-        // Causes the error. We can serialize whatever, but `SimpleMessage` isn't
-        // in the unserialization whitelist. This causes the envelope to get an
-        // instance of __PHP_Incomplete_Class
-        $s->unserialize($s->serialize($this->env));
+        $this->serializer->unserialize(self::SIG.'|'.$env);
     }
 
-    public function testSerializerWithoutAllowedClassesCanUnserializeAnything()
+    public function testUnserializeReturnsTheUnserializeEnvelopeWhenSuccessful()
     {
-        $s = new NativeSerializer(self::KEY);
+        $this->willVerifyMessage($this->envMessage);
 
-        $result = $s->unserialize($s->serialize($this->env));
+        $result = $this->serializer->unserialize($this->sigMessage);
 
         $this->assertEquals($this->env, $result);
     }
 
-    public static function notStrings()
-    {
-        return [
-            [['an array']],
-            [new \stdClass],
-            [1],
-            [1.0],
-            [null],
-            [false],
-        ];
-    }
-
-    /**
-     * @dataProvider notStrings
-     */
-    public function testSerializersCannotBeCreatedWithANonStringKey($key)
-    {
-        $this->expectException(\TypeError::class);
-
-        new NativeSerializer($key);
-    }
-
-    public function testSerializersCannotBeCreatedWithEmptyKeys()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('$key cannot be empty');
-
-        new NativeSerializer('');
-    }
-
-    /**
-     * @group regresion
-     */
-    public function testMessagesSerializedInVersion2xCanStillBeUnserialized()
-    {
-        $oldMessage = 'bbb07fc3841b8114978c60bddcf61d3f0d167887250696a7974502f8ce42d136|TzoyNToiUE1HXFF1ZXVlXERlZmF1bHRFbnZlbG9wZSI6Mjp7czoxMDoiACoAbWVzc2FnZSI7TzoyMzoiUE1HXFF1ZXVlXFNpbXBsZU1lc3NhZ2UiOjI6e3M6Mjk6IgBQTUdcUXVldWVcU2ltcGxlTWVzc2FnZQBuYW1lIjtzOjE6InQiO3M6MzI6IgBQTUdcUXVldWVcU2ltcGxlTWVzc2FnZQBwYXlsb2FkIjtOO31zOjExOiIAKgBhdHRlbXB0cyI7aTowO30=';
-
-        $env = $this->serializer->unserialize($oldMessage);
-
-        $this->assertEquals($this->env, $env);
-    }
-
     protected function setUp()
     {
-        $this->serializer = new NativeSerializer(self::KEY);
+        $this->signer = $this->createMock(Signer::class);
+        $this->serializer = new NativeSerializer($this->signer);
         $this->env = new DefaultEnvelope(new SimpleMessage('t'));
+        $this->envMessage = base64_encode(serialize($this->env));
+        $this->sigMessage = self::SIG.'|'.$this->envMessage;
+    }
+
+    private function willSignMessage(string $message)
+    {
+        $this->signer->expects($this->once())
+            ->method('sign')
+            ->with($message)
+            ->willReturn(self::SIG);
+    }
+
+    private function willVerifyMessage(string $message)
+    {
+        $this->signer->expects($this->once())
+            ->method('verify')
+            ->with(self::SIG, $message)
+            ->willReturn(true);
     }
 }
