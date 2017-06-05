@@ -18,12 +18,17 @@ n/a
 
 ### Changed
 - [BC Break] Dropped support for PHP 5.6
+- [BC Break] `NativeSerializer` now uses a `PMG\Queue\Signer\Signer` to sign
+  its message. Previously this was all handled by the serializer directly. See
+  `UPGRADE-4.0.md` for a migration path.
 
 ### Fixed
 n/a
 
 ### Added
-n/a
+- A new `PMG\Queue\Signer\Signer` interface was added as a way to make the
+  message signature generation and validation pluggable in `Serializer`
+  implementations.
 
 ## 3.2.0
 
