@@ -15,6 +15,8 @@ namespace PMG\Queue\Serializer;
 
 use PMG\Queue\Envelope;
 use PMG\Queue\Exception\SerializationError;
+use PMG\Queue\Signer\Signer;
+use PMG\Queue\Signer\HmacSha256;
 
 /**
  * A serializer implemtnation that uses PHP's native serialize and unserialize.
@@ -23,8 +25,6 @@ use PMG\Queue\Exception\SerializationError;
  */
 final class NativeSerializer implements Serializer
 {
-    const HMAC_ALGO = 'sha256';
-
     /**
      * Only applicable to PHP 7+. This is a set of allowed classes passed
      * to the second argument of `unserialize`.
@@ -34,18 +34,19 @@ final class NativeSerializer implements Serializer
     private $allowedClasses;
 
     /**
-     * @var string
+     * @var Signer
      */
-    private $key;
+    private $signer;
 
-    public function __construct(string $key, array $allowedClasses=null)
+    public function __construct(Signer $signer, array $allowedClasses=null)
     {
-        if (empty($key)) {
-            throw new \InvalidArgumentException('$key cannot be empty');
-        }
-
-        $this->key = $key;
+        $this->signer = $signer;
         $this->allowedClasses = $allowedClasses;
+    }
+
+    public static function fromSigningKey(string $key, array $allowedClasses=null)
+    {
+        return new self(new HmacSha256($key), $allowedClasses);
     }
 
     /**
@@ -54,7 +55,7 @@ final class NativeSerializer implements Serializer
     public function serialize(Envelope $env)
     {
         $str = base64_encode(serialize($env));
-        return sprintf('%s|%s', $this->hmac($str), $str);
+        return sprintf('%s|%s', $this->signer->sign($str), $str);
     }
 
     /**
@@ -76,15 +77,15 @@ final class NativeSerializer implements Serializer
         return $m;
     }
 
-    private function verifySignature($message)
+    private function verifySignature(string $message) : string
     {
         if (substr_count($message, '|') !== 1) {
             throw new SerializationError('Data to unserialize does not have a signature');
         }
 
         list($sig, $env) = explode('|', $message, 2);
-        if (!hash_equals($this->hmac($env), $sig)) {
-            throw new SerializationError('Invalid HMAC Signature');
+        if (!$this->signer->verify($sig, $env)) {
+            throw new SerializationError('Invalid Message Signature');
         }
 
         return $env;
@@ -112,10 +113,5 @@ final class NativeSerializer implements Serializer
         }
 
         return $m;
-    }
-
-    private function hmac($data)
-    {
-        return hash_hmac(self::HMAC_ALGO, $data, $this->key, false);
     }
 }

@@ -22,5 +22,10 @@ use PMG\Queue\QueueException;
  */
 final class InvalidArgumentException extends \InvalidArgumentException implements QueueException
 {
-
+    public static function assertNotEmpty($value, string $message)
+    {
+        if (empty($value)) {
+            throw new self($message);
+        }
+    }
 }

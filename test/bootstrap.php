@@ -12,3 +12,4 @@
 
 $loader = require __DIR__.'/../vendor/autoload.php';
 $loader->addPsr4('PMG\\Queue\\', __DIR__.'/unit');
+$loader->addPsr4('PMG\\Queue\\', __DIR__.'/integration');
