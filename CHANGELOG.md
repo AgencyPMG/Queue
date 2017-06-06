@@ -21,6 +21,8 @@ n/a
 - [BC Break] `NativeSerializer` now uses a `PMG\Queue\Signer\Signer` to sign
   its message. Previously this was all handled by the serializer directly. See
   `UPGRADE-4.0.md` for a migration path.
+- [BC Break, Internals] `AbstractPersistanceDriver::assureSerializer` was renamed
+  to `ensureSerializer`.
 
 ### Fixed
 n/a

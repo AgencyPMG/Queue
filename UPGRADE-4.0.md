@@ -22,3 +22,24 @@ $serializer = new NativeSerializer('secretKey');
 $serializer = NativeSerializer::fromSigningKey('secretKey');
 // $serializer = new NativeSerializer(new HmacSha256('secretKey'));
 ```
+
+## For Driver Authors
+
+### `assureSerializer` was renamed in `AbstractPersistanceDriver`
+
+```php
+class SomeDriver implements Driver
+{
+    private function whatever()
+    {
+        // 3.X
+        $this->assureSerializer()->serialize(...);
+
+        // 4.X
+        $this->ensureSerializer()->serialize(...);
+    }
+}
+```
+
+Prefer using `$this->serialize` or `$this->unserialize` instead of accessing the
+serializer directly.
