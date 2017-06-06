@@ -25,10 +25,15 @@ $serializer = NativeSerializer::fromSigningKey('secretKey');
 
 ## For Driver Authors
 
-### Driver Has Stricter Type Declarations
+### `Driver` Has Stricter Type Declarations
 
 Check the [`Driver` interface](https://github.com/AgencyPMG/Queue/blob/master/src/Driver.php)
 for the updated method signatures.
+
+### `Driver::release` was Added
+
+This is a method that should skip the retry system for the given
+envelope/message and put it back into a ready state immediately.
 
 ### `assureSerializer` was renamed in `AbstractPersistanceDriver`
 

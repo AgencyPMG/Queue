@@ -24,6 +24,7 @@ n/a
 - [BC Break, Internals] `AbstractPersistanceDriver::assureSerializer` was renamed
   to `ensureSerializer`.
 - [BC Break, Internals] `Driver` now has more strict type declarations.
+- [BC Break, Internals] `Driver::release` was introduced.
 
 ### Fixed
 n/a

@@ -41,6 +41,20 @@ class MemoryDriverTest extends \PMG\Queue\UnitTestCase
         $this->assertSame($m, $e->unwrap());
     }
 
+    public function testMessagesCanBeEnqueuedDequeuedAndReleased()
+    {
+        $m = new SimpleMessage('test');
+        $this->assertInstanceOf(Envelope::class, $this->driver->enqueue(self::Q, $m));
+
+        $e = $this->driver->dequeue(self::Q);
+        $this->assertSame($m, $e->unwrap());
+
+        $this->driver->release(self::Q, $e);
+
+        $e2 = $this->driver->dequeue(self::Q);
+        $this->assertSame($e, $e2);
+    }
+
     protected function setUp()
     {
         $this->driver = new MemoryDriver();

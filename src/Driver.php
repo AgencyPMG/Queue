@@ -79,4 +79,17 @@ interface Driver
      * @return  void
      */
     public function fail(string $queueName, Envelope $envelope);
+
+    /**
+     * Release a message back to a ready state. This is used by the consumer
+     * when it skips the retry system. This may happen if the consumer receives
+     * a signal and has to exit early.
+     *
+     * @param $queueName The queue from which the message came
+     * @param $envelope The message to release, should be the same instance
+     *        returned from `dequeue`
+     * @throws Exception\DriverError if something goes wrong
+     * @return void
+     */
+    public function release(string $queueName, Envelope $envelope);
 }

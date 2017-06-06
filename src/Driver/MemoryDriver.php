@@ -77,12 +77,20 @@ final class MemoryDriver implements \PMG\Queue\Driver
         // noop
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function release(string $queueName, Envelope $envelope)
+    {
+        $this->enqueueEnvelope($queueName, $envelope);
+    }
+
     private function enqueueEnvelope(string $queueName, Envelope $envelope)
     {
         $this->getQueue($queueName)->enqueue($envelope);
     }
 
-    private function getQueue($queueName)
+    private function getQueue(string $queueName)
     {
         if (!isset($this->queues[$queueName])) {
             $this->queues[$queueName] = new \SplQueue();
