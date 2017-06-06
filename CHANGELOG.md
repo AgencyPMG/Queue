@@ -23,6 +23,7 @@ n/a
   `UPGRADE-4.0.md` for a migration path.
 - [BC Break, Internals] `AbstractPersistanceDriver::assureSerializer` was renamed
   to `ensureSerializer`.
+- [BC Break, Internals] `Driver` now has more strict type declarations.
 
 ### Fixed
 n/a

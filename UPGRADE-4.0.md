@@ -25,6 +25,11 @@ $serializer = NativeSerializer::fromSigningKey('secretKey');
 
 ## For Driver Authors
 
+### Driver Has Stricter Type Declarations
+
+Check the [`Driver` interface](https://github.com/AgencyPMG/Queue/blob/master/src/Driver.php)
+for the updated method signatures.
+
 ### `assureSerializer` was renamed in `AbstractPersistanceDriver`
 
 ```php
