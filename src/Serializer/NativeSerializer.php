@@ -14,6 +14,9 @@
 namespace PMG\Queue\Serializer;
 
 use PMG\Queue\Envelope;
+use PMG\Queue\Exception\InvalidSignature;
+use PMG\Queue\Exception\MissingSignature;
+use PMG\Queue\Exception\NotAnEnvelope;
 use PMG\Queue\Exception\SerializationError;
 use PMG\Queue\Signer\Signer;
 use PMG\Queue\Signer\HmacSha256;
@@ -67,7 +70,7 @@ final class NativeSerializer implements Serializer
 
         $m = $this->doUnserialize(base64_decode($env));
         if (!$m instanceof Envelope) {
-            throw new SerializationError(sprintf(
+            throw new NotAnEnvelope(sprintf(
                 'Expected an instance of "%s" got "%s"',
                 Envelope::class,
                 is_object($m) ? get_class($m) : gettype($m)
@@ -80,12 +83,12 @@ final class NativeSerializer implements Serializer
     private function verifySignature(string $message) : string
     {
         if (substr_count($message, '|') !== 1) {
-            throw new SerializationError('Data to unserialize does not have a signature');
+            throw new MissingSignature('Data to unserialize does not have a signature');
         }
 
         list($sig, $env) = explode('|', $message, 2);
         if (!$this->signer->verify($sig, $env)) {
-            throw new SerializationError('Invalid Message Signature');
+            throw new InvalidSignature('Invalid Message Signature');
         }
 
         return $env;

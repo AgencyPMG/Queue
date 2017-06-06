@@ -13,14 +13,13 @@
 
 namespace PMG\Queue\Exception;
 
-use PMG\Queue\QueueException;
-
 /**
- * Thrown when there's some trouble serializing or unserializing messages.
+ * Thrown when a serializer is asked to unserialize a message that does not have
+ * a signature to authenticate it.
  *
- * @since   2.0
+ * @since 4.0
  */
-class SerializationError extends \RuntimeException implements DriverError
+final class MissingSignature extends SerializationError
 {
-
+    // noop
 }

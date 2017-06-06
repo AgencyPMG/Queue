@@ -16,7 +16,10 @@ namespace PMG\Queue\Serializer;
 use PMG\Queue\Envelope;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\SimpleMessage;
+use PMG\Queue\Exception\MissingSignature;
+use PMG\Queue\Exception\NotAnEnvelope;
 use PMG\Queue\Exception\SerializationError;
+use PMG\Queue\Exception\InvalidSignature;
 use PMG\Queue\Signer\Signer;
 
 class NativeSerializerTest extends \PMG\Queue\UnitTestCase
@@ -37,7 +40,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
 
     public function testUnserializeErrorsWhenTheMessageSignatureIsNotPresent()
     {
-        $this->expectException(SerializationError::class);
+        $this->expectException(MissingSignature::class);
         $this->expectExceptionMessage('does not have a signature');
 
         $this->serializer->unserialize($this->envMessage);
@@ -45,7 +48,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
 
     public function testUnserializeErrorsWhenTheSignatureIsInvalid()
     {
-        $this->expectException(SerializationError::class);
+        $this->expectException(InvalidSignature::class);
         $this->expectExceptionMessage('Invalid Message Signature');
         $this->signer->expects($this->once())
             ->method('verify')
@@ -80,7 +83,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
 
     public function testUnserializeErrorsWhenTheClassUnserializeIsNotAnEnvelope()
     {
-        $this->expectException(SerializationError::class);
+        $this->expectException(NotAnEnvelope::class);
         $this->expectExceptionMessage('an instance of');
         $env = base64_encode(serialize(new \stdClass()));
         $this->willVerifyMessage($env);

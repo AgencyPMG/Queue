@@ -13,14 +13,14 @@
 
 namespace PMG\Queue\Exception;
 
-use PMG\Queue\QueueException;
-
 /**
- * Thrown when there's some trouble serializing or unserializing messages.
+ * Thrown when a serializer unserializes something other than an envelope. This
+ * can happen simply because `unserialize` (which is what `NativeSerializer` uses)
+ * can end up unserializing anything.
  *
- * @since   2.0
+ * @since 4.0
  */
-class SerializationError extends \RuntimeException implements DriverError
+final class NotAnEnvelope extends SerializationError
 {
-
+    // noop
 }
