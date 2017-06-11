@@ -14,6 +14,7 @@
 namespace PMG\Queue;
 
 use Psr\Log\LogLevel;
+use PMG\Queue\Exception\SimpleMustStop;
 
 class DefaultConsumerTest extends UnitTestCase
 {
@@ -78,7 +79,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->assertFalse($this->consumer->once(self::Q));
     }
 
-    public function testOnceWithAExceptionThrownFromExecutorAndValidRetryRetriesJobAndThrows()
+    public function testOnceWithAExceptionThrownFromHandlerAndValidRetryRetriesJobAndThrows()
     {
         $this->withMessage();
         $this->willRetry();
@@ -96,6 +97,21 @@ class DefaultConsumerTest extends UnitTestCase
         $this->assertCount(1, $messages);
         $this->assertContains('oops', $messages[0]);
         $this->assertContains('TestMessage', $messages[0]);
+    }
+
+    public function testFailureWithMustStopAcksMessagesAndRethrows()
+    {
+        $this->expectException(Exception\MustStop::class);
+        $this->withMessage();
+        $this->driver->expects($this->once())
+            ->method('ack')
+            ->with(self::Q, $this->envelope);
+        $this->handler->expects($this->once())
+            ->method('handle')
+            ->with($this->identicalTo($this->message))
+            ->willThrowException(new SimpleMustStop('oops'));
+
+        $this->consumer->once(self::Q);
     }
 
     protected function setUp()
