@@ -64,12 +64,32 @@ class DefaultConsumer extends AbstractConsumer
         if (!$envelope) {
             return null;
         }
+        return $this->doOnce($queueName, $envelope);
+    }
 
+    protected function doOnce(string $queueName, Envelope $envelope)
+    {
         $result = false;
         $message = $envelope->unwrap();
 
         $this->getLogger()->debug('Handling message {msg}', ['msg' => $message->getName()]);
-        $result = $this->handleMessage($message);
+        try {
+            $result = $this->handleMessage($message);
+        } catch (Exception\MustStop $e) {
+            $this->driver->ack($queueName, $envelope);
+            throw $e;
+        } catch (\Exception $e) {
+            // any other exception is simply logged. We and marked as failed
+            // below. We only log here because we can't make guarantees about
+            // the implementation of the handler and whether or not it actually
+            // throws exceptions on failure (see PcntlForkingHandler).
+            $this->getLogger()->critical('Unexpected {cls} exception handling {name} message: {msg}', [
+                'cls'   => get_class($e),
+                'name'  => $message->getName(),
+                'msg'   => $e->getMessage()
+            ]);
+            $result = false;
+        }
         $this->getLogger()->debug('Handled message {msg}', ['msg' => $message->getName()]);
 
         if ($result) {
@@ -94,24 +114,7 @@ class DefaultConsumer extends AbstractConsumer
 
     protected function handleMessage(Message $message)
     {
-        try {
-            return $this->getHandler()->handle($message, $this->getHandlerOptions());
-        } catch (Exception\MustStop $e) {
-            // MustStop exceptions are thrown by handlers to indicate a
-            // graceful stop is required. So we don't wrap them. Just rethrow
-            throw $e;
-        } catch (\Exception $e) {
-            // any other exception is simply logged. We and marked as failed
-            // below. We only log here because we can't make guarantees about
-            // the implementation of the handler and whether or not it actually
-            // throws exceptions on failure (see PcntlForkingHandler).
-            $this->getLogger()->critical('Unexpected {cls} exception handling {name} message: {msg}', [
-                'cls'   => get_class($e),
-                'name'  => $message->getName(),
-                'msg'   => $e->getMessage()
-            ]);
-            return false;
-        }
+        return $this->getHandler()->handle($message, $this->getHandlerOptions());
     }
 
     protected function canRetry(Envelope $env)
