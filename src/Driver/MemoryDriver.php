@@ -32,7 +32,7 @@ final class MemoryDriver implements \PMG\Queue\Driver
     /**
      * {@inheritdoc}
      */
-    public function enqueue($queueName, Message $message)
+    public function enqueue(string $queueName, Message $message) : Envelope
     {
         $e = new DefaultEnvelope($message);
         $this->enqueueEnvelope($queueName, $e);
@@ -42,7 +42,7 @@ final class MemoryDriver implements \PMG\Queue\Driver
     /**
      * {@inheritdoc}
      */
-    public function dequeue($queueName)
+    public function dequeue(string $queueName)
     {
         try{
             return $this->getQueue($queueName)->dequeue();
@@ -54,7 +54,7 @@ final class MemoryDriver implements \PMG\Queue\Driver
     /**
      * {@inheritdoc}
      */
-    public function ack($queueName, Envelope $envelope)
+    public function ack(string $queueName, Envelope $envelope)
     {
         // noop
     }
@@ -62,7 +62,7 @@ final class MemoryDriver implements \PMG\Queue\Driver
     /**
      * {@inheritdoc}
      */
-    public function retry($queueName, Envelope $envelope)
+    public function retry(string $queueName, Envelope $envelope) : Envelope
     {
         $e = $envelope->retry();
         $this->enqueueEnvelope($queueName, $e);
@@ -72,17 +72,25 @@ final class MemoryDriver implements \PMG\Queue\Driver
     /**
      * {@inheritdoc}
      */
-    public function fail($queueName, Envelope $envelope)
+    public function fail(string $queueName, Envelope $envelope)
     {
         // noop
     }
 
-    private function enqueueEnvelope($queueName, Envelope $envelope)
+    /**
+     * {@inheritdoc}
+     */
+    public function release(string $queueName, Envelope $envelope)
+    {
+        $this->enqueueEnvelope($queueName, $envelope);
+    }
+
+    private function enqueueEnvelope(string $queueName, Envelope $envelope)
     {
         $this->getQueue($queueName)->enqueue($envelope);
     }
 
-    private function getQueue($queueName)
+    private function getQueue(string $queueName)
     {
         if (!isset($this->queues[$queueName])) {
             $this->queues[$queueName] = new \SplQueue();

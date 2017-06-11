@@ -60,15 +60,15 @@ abstract class AbstractPersistanceDriver implements \PMG\Queue\Driver
 
     protected function serialize(Envelope $env)
     {
-        return $this->assureSerializer()->serialize($env);
+        return $this->ensureSerializer()->serialize($env);
     }
 
     protected function unserialize($data)
     {
-        return $this->assureSerializer()->unserialize($data);
+        return $this->ensureSerializer()->unserialize($data);
     }
 
-    protected function assureSerializer()
+    protected function ensureSerializer()
     {
         if (!$this->serializer) {
             throw new \RuntimeException(sprintf(

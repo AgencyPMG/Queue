@@ -36,7 +36,7 @@ interface Driver
      * @throws  Exception\DriverError when something goes wrong
      * @return  Envelope An envelop representing the message in the queue.
      */
-    public function enqueue($queueName, Message $message);
+    public function enqueue(string $queueName, Message $message) : Envelope;
 
     /**
      * Pull a message out of the queue.
@@ -45,7 +45,7 @@ interface Driver
      * @throws  Exception\DriverError when something goes wrong
      * @return  Envelope|null An envelope if a message is found, null otherwise
      */
-    public function dequeue($queueName);
+    public function dequeue(string $queueName);
 
     /**
      * Acknowledge a message as complete.
@@ -56,7 +56,7 @@ interface Driver
      * @throws  Exception\DriverError when something goes wrong
      * @return  void
      */
-    public function ack($queueName, Envelope $envelope);
+    public function ack(string $queueName, Envelope $envelope);
 
     /**
      * Retry a job -- put it back in the queue for retrying.
@@ -67,7 +67,7 @@ interface Driver
      * @throws  Exception\DriverError when something goes wrong
      * @return  Envelope The new envelope for the retried job.
      */
-    public function retry($queueName, Envelope $envelope);
+    public function retry(string $queueName, Envelope $envelope) : Envelope;
 
     /**
      * Fail a job -- this called when no more retries can be attempted.
@@ -76,7 +76,20 @@ interface Driver
      * @param   $envelope The message envelope -- should be the same instance
      *          returned from `dequeue`
      * @throws  Exception\DriverError when something goes wrong
-     * @return  Envelope The new envelope for the retried job.
+     * @return  void
      */
-    public function fail($queueName, Envelope $envelope);
+    public function fail(string $queueName, Envelope $envelope);
+
+    /**
+     * Release a message back to a ready state. This is used by the consumer
+     * when it skips the retry system. This may happen if the consumer receives
+     * a signal and has to exit early.
+     *
+     * @param $queueName The queue from which the message came
+     * @param $envelope The message to release, should be the same instance
+     *        returned from `dequeue`
+     * @throws Exception\DriverError if something goes wrong
+     * @return void
+     */
+    public function release(string $queueName, Envelope $envelope);
 }

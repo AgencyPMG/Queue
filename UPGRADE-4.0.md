@@ -22,3 +22,34 @@ $serializer = new NativeSerializer('secretKey');
 $serializer = NativeSerializer::fromSigningKey('secretKey');
 // $serializer = new NativeSerializer(new HmacSha256('secretKey'));
 ```
+
+## For Driver Authors
+
+### `Driver` Has Stricter Type Declarations
+
+Check the [`Driver` interface](https://github.com/AgencyPMG/Queue/blob/master/src/Driver.php)
+for the updated method signatures.
+
+### `Driver::release` was Added
+
+This is a method that should skip the retry system for the given
+envelope/message and put it back into a ready state immediately.
+
+### `assureSerializer` was renamed in `AbstractPersistanceDriver`
+
+```php
+class SomeDriver implements Driver
+{
+    private function whatever()
+    {
+        // 3.X
+        $this->assureSerializer()->serialize(...);
+
+        // 4.X
+        $this->ensureSerializer()->serialize(...);
+    }
+}
+```
+
+Prefer using `$this->serialize` or `$this->unserialize` instead of accessing the
+serializer directly.
