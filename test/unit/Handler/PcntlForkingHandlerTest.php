@@ -15,6 +15,7 @@ namespace PMG\Queue\Handler;
 
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\Exception\CouldNotFork;
+use PMG\Queue\Exception\ForkedProcessFailed;
 
 /**
  * This uses `CallableHandler` simply because I'm not sure how phpunit mock objects
@@ -34,45 +35,51 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
             return true;
         });
 
-        $this->assertTrue($handler->handle($this->message));
+        $promise = $handler->handle($this->message);
+
+        $this->assertTrue($promise->wait());
     }
 
-    public function testChildProcessWithFailedResultReturnsFalseFromTheParent()
+    public function testChildProcessWithFailedResultCausesErrorInParent()
     {
+        $this->expectException(ForkedProcessFailed::class);
         $handler = $this->createHandler(function () {
             return false;
         });
 
-        $this->assertFalse($handler->handle($this->message));
+        $handler->handle($this->message)->wait();
     }
 
     public function testChildProcessThatExitsEarlyWithErrorReturnsFalseFromParent()
     {
+        $this->expectException(ForkedProcessFailed::class);
         $handler = $this->createHandler(function () {
             // we can't throw here because php unit complains. Instead just call
             // `exit` with 255 to simulate exiting early.
             exit(255);
         });
 
-        $this->assertFalse($handler->handle($this->message));
+        $handler->handle($this->message)->wait();
     }
 
     public function testChildProcessThatThrowsAnExceptionExitsUnsuccessfully()
     {
+        $this->expectException(ForkedProcessFailed::class);
         $handler = $this->createHandler(function () {
             throw new \Exception('oh noz');
         });
 
-        $this->assertFalse($handler->handle($this->message));
+        $handler->handle($this->message)->wait();
     }
 
     public function testChildProcessWithErrorExitsUnsuccessfully()
     {
+        $this->expectException(ForkedProcessFailed::class);
         $handler = $this->createHandler(function () {
             throw new \Error('oh noz');
         });
 
-        $this->assertFalse($handler->handle($this->message));
+        $handler->handle($this->message)->wait();
     }
 
     public function testChildProcessIsPassedTheOptionsFromTheHandler()
@@ -83,7 +90,9 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
             return true;
         });
 
-        $this->assertTrue($handler->handle($this->message, ['one' => true]));
+        $promise = $handler->handle($this->message, ['one' => true]);
+
+        $this->assertTrue($promise->wait());
     }
 
     public function testHandlerErrorsIfAChildProcessCannotFork()

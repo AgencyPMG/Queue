@@ -148,7 +148,7 @@ class DefaultConsumer extends AbstractConsumer
 
     protected function handleMessage(Message $message)
     {
-        return $this->getHandler()->handle($message, $this->getHandlerOptions());
+        return $this->getHandler()->handle($message, $this->getHandlerOptions())->wait();
     }
 
     protected function canRetry(Envelope $env) : bool

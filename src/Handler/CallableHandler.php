@@ -13,6 +13,8 @@
 
 namespace PMG\Queue\Handler;
 
+use GuzzleHttp\Promise\Promise;
+use GuzzleHttp\Promise\PromiseInterface;
 use PMG\Queue\Message;
 use PMG\Queue\MessageHandler;
 
@@ -38,9 +40,19 @@ final class CallableHandler implements MessageHandler
 
     /**
      * {@inheritdoc}
+     * This *always* resolves with the values from the callback. If the callback
+     * throws something that will result in a rejected promise.
      */
-    public function handle(Message $message, array $options=[])
+    public function handle(Message $message, array $options=[]) : PromiseInterface
     {
-        return call_user_func($this->callback, $message, $options);
+        $promise = new Promise(function () use (&$promise, $message, $options) {
+            $promise->resolve(call_user_func(
+                $this->callback,
+                $message,
+                $options
+            ));
+        });
+
+        return $promise;
     }
 }

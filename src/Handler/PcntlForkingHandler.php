@@ -13,9 +13,12 @@
 
 namespace PMG\Queue\Handler;
 
+use GuzzleHttp\Promise\Promise;
+use GuzzleHttp\Promise\PromiseInterface;
 use PMG\Queue\Message;
 use PMG\Queue\MessageHandler;
 use PMG\Queue\Exception\CouldNotFork;
+use PMG\Queue\Exception\ForkedProcessFailed;
 
 /**
  * A message handler decorator that forks a child process to handle the message.
@@ -54,18 +57,27 @@ final class PcntlForkingHandler implements MessageHandler
      * `MessageHandler`. Just be sure to return `false` (the job failed) so it
      * can be retried.
      */
-    public function handle(Message $message, array $options=[])
+    public function handle(Message $message, array $options=[]) : PromiseInterface
     {
         $child = $this->fork();
         if (0 === $child) {
             try {
-                $result = $this->wrapped->handle($message, $options);
+                $result = $this->wrapped->handle($message, $options)->wait();
             } finally {
                 $this->pcntl->quit(isset($result) && $result);
             }
         }
 
-        return $this->pcntl->wait($child);
+        $promise = new Promise(function () use (&$promise, $child) {
+            $succeeded = $this->pcntl->wait($child);
+            if ($succeeded) {
+                $promise->resolve(true);
+            } else {
+                $promise->reject(new ForkedProcessFailed());
+            }
+        });
+
+        return $promise;
     }
 
     private function fork()

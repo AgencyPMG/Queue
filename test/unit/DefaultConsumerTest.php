@@ -13,6 +13,7 @@
 
 namespace PMG\Queue;
 
+use GuzzleHttp\Promise\FulfilledPromise;
 use Psr\Log\LogLevel;
 use PMG\Queue\Exception\SimpleMustStop;
 
@@ -43,7 +44,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->handler->expects($this->once())
             ->method('handle')
             ->with($this->identicalTo($this->message))
-            ->willReturn(true);
+            ->willReturn(self::promise(true));
 
         $this->assertTrue($this->consumer->once(self::Q));
     }
@@ -58,7 +59,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->handler->expects($this->once())
             ->method('handle')
             ->with($this->identicalTo($this->message))
-            ->willReturn(false);
+            ->willReturn(self::promise(false));
 
         $this->assertFalse($this->consumer->once(self::Q));
     }
@@ -74,7 +75,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->handler->expects($this->once())
             ->method('handle')
             ->with($this->identicalTo($this->message))
-            ->willReturn(false);
+            ->willReturn(self::promise(false));
 
         $this->assertFalse($this->consumer->once(self::Q));
     }
@@ -133,7 +134,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->handler->expects($this->once())
             ->method('handle')
             ->with($this->identicalTo($this->message))
-            ->willReturn(true);
+            ->willReturn(self::promise(true));
 
         $result = $this->consumer->once(self::Q, $lifecycle);
 
@@ -160,7 +161,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->handler->expects($this->once())
             ->method('handle')
             ->with($this->identicalTo($this->message))
-            ->willReturn(false);
+            ->willReturn(self::promise(false));
 
         $result = $this->consumer->once(self::Q, $lifecycle);
 
@@ -191,5 +192,10 @@ class DefaultConsumerTest extends UnitTestCase
         $this->retries->expects($this->atLeastOnce())
             ->method('canRetry')
             ->willReturn(true);
+    }
+
+    private static function promise(bool $result) : FulfilledPromise
+    {
+        return new FulfilledPromise($result);
     }
 }
