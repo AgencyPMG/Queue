@@ -27,11 +27,11 @@ interface Consumer
     /**
      * Run the consumer for a given queue. This will block.
      *
-     * @param string $queueName The queue from which the jobs will be consumed.
+     * @param $queueName The queue from which the jobs will be consumed.
      * @param $lifecycle The message lifecycle to apply to the running consumer.
      * @return int The exit code to be used for the consumer.
      */
-    public function run($queueName, MessageLifecycle $lifecycle=null);
+    public function run(string $queueName, MessageLifecycle $lifecycle=null);
 
     /**
      * Consume a single job from the given queue. This will block until the
@@ -47,7 +47,7 @@ interface Consumer
      * @return  boolean|null True if the a job was execute successfully. Null if
      *          no job was executed. See the logs.
      */
-    public function once($queueName, MessageLifecycle $lifecycle=null);
+    public function once(string $queueName, MessageLifecycle $lifecycle=null);
 
     /**
      * Gracefully stop the consumer with the given exit code.
@@ -55,5 +55,5 @@ interface Consumer
      * @param int $code The exit code passed to `exit`. If null `EXIT_SUCCESS` is used.
      * @return void
      */
-    public function stop($code=null);
+    public function stop(int $code=null);
 }
