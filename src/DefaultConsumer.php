@@ -13,6 +13,7 @@
 
 namespace PMG\Queue;
 
+use GuzzleHttp\Promises\PromiseInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -42,6 +43,13 @@ class DefaultConsumer extends AbstractConsumer
      * @var array
      */
     private $handlerOptions = [];
+
+    /**
+     * The promise that's currently being handled by a consumer.
+     *
+     * @var PromiseInterface|null
+     */
+    private $currentPromise = null;
 
     public function __construct(
         Driver $driver,
@@ -84,6 +92,17 @@ class DefaultConsumer extends AbstractConsumer
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function stop($code=null)
+    {
+        if ($this->currentPromise) {
+            $this->currrentPromise->cancel();
+        }
+        parent::stop($code);
+    }
+
+    /**
      * Do the actual work for processing a single message.
      *
      * @param $queueName The queue to which the message belongs
@@ -101,6 +120,14 @@ class DefaultConsumer extends AbstractConsumer
         } catch (Exception\MustStop $e) {
             $this->driver->ack($queueName, $envelope);
             throw $e;
+        } catch (Exception\ShouldReleaseMessage $e) {
+            $this->driver->release($queueName, $envelope);
+            $this->getLogger()->debug('Releasing message {msg} due to {cls} exception: {err}', [
+                'msg' => $message->getName(),
+                'cls' => get_class($e),
+                'err' => $e->getMessage(),
+            ]);
+            return [$result, true];
         } catch (\Exception $e) {
             // any other exception is simply logged. We and marked as failed
             // below. We only log here because we can't make guarantees about
@@ -148,7 +175,15 @@ class DefaultConsumer extends AbstractConsumer
 
     protected function handleMessage(Message $message)
     {
-        return $this->getHandler()->handle($message, $this->getHandlerOptions());
+        try {
+            $this->currentPromise = $this->getHandler()->handle(
+                $message,
+                $this->getHandlerOptions()
+            );
+            return $this->currentPromise->wait();
+        } finally {
+            $this->currentPromise = null;
+        }
     }
 
     protected function canRetry(Envelope $env) : bool

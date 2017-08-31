@@ -13,6 +13,8 @@
 
 namespace PMG\Queue;
 
+use GuzzleHttp\Promise\PromiseInterface;
+
 /**
  * Something that can process a message.
  *
@@ -27,11 +29,9 @@ interface MessageHandler
      * @param $message That message to process.
      * @param array $options A freeform set of options that may be passed from the
      *        consumer.
-     * @return boolean True if the message was handled successfully. False otherwise.
-     *         we return a value here so message handlers aren't limited to processing
-     *         in the same thread/process. Eg. a handler could fork and fail a message
-     *         but the exception thrown in a child process wouldn't make it to the
-     *         parent.
+     * @return a promise object that resolves to `true` if the the handler was successful.
+     *         or false if the handler failed. Since handlers may process messages
+     *         outside the current thread, we're limited to a boolean here.
      */
-    public function handle(Message $message, array $options=[]);
+    public function handle(Message $message, array $options=[]) : PromiseInterface;
 }

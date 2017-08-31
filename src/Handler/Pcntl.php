@@ -75,4 +75,16 @@ class Pcntl
     {
         exit($successful ? 0 : 1);
     }
+
+    /**
+     * Deliver a signal to a process.
+     *
+     * @param $child The process to signal
+     * @param $sig The signal to send.
+     * @return void
+     */
+    public function signal(int $child, int $sig)
+    {
+        posix_kill($child, $sig);
+    }
 }

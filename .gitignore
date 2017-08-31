@@ -1,7 +1,6 @@
 /vendor*
 /coverage*
-
-# archives and other useless files
+composer.lock
 *.swp
 *.dmg
 *.gz
@@ -11,8 +10,6 @@
 *.tar
 *.zip
 *.7z
-
-# compile files
 *.com
 *.class
 *.dll
@@ -20,8 +17,6 @@
 *.app
 *.o
 *.so
-
-# system files
 .DS_Store*
 ehthumbs.db
 Icon?

@@ -30,6 +30,9 @@ n/a
   custom consumer implementations need to worry about this. See `DefaultConsumer`
   for an example how this may be handled. End users can keep using the consumer
   exactly as they were.
+- [BC Break, Internals] `MessageHandler::handle` now returns a promise object
+  from the `guzzlehttp/promises` library. Only folks who wrote custom handler
+  implementations need to worry about this.
 
 ### Fixed
 n/a

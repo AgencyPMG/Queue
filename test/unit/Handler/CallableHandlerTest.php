@@ -29,7 +29,9 @@ class CallableHandlerTest extends \PMG\Queue\UnitTestCase
             return true;
         });
 
-        $this->assertTrue($handler->handle($this->message));
+        $promise = $handler->handle($this->message);
+        $result = $promise->wait();
+        $this->assertTrue($result);
         $this->assertSame($this->message, $calledWith);
     }
 
@@ -41,7 +43,10 @@ class CallableHandlerTest extends \PMG\Queue\UnitTestCase
             return true;
         });
 
-        $this->assertTrue($handler->handle($this->message, ['one' => true]));
+        $promise = $handler->handle($this->message, ['one' => true]);
+        $result = $promise->wait();
+
+        $this->assertTrue($result);
         $this->assertSame($calledWith, ['one' => true]);
     }
 
