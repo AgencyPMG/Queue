@@ -28,5 +28,5 @@ interface RetrySpec
      * @param   $env The envelop to check
      * @return  boolean True if the message should be retried.
      */
-    public function canRetry(Envelope $env);
+    public function canRetry(Envelope $env) : bool;
 }

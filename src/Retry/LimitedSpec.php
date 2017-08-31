@@ -42,7 +42,7 @@ final class LimitedSpec implements RetrySpec
     /**
      * {@inheritdoc}
      */
-    public function canRetry(Envelope $env)
+    public function canRetry(Envelope $env) : bool
     {
         return $env->attempts() < $this->maxAttempts;
     }

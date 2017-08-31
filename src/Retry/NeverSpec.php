@@ -26,7 +26,7 @@ final class NeverSpec implements RetrySpec
     /**
      * {@inheritdoc}
      */
-    public function canRetry(Envelope $env)
+    public function canRetry(Envelope $env) : bool
     {
         return false;
     }
