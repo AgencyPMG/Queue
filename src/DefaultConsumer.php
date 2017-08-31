@@ -58,16 +58,39 @@ class DefaultConsumer extends AbstractConsumer
     /**
      * {@inheritdoc}
      */
-    public function once($queueName)
+    public function once($queueName, MessageLifecycle $lifecycle=null)
     {
         $envelope = $this->driver->dequeue($queueName);
         if (!$envelope) {
             return null;
         }
-        return $this->doOnce($queueName, $envelope);
+
+        $lifecycle = $lifecycle ?? new NullLifecycle();
+        $message = $envelope->unwrap();
+
+        $lifecycle->starting($message, $this);
+
+        list($succeeded, $willRetry) = $this->doOnce($queueName, $envelope);
+
+        $lifecycle->completed($message, $this);
+
+        if ($succeeded) {
+            $lifecycle->succeeded($message, $this);
+        } else {
+            $lifecycle->failed($message, $this, $willRetry);
+        }
+
+        return $succeeded;
     }
 
-    protected function doOnce(string $queueName, Envelope $envelope)
+    /**
+     * Do the actual work for processing a single message.
+     *
+     * @param $queueName The queue to which the message belongs
+     * @param $envelope The envelope containing the message to process
+     * @return An array if [$messageSucceeded, $willRetry]
+     */
+    protected function doOnce(string $queueName, Envelope $envelope) : array
     {
         $result = false;
         $message = $envelope->unwrap();
@@ -93,23 +116,34 @@ class DefaultConsumer extends AbstractConsumer
         $this->getLogger()->debug('Handled message {msg}', ['msg' => $message->getName()]);
 
         if ($result) {
+            $willRetry = false;
             $this->driver->ack($queueName, $envelope);
             $this->getLogger()->debug('Acknowledged message {msg}', ['msg' => $message->getName()]);
         } else {
-            $this->failed($queueName, $envelope);
+            $willRetry = $this->failed($queueName, $envelope);
             $this->getLogger()->debug('Failed message {msg}', ['msg' => $message->getName()]);
         }
 
-        return $result;
+        return [$result, $willRetry];
     }
 
-    protected function failed($queueName, Envelope $env)
+    /**
+     * Fail the message. This will retry it if possible.
+     *
+     * @param string $queueName the queue from which the message originated
+     * @param $env The envelope containing the message
+     * @return bool True if the message will be retried.
+     */
+    protected function failed($queueName, Envelope $env) : bool
     {
-        if ($this->canRetry($env)) {
+        $retry = $this->canRetry($env);
+        if ($retry) {
             $this->getDriver()->retry($queueName, $env);
         } else {
             $this->getDriver()->fail($queueName, $env);
         }
+
+        return $retry;
     }
 
     protected function handleMessage(Message $message)
@@ -117,7 +151,7 @@ class DefaultConsumer extends AbstractConsumer
         return $this->getHandler()->handle($message, $this->getHandlerOptions());
     }
 
-    protected function canRetry(Envelope $env)
+    protected function canRetry(Envelope $env) : bool
     {
         return $this->retries->canRetry($env);
     }

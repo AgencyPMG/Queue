@@ -12,11 +12,12 @@ which your :doc:`producer <producers>` put messages.
 
     :namespace: PMG\\Queue
 
-    .. php:method:: run($queueName)
+    .. php:method:: run($queueName, MessageLifecycle $lifecycle=null)
 
         Consume and handle messages from $queueName indefinitely.
 
         :param string $queueName: The queue from which the messages will be processed.
+        :param MessageLifecycle|null $lifecycle: An optional message lifecycle.
         :throws: ``PMG\Queue\Exception\DriverError`` If some things goes wrong
             with the underlying driver. Generally this happens if the persistent
             backend goes down or is unreachable. Without the driver the consumer
@@ -24,11 +25,12 @@ which your :doc:`producer <producers>` put messages.
         :returns: An exit code
         :rtype: int
 
-    .. php:method:: once($queueName)
+    .. php:method:: once($queueName, MessageLifecycle $lifecycle=null)
 
         Consume and handle a single message from $queueName
 
         :param string $queueName: The queue from which the messages will be processed.
+        :param MessageLifecycle|null $lifecycle: An optional message lifecycle.
         :throws: PMG\\Queue\\Exception\\DriverError If some things goes wrong
             with the underlying driver. Generally this happens if the persistent
             backend goes down or is unreachable. Without the driver the consumer
@@ -37,7 +39,7 @@ which your :doc:`producer <producers>` put messages.
             null if no message was handled.
         :rtype: boolean or null
 
-    .. php:method:: stop($code)
+    .. php:method:: stop(int $code)
 
         Used on a running consumer this will tell it to gracefully stop on its
         next iteration.
@@ -149,10 +151,66 @@ argument to ``DefaultConsumer``'s constructor.
     $consumer = new DefaultConsumer($driver, $handler, $retry, $monolog);
 
 
+Using Message Lifecycles
+------------------------
+
+A ``MessageLifecycle`` implementation provides a look into a message as it
+moves through the consumer. The goal is to allow an application to hook into a
+consumer processing to take actions they want. Say an application requires
+sending a notification when a message fails and will not be retried.
+
+.. code-block:: php
+
+    <?php
+
+    use PMG\Queue\NullLifecycle;
+    use App\Notifications\Notifier;
+    use App\Notifications\Notification;
+
+    // NullLifecycle provides all the lifecycle methods, so only what's
+    // required can be implemented here.
+    class NotifyingLifecycle extends NullLifecycle
+    {
+        /** @var Notifier */
+        private $notifier;
+
+        // constructor, etc
+
+        public function failed(Message $message, Consumer $consumer, bool $isRetrying)
+        {
+            if (!$isRetrying) {
+                $this->notifier->send(new Notification(sprintf(
+                    '%s message failed',
+                    $message->getName()
+                )));
+            }
+        }
+    }
+
+This custom lifecycle can be passed into ``Consumer::run`` or ``Consumer::once``.
+
+.. code-block:: php
+
+    <?php
+
+    /** @var PMG\Queue\Consumer $consumer */
+    $consumer->run('someQueue', new NotifyingLifecycle(/* ... */));
+
+Lifecycles Don't Know About Queue Names
+"""""""""""""""""""""""""""""""""""""""
+
+This is on purpose. Because lifecycle objects are passed into consumers at the
+same time as the queue name, it's up to the implementation to decide if they
+care about that detail. If the implementation does care, it can take the queue
+name as a constructor argument.
+
+We've found at PMG that most times queue name is a detail that simply does not
+matter to the application itself. It's just a way to distribute work.
+
 Build Custom Consumers
 ----------------------
 
-Extend ``PMG\\Queue\\AbstractConsumer`` to make things easy and only have to
+Extend ``PMG\\Queue\\AbstractConsumer`` to make things easy and
 implement the ``once`` method. Here's an example that decorates another
 ``Consumer`` with events.
 

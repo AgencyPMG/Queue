@@ -114,6 +114,59 @@ class DefaultConsumerTest extends UnitTestCase
         $this->consumer->once(self::Q);
     }
 
+    /**
+     * @group https://github.com/AgencyPMG/Queue/issues/61
+     */
+    public function testLifecycleOfSuccessfulMessageCallsExpectedLifecycleMethods()
+    {
+        $lifecycle = $this->createMock(MessageLifecycle::class);
+        $lifecycle->expects($this->once())
+            ->method('starting')
+            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer));
+        $lifecycle->expects($this->once())
+            ->method('completed')
+            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer));
+        $lifecycle->expects($this->once())
+            ->method('succeeded')
+            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer));
+        $this->withMessage();
+        $this->handler->expects($this->once())
+            ->method('handle')
+            ->with($this->identicalTo($this->message))
+            ->willReturn(true);
+
+        $result = $this->consumer->once(self::Q, $lifecycle);
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @group https://github.com/AgencyPMG/Queue/issues/61
+     */
+    public function testLifecycleOnFailedMessageCallsExpectedLifecycleMethods()
+    {
+        $lifecycle = $this->createMock(MessageLifecycle::class);
+        $lifecycle->expects($this->once())
+            ->method('starting')
+            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer));
+        $lifecycle->expects($this->once())
+            ->method('completed')
+            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer));
+        $lifecycle->expects($this->once())
+            ->method('failed')
+            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer), true);
+        $this->withMessage();
+        $this->willRetry();
+        $this->handler->expects($this->once())
+            ->method('handle')
+            ->with($this->identicalTo($this->message))
+            ->willReturn(false);
+
+        $result = $this->consumer->once(self::Q, $lifecycle);
+
+        $this->assertFalse($result);
+    }
+
     protected function setUp()
     {
         $this->driver = $this->createMock(Driver::class);

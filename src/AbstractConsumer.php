@@ -52,14 +52,15 @@ abstract class AbstractConsumer implements Consumer
     /**
      * {@inheritdoc}
      */
-    public function run($queueName)
+    public function run($queueName, MessageLifecycle $lifecycle=null)
     {
+        $lifecycle = $lifecycle ?? new NullLifecycle();
         $this->running = true;
         while ($this->running) {
             $this->maybeCallSignalHandlers();
 
             try {
-                $this->once($queueName);
+                $this->once($queueName, $lifecycle);
             } catch (Exception\MustStop $e) {
                 $this->getLogger()->warning('Caught a must stop exception, exiting: {msg}', [
                     'msg'   => $e->getMessage(),
