@@ -15,6 +15,7 @@ namespace PMG\Queue\Handler;
 
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\Exception\CouldNotFork;
+use PMG\Queue\Exception\ForkedProcessCancelled;
 use PMG\Queue\Exception\ForkedProcessFailed;
 
 /**
@@ -107,6 +108,46 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
             ->willReturn(-1);
 
         $handler->handle($this->message);
+    }
+
+    public function testHandlerPromisesCanBeCancelled()
+    {
+        $this->expectException(ForkedProcessCancelled::class);
+        $handler = $this->createHandler(function () {
+            sleep(10000);
+            $this->assertTrue(false, 'causes a different exit exception');
+        });
+
+        $promise = $handler->handle($this->message);
+        $promise->cancel();
+
+        $promise->wait();
+    }
+
+    /**
+     * @requires function pcntl_async_signals
+     * @group slow
+     */
+    public function testHandlersWaitingThatAreCancelledAsynchronouslyFail()
+    {
+        $this->expectException(ForkedProcessCancelled::class);
+        $handler = $this->createHandler(function () {
+            sleep(10000);
+            $this->assertTrue(false, 'causes a different exit exception');
+        });
+        $promise = $handler->handle($this->message);
+
+        $previous = pcntl_async_signals(true);
+        pcntl_signal(SIGALRM, function () use ($promise) {
+            $promise->cancel();
+        });
+        pcntl_alarm(3);
+        try {
+            $promise->wait();
+        } finally {
+            pcntl_async_signals($previous);
+            pcntl_signal(SIGALRM, SIG_DFL);
+        }
     }
 
     protected function setUp()

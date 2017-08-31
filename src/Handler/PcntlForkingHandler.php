@@ -18,6 +18,7 @@ use GuzzleHttp\Promise\PromiseInterface;
 use PMG\Queue\Message;
 use PMG\Queue\MessageHandler;
 use PMG\Queue\Exception\CouldNotFork;
+use PMG\Queue\Exception\ForkedProcessCancelled;
 use PMG\Queue\Exception\ForkedProcessFailed;
 
 /**
@@ -59,6 +60,8 @@ final class PcntlForkingHandler implements MessageHandler
      */
     public function handle(Message $message, array $options=[]) : PromiseInterface
     {
+        // this is outside the promise so both the cancel and wait
+        // callbacks have access to the child's PID
         $child = $this->fork();
         if (0 === $child) {
             try {
@@ -70,11 +73,20 @@ final class PcntlForkingHandler implements MessageHandler
 
         $promise = new Promise(function () use (&$promise, $child) {
             $succeeded = $this->pcntl->wait($child);
+            // this happens when the promise is cancelled. We don't want to
+            // to try and change the promise to resolved if that happens.
+            if ($promise->getState() !== PromiseInterface::PENDING) {
+                return;
+            }
+
             if ($succeeded) {
                 $promise->resolve(true);
             } else {
                 $promise->reject(new ForkedProcessFailed());
             }
+        }, function () use (&$promise, $child) {
+            $this->pcntl->signal($child, SIGTERM);
+            $promise->reject(new ForkedProcessCancelled());
         });
 
         return $promise;

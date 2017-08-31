@@ -38,8 +38,8 @@ class PcntlTest extends \PMG\Queue\UnitTestCase
                 $this->pcntl->wait($pid);
             } finally {
                 // continue, then kill the stopped process.
-                posix_kill($pid, SIGCONT);
-                posix_kill($pid, SIGTERM);
+                $this->pcntl->signal($pid, SIGCONT);
+                $this->pcntl->signal($pid, SIGTERM);
                 pcntl_waitpid($pid, $status, WUNTRACED);
                 $this->assertTrue(pcntl_wifsignaled($status));
             }
@@ -55,7 +55,7 @@ class PcntlTest extends \PMG\Queue\UnitTestCase
 
         $pid = $this->fork();
         if ($pid) {
-            posix_kill($pid, SIGINT);
+            $this->pcntl->signal($pid, SIGINT);
             $this->pcntl->wait($pid);
         } else {
             self::waitAndExit(5, 0);
