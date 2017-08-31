@@ -31,6 +31,28 @@ through its lifecycle (starting, completed, succeeded, failed). Users may
 implement this themselves, see the [consumers documentation](http://pmg-queue.readthedocs.io/en/latest/consumers.html)
 for more info.
 
+## For Handler Authors
+
+Implementation of `MessageHandler` now requires a `GuzzleHttp\Promise\PromiseInterface`
+be returned from the `handle` method. This lets consumers do much more graceful
+stopping. If your handler does not *really* need a promise, use `FulfilledPromise`:
+
+```php
+use GuzzleHttp\Promise\FulfilledPromise;
+use GuzzleHttp\Promise\PromiseInterface;
+use PMG\Queue\MessageHandler;
+
+final class CustomHandler implements MessageHandler
+{
+    public function handle(Message $message, array $options=[]) : PromiseInterface
+    {
+        $result = $this->doHandleSomehow($message, $options);
+
+        return new FulfilledPromise($result);
+    }
+}
+```
+
 ## For Driver Authors
 
 ### `Driver` Has Stricter Type Declarations
