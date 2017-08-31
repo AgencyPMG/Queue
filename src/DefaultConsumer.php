@@ -13,6 +13,7 @@
 
 namespace PMG\Queue;
 
+use GuzzleHttp\Promises\PromiseInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -42,6 +43,13 @@ class DefaultConsumer extends AbstractConsumer
      * @var array
      */
     private $handlerOptions = [];
+
+    /**
+     * The promise that's currently being handled by a consumer.
+     *
+     * @var PromiseInterface|null
+     */
+    private $currentPromise = null;
 
     public function __construct(
         Driver $driver,
@@ -81,6 +89,17 @@ class DefaultConsumer extends AbstractConsumer
         }
 
         return $succeeded;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function stop($code=null)
+    {
+        if ($this->currentPromise) {
+            $this->currrentPromise->cancel();
+        }
+        parent::stop($code);
     }
 
     /**
@@ -148,7 +167,15 @@ class DefaultConsumer extends AbstractConsumer
 
     protected function handleMessage(Message $message)
     {
-        return $this->getHandler()->handle($message, $this->getHandlerOptions())->wait();
+        try {
+            $this->currentPromise = $this->getHandler()->handle(
+                $message,
+                $this->getHandlerOptions()
+            );
+            return $this->currentPromise->wait();
+        } finally {
+            $this->currentPromise = null;
+        }
     }
 
     protected function canRetry(Envelope $env) : bool
