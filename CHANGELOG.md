@@ -33,6 +33,10 @@ n/a
 - [BC Break, Internals] `MessageHandler::handle` now returns a promise object
   from the `guzzlehttp/promises` library. Only folks who wrote custom handler
   implementations need to worry about this.
+- `RetrySpec::canRetry` now has a return type hint.
+- `Consumer::once` and `Consumer::run` have `string` typehints for their
+   `$queueName` arguments.
+- `Consumer::stop` now has a typehint for its `$code` argument.
 
 ### Fixed
 n/a
