@@ -52,7 +52,7 @@ abstract class AbstractConsumer implements Consumer
     /**
      * {@inheritdoc}
      */
-    public function run($queueName, MessageLifecycle $lifecycle=null)
+    public function run(string $queueName, MessageLifecycle $lifecycle=null)
     {
         $lifecycle = $lifecycle ?? new NullLifecycle();
         $this->running = true;
@@ -78,10 +78,10 @@ abstract class AbstractConsumer implements Consumer
     /**
      * {@inheritdoc}
      */
-    public function stop($code=null)
+    public function stop(int $code=null)
     {
         $this->running = false;
-        $this->exitCode = null === $code ? self::EXIT_SUCCESS : intval($code);
+        $this->exitCode = null === $code ? self::EXIT_SUCCESS : $code;
     }
 
     protected function getLogger()

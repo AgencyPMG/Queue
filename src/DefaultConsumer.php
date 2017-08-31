@@ -66,7 +66,7 @@ class DefaultConsumer extends AbstractConsumer
     /**
      * {@inheritdoc}
      */
-    public function once($queueName, MessageLifecycle $lifecycle=null)
+    public function once(string $queueName, MessageLifecycle $lifecycle=null)
     {
         $envelope = $this->driver->dequeue($queueName);
         if (!$envelope) {
@@ -94,7 +94,7 @@ class DefaultConsumer extends AbstractConsumer
     /**
      * {@inheritdoc}
      */
-    public function stop($code=null)
+    public function stop(int $code=null)
     {
         if ($this->currentPromise) {
             $this->currrentPromise->cancel();
@@ -157,11 +157,11 @@ class DefaultConsumer extends AbstractConsumer
     /**
      * Fail the message. This will retry it if possible.
      *
-     * @param string $queueName the queue from which the message originated
+     * @param $queueName the queue from which the message originated
      * @param $env The envelope containing the message
      * @return bool True if the message will be retried.
      */
-    protected function failed($queueName, Envelope $env) : bool
+    protected function failed(string $queueName, Envelope $env) : bool
     {
         $retry = $this->canRetry($env);
         if ($retry) {
