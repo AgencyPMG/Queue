@@ -13,14 +13,12 @@
 
 namespace PMG\Queue\Exception;
 
-use PMG\Queue\QueueException;
-
 /**
  * Thrown by the `PcntlForkingHandler` when the child process is cancelled.
  *
  * @since 4.0
  */
-final class ForkedProcessCancelled extends \RuntimeException implements QueueException
+final class ForkedProcessCancelled extends \RuntimeException implements ShouldReleaseMessage
 {
     // noop
 }

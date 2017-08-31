@@ -120,6 +120,14 @@ class DefaultConsumer extends AbstractConsumer
         } catch (Exception\MustStop $e) {
             $this->driver->ack($queueName, $envelope);
             throw $e;
+        } catch (Exception\ShouldReleaseMessage $e) {
+            $this->driver->release($queueName, $envelope);
+            $this->getLogger()->debug('Releasing message {msg} due to {cls} exception: {err}', [
+                'msg' => $message->getName(),
+                'cls' => get_class($e),
+                'err' => $e->getMessage(),
+            ]);
+            return [$result, true];
         } catch (\Exception $e) {
             // any other exception is simply logged. We and marked as failed
             // below. We only log here because we can't make guarantees about

@@ -115,6 +115,20 @@ class DefaultConsumerTest extends UnitTestCase
         $this->consumer->once(self::Q);
     }
 
+    public function testFailureWithShouldReleaseReleasesMessageBackIntoDriver()
+    {
+        $this->withMessage();
+        $this->driver->expects($this->once())
+            ->method('release')
+            ->with(self::Q, $this->envelope);
+        $this->handler->expects($this->once())
+            ->method('handle')
+            ->with($this->identicalTo($this->message))
+            ->willThrowException(new Exception\ForkedProcessCancelled('oops'));
+
+        $result = $this->consumer->once(self::Q);
+    }
+
     /**
      * @group https://github.com/AgencyPMG/Queue/issues/61
      */
