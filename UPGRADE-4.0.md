@@ -23,6 +23,14 @@ $serializer = NativeSerializer::fromSigningKey('secretKey');
 // $serializer = new NativeSerializer(new HmacSha256('secretKey'));
 ```
 
+## Message Lifecycle in Consumers
+
+`Consumer::once` and `Consumer::run` both take an optional `MessageLifecycle`
+argument. This is a useful way to hook into the consumer as it moves a message
+through its lifecycle (starting, completed, succeeded, failed). Users may
+implement this themselves, see the [consumers documentation](http://pmg-queue.readthedocs.io/en/latest/consumers.html)
+for more info.
+
 ## For Driver Authors
 
 ### `Driver` Has Stricter Type Declarations

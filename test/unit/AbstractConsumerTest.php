@@ -93,6 +93,23 @@ class AbstractConsumerTest extends UnitTestCase
         $this->assertEquals(DefaultConsumer::EXIT_ERROR, $result);
     }
 
+    /**
+     * @group https://github.com/AgencyPMG/Queue/issues/61
+     */
+    public function testRunPassesGivenMessageLifecycleToOnce()
+    {
+        $lifecycle = $this->createMock(MessageLifecycle::class);
+        $this->consumer->expects($this->at(0))
+            ->method('once')
+            ->with(self::Q, $this->identicalTo($lifecycle));
+        $this->consumer->expects($this->at(1))
+            ->method('once')
+            ->with(self::Q, $this->identicalTo($lifecycle))
+            ->willThrowException(new Exception\SimpleMustStop('oops', 1));
+
+        $this->assertEquals(1, $this->consumer->run(self::Q, $lifecycle));
+    }
+
     protected function setUp()
     {
         $this->logger = new CollectingLogger();

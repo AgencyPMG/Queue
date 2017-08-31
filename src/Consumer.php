@@ -27,10 +27,11 @@ interface Consumer
     /**
      * Run the consumer for a given queue. This will block.
      *
-     * @param   string $queueName The queue from which the jobs will be consumed.
-     * @return  int The exit code to be used for the consumer.
+     * @param string $queueName The queue from which the jobs will be consumed.
+     * @param $lifecycle The message lifecycle to apply to the running consumer.
+     * @return int The exit code to be used for the consumer.
      */
-    public function run($queueName);
+    public function run($queueName, MessageLifecycle $lifecycle=null);
 
     /**
      * Consume a single job from the given queue. This will block until the
@@ -38,6 +39,7 @@ interface Consumer
      * safe to run in a loop.
      *
      * @param   string $queueName The queue from which jobs will be consumed.
+     * @param $lifecycle The message lifecycle to apply to any job run.
      * @throws  Exception\MustStop if the executor or handler throws a must
      *          stop execption indicating a graceful stop is necessary
      * @throws  Exception\DriverError|Exception if anything goes wrong with the
@@ -45,7 +47,7 @@ interface Consumer
      * @return  boolean|null True if the a job was execute successfully. Null if
      *          no job was executed. See the logs.
      */
-    public function once($queueName);
+    public function once($queueName, MessageLifecycle $lifecycle=null);
 
     /**
      * Gracefully stop the consumer with the given exit code.

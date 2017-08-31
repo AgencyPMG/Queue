@@ -25,6 +25,11 @@ n/a
   to `ensureSerializer`.
 - [BC Break, Internals] `Driver` now has more strict type declarations.
 - [BC Break, Internals] `Driver::release` was introduced.
+- [BC Break, Internals] `Consumer::once` and `Consumer::run` Now take an optional
+  `MessageLifecycle` instance as their second argument. Only folks who wrote 
+  custom consumer implementations need to worry about this. See `DefaultConsumer`
+  for an example how this may be handled. End users can keep using the consumer
+  exactly as they were.
 
 ### Fixed
 n/a
@@ -33,6 +38,8 @@ n/a
 - A new `PMG\Queue\Signer\Signer` interface was added as a way to make the
   message signature generation and validation pluggable in `Serializer`
   implementations.
+- `PMG\Queue\MessageLifecycle` was introduced as a way for you to hook into a
+  consumer as it moves a message through its life.
 
 ## 3.2.0
 
