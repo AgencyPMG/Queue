@@ -110,6 +110,9 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
         $handler->handle($this->message);
     }
 
+    /**
+     * @group slow
+     */
     public function testHandlerPromisesCanBeCancelled()
     {
         $this->expectException(ForkedProcessCancelled::class);

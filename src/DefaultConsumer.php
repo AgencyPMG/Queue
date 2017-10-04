@@ -97,7 +97,7 @@ class DefaultConsumer extends AbstractConsumer
     public function stop(int $code=null)
     {
         if ($this->currentPromise) {
-            $this->currrentPromise->cancel();
+            $this->currentPromise->cancel();
         }
         parent::stop($code);
     }
