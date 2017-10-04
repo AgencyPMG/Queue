@@ -6,13 +6,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 4.NEXT (Unreleased)
 
 ### Changed
+
 n/a
 
 ### Fixed
+
 n/a
 
 ### Added
+
 n/a
+
+## 4.0.1
+
+### Fixed
+
+- Fixed a typo in `DefaultConsumer` causing undefined method errors. See
+  https://github.com/AgencyPMG/Queue/pull/66
 
 ## 4.0.0 (Unreleased)
 
