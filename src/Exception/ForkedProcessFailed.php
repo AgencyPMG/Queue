@@ -22,5 +22,8 @@ use PMG\Queue\QueueException;
  */
 final class ForkedProcessFailed extends \RuntimeException implements QueueException
 {
-    // noop
+    public static function withExitCode(int $exitCode) : self
+    {
+        return new self(sprintf('exit code %d', $exitCode), $exitCode);
+    }
 }

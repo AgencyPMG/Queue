@@ -83,7 +83,7 @@ final class PcntlForkingHandler implements MessageHandler
             if ($result->successful()) {
                 $promise->resolve(true);
             } else {
-                $promise->reject(new ForkedProcessFailed());
+                $promise->reject(ForkedProcessFailed::withExitCode($result->getExitCode()));
             }
         }, function () use (&$promise, $child) {
             $this->pcntl->signal($child, SIGTERM);

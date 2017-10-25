@@ -45,6 +45,7 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
     public function testChildProcessWithFailedResultCausesErrorInParent()
     {
         $this->expectException(ForkedProcessFailed::class);
+        $this->expectExceptionMessage('exit code 1');
         $handler = $this->createHandler(function () {
             return false;
         });
