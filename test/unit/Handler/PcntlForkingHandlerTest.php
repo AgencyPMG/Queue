@@ -17,6 +17,7 @@ use PMG\Queue\SimpleMessage;
 use PMG\Queue\Exception\CouldNotFork;
 use PMG\Queue\Exception\ForkedProcessCancelled;
 use PMG\Queue\Exception\ForkedProcessFailed;
+use PMG\Queue\Handler\Pcntl\Pcntl;
 
 /**
  * This uses `CallableHandler` simply because I'm not sure how phpunit mock objects
@@ -44,6 +45,7 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
     public function testChildProcessWithFailedResultCausesErrorInParent()
     {
         $this->expectException(ForkedProcessFailed::class);
+        $this->expectExceptionMessage('exit code 1');
         $handler = $this->createHandler(function () {
             return false;
         });

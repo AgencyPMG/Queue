@@ -20,6 +20,7 @@ use PMG\Queue\MessageHandler;
 use PMG\Queue\Exception\CouldNotFork;
 use PMG\Queue\Exception\ForkedProcessCancelled;
 use PMG\Queue\Exception\ForkedProcessFailed;
+use PMG\Queue\Handler\Pcntl\Pcntl;
 
 /**
  * A message handler decorator that forks a child process to handle the message.
@@ -72,17 +73,17 @@ final class PcntlForkingHandler implements MessageHandler
         }
 
         $promise = new Promise(function () use (&$promise, $child) {
-            $succeeded = $this->pcntl->wait($child);
+            $result = $this->pcntl->wait($child);
             // this happens when the promise is cancelled. We don't want to
             // to try and change the promise to resolved if that happens.
             if ($promise->getState() !== PromiseInterface::PENDING) {
                 return;
             }
 
-            if ($succeeded) {
+            if ($result->successful()) {
                 $promise->resolve(true);
             } else {
-                $promise->reject(new ForkedProcessFailed());
+                $promise->reject(ForkedProcessFailed::withExitCode($result->getExitCode()));
             }
         }, function () use (&$promise, $child) {
             $this->pcntl->signal($child, SIGTERM);
