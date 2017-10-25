@@ -73,14 +73,14 @@ final class PcntlForkingHandler implements MessageHandler
         }
 
         $promise = new Promise(function () use (&$promise, $child) {
-            $succeeded = $this->pcntl->wait($child);
+            $result = $this->pcntl->wait($child);
             // this happens when the promise is cancelled. We don't want to
             // to try and change the promise to resolved if that happens.
             if ($promise->getState() !== PromiseInterface::PENDING) {
                 return;
             }
 
-            if ($succeeded) {
+            if ($result->successful()) {
                 $promise->resolve(true);
             } else {
                 $promise->reject(new ForkedProcessFailed());

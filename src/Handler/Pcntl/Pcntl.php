@@ -38,10 +38,9 @@ class Pcntl
      * Fork a new process and return the current processes ID. In the parent thead
      * this will be the child process' ID and the child thread will see a `0`.
      *
-     * @throws CouldNotFork if the call to `pcntl_fork` fails.
      * @return int
      */
-    public function fork()
+    public function fork() : int
     {
         return @pcntl_fork();
     }
@@ -54,12 +53,12 @@ class Pcntl
      *
      * @return bool True if the child existed successfully.
      */
-    public function wait($child)
+    public function wait($child) : WaitResult
     {
         pcntl_waitpid($child, $status, WUNTRACED);
 
         if (pcntl_wifexited($status)) {
-            return pcntl_wexitstatus($status) === 0;
+            return new WaitResult(pcntl_wexitstatus($status));
         }
 
         throw AbnormalExit::fromWaitStatus($status);
