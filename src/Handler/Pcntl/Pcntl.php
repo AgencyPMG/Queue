@@ -11,7 +11,7 @@
  * @license     http://opensource.org/licenses/Apache-2.0 Apache-2.0
  */
 
-namespace PMG\Queue\Handler;
+namespace PMG\Queue\Handler\Pcntl;
 
 use PMG\Queue\Exception\AbnormalExit;
 

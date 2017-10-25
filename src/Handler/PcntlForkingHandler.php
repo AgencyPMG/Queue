@@ -20,6 +20,7 @@ use PMG\Queue\MessageHandler;
 use PMG\Queue\Exception\CouldNotFork;
 use PMG\Queue\Exception\ForkedProcessCancelled;
 use PMG\Queue\Exception\ForkedProcessFailed;
+use PMG\Queue\Handler\Pcntl\Pcntl;
 
 /**
  * A message handler decorator that forks a child process to handle the message.

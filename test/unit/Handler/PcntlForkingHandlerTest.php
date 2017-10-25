@@ -17,6 +17,7 @@ use PMG\Queue\SimpleMessage;
 use PMG\Queue\Exception\CouldNotFork;
 use PMG\Queue\Exception\ForkedProcessCancelled;
 use PMG\Queue\Exception\ForkedProcessFailed;
+use PMG\Queue\Handler\Pcntl\Pcntl;
 
 /**
  * This uses `CallableHandler` simply because I'm not sure how phpunit mock objects
