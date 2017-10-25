@@ -7,7 +7,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-n/a
+- `PMG\Queue\Handler\Pcntl` was moved to `PMG\Queue\Handler\Pcntl\Pcntl`
+- `Pcntl::wait` now returns a result object that provides the successful exit
+  result as well as an exit code.
 
 ### Fixed
 
