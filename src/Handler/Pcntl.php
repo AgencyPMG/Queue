@@ -21,6 +21,7 @@ use PMG\Queue\Exception\AbnormalExit;
  * `PcntlForkingHandler` works.
  *
  * @since 3.1
+ * @internal
  */
 class Pcntl
 {
