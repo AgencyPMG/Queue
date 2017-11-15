@@ -7,7 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-n/a
+- Deprecated `PMG\Queue\NullLifecycle`, use `PMG\Queue\Lifecycle\NullLifecycle`
+  instead.
 
 ### Fixed
 

@@ -13,45 +13,12 @@
 
 namespace PMG\Queue;
 
-/**
- * A `MessageLifecycle` implementation that does nothing.
- *
- * This is also useful to extend in your own implementation if you only care
- * about certain events.
- *
- * @since 4.0
- */
-class NullLifecycle implements MessageLifecycle
-{
-    /**
-     * {@inheritdoc}
-     */
-    public function starting(Message $message, Consumer $consumer)
-    {
-        // noop
-    }
+use PMG\Queue\Lifecycle\NullLifecycle;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function completed(Message $message, Consumer $consumer)
-    {
-        // noop
-    }
+class_alias(NullLifecycle::class, __NAMESPACE__.'\\NullLifecycle');
 
-    /**
-     * {@inheritdoc}
-     */
-    public function failed(Message $message, Consumer $consumer, bool $isRetrying)
-    {
-        // noop
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function succeeded(Message $message, Consumer $consumer)
-    {
-        // noop
-    }
-}
+@trigger_error(sprintf(
+    'The %s\\NullLifecycle class is deprecated, use %s instead',
+    __NAMESPACE__,
+    NullLifecycle::class
+), E_USER_DEPRECATED);

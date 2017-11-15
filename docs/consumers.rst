@@ -163,7 +163,7 @@ sending a notification when a message fails and will not be retried.
 
     <?php
 
-    use PMG\Queue\NullLifecycle;
+    use PMG\Queue\Lifecycle\NullLifecycle;
     use App\Notifications\Notifier;
     use App\Notifications\Notification;
 
@@ -206,6 +206,80 @@ name as a constructor argument.
 
 We've found at PMG that most times queue name is a detail that simply does not
 matter to the application itself. It's just a way to distribute work.
+
+Provided Message Lifecycles
+"""""""""""""""""""""""""""
+
+A ``NullLifecycle``, mentioned above, that does nothing. This makes a convenient
+base class to extend and implement what methods your application requires.
+
+Additionally there are a few other provided ``MessageLifecycle`` implementations.
+
+``DelegatingLifecycle`` proxies to multiple child lifecycles. Use this to compose
+other lifecycles together. In the example below, both ``NotifyingLifecycle`` and
+``SomeOtherLifecycle`` would be called for each stage through which the message
+moves.
+
+.. code-block:: php
+
+    <?php
+
+    use PMG\Queue\Lifecycle\DelegatingLifecycle;
+
+    $lifecycle = new DelegatingLifecycle(
+        new NotifyingLifecycle(/* ... */), // see above
+        new SomeOtherLifecycle()
+    );
+
+    // Or create from an array
+    $lifecycle = DelegatingLifecycle::fromArray([
+        new NotifyingLifecycle(/* ... */),
+        new SomeOtherLifecycle(),
+    ]);
+
+``MappingLifecycle`` proxies to other lifecycles based on the incoming message
+name. Use this if specific ``MessageLifecycle`` implementations need to fire
+for specific messages. In the example below ``NotifyingLifecycle`` would track
+``messageA`` through its lifecycle and ``SomeOtherLifecycle`` would track
+``messageB``. Any other message would fallback to ``FallbackLifecycle``.
+
+.. code-block:: php
+
+    <?php
+
+    use PMG\Queue\Lifecycle\MappingLifecycle;
+
+    // can use an array or `ArrayAccess` implementation here
+    $lifecycle = new MappingLifecycle([
+        'messageA' => new NotifyingLifecycle(/* ... */), 
+        'messageB' => new SomeOtherLifecycle(),
+    ], new FallbackLifecycle());
+
+    // or omit the fallback and it will default to `NullLifecycle`
+    // and do nothing.
+    $lifecycle = new MappingLifecycle([
+        'messageA' => new NotifyingLifecycle(/* ... */), 
+        'messageB' => new SomeOtherLifecycle(),
+    ]);
+
+These two implementations could be combined as well.
+
+.. code-block:: php
+
+    <?php
+
+    use PMG\Queue\Lifecycle\DelegatingLifecycle;
+    use PMG\Queue\Lifecycle\MappingLifecycle;
+
+    $lifecycle = new DelegatingLifecycle(
+        new FooLifecycle(),
+        new MappingLifecycle([
+            'messageA' => new DelegatingLifecycle(
+                new BarLifecycle(),
+                new BazLifecycle()
+            ),
+        ])
+    );
 
 Build Custom Consumers
 ----------------------
