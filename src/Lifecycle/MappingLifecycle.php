@@ -44,7 +44,7 @@ final class MappingLifecycle implements MessageLifecycle
      * @param $fallback The message lifecycle to which unmatches messages will be applied
      * @throws InvalidArgumentException if $mapping is a bad type
      */
-    public function __construct($mapping, ?MessageLifecycle $fallback=null)
+    public function __construct($mapping, MessageLifecycle $fallback=null)
     {
         if (!is_array($mapping) && !$mapping instanceof \ArrayAccess) {
             throw new InvalidArgumentException(sprintf(

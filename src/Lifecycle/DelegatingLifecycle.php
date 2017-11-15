@@ -88,7 +88,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
         return count($this->lifecycles);
     }
 
-    private function apply(callable $fn) : void
+    private function apply(callable $fn)
     {
         foreach ($this->lifecycles as $lifecycle) {
             $fn($lifecycle);
