@@ -7,8 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Deprecated `PMG\Queue\NullLifecycle`, use `PMG\Queue\Lifecycle\NullLifecycle`
-  instead.
+n/a
 
 ### Fixed
 
@@ -17,6 +16,21 @@ n/a
 ### Added
 
 n/a
+
+## 4.2.0
+
+### Changed
+
+- Deprecated `PMG\Queue\NullLifecycle`, use `PMG\Queue\Lifecycle\NullLifecycle`
+  instead.
+
+### Added
+
+- Two new `PMG\Queue\MessageLifecycle` implementations:
+    - `PMG\Queue\Lifecycle\DelegatingLifecycle` to delegate to one or more other
+      message lifecycles
+    - `PMG\Queue\Lifecycle\MappingLifecycle` to delegate to other message
+      lifecycles based on the message name.
 
 ## 4.1.0
 
