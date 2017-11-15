@@ -163,7 +163,7 @@ sending a notification when a message fails and will not be retried.
 
     <?php
 
-    use PMG\Queue\NullLifecycle;
+    use PMG\Queue\Lifecycle\NullLifecycle;
     use App\Notifications\Notifier;
     use App\Notifications\Notification;
 
