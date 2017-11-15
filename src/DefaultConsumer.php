@@ -73,7 +73,7 @@ class DefaultConsumer extends AbstractConsumer
             return null;
         }
 
-        $lifecycle = $lifecycle ?? new NullLifecycle();
+        $lifecycle = $lifecycle ?? new Lifecycle\NullLifecycle();
         $message = $envelope->unwrap();
 
         $lifecycle->starting($message, $this);

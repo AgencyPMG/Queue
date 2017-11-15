@@ -54,7 +54,7 @@ abstract class AbstractConsumer implements Consumer
      */
     public function run(string $queueName, MessageLifecycle $lifecycle=null)
     {
-        $lifecycle = $lifecycle ?? new NullLifecycle();
+        $lifecycle = $lifecycle ?? new Lifecycle\NullLifecycle();
         $this->running = true;
         while ($this->running) {
             $this->maybeCallSignalHandlers();
