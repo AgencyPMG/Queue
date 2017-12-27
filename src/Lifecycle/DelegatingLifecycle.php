@@ -38,7 +38,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     public static function fromArray(array $lifecycles) : self
     {
         @trigger_error(sprintf(
-            '%s deprecated as of version 5.0 and will be removed in 6.0, use %s::fromIterable instead',
+            '%s is deprecated as of version 5.0 and will be removed in 6.0, use %s::fromIterable instead',
             __METHOD__,
             __CLASS__
         ), E_USER_DEPRECATED);
