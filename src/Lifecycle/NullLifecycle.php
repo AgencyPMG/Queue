@@ -46,7 +46,15 @@ class NullLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function failed(Message $message, Consumer $consumer, bool $isRetrying)
+    public function retrying(Message $message, Consumer $consumer)
+    {
+        // noop
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function failed(Message $message, Consumer $consumer)
     {
         // noop
     }

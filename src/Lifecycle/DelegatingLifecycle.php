@@ -63,10 +63,20 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function failed(Message $message, Consumer $consumer, bool $isRetrying)
+    public function retrying(Message $message, Consumer $consumer)
     {
-        $this->apply(function (MessageLifecycle $ml) use ($message, $consumer, $isRetrying) {
-            $ml->failed($message, $consumer, $isRetrying);
+        $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
+            $ml->retrying($message, $consumer);
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function failed(Message $message, Consumer $consumer)
+    {
+        $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
+            $ml->failed($message, $consumer);
         });
     }
 

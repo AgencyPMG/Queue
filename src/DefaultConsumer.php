@@ -84,8 +84,10 @@ class DefaultConsumer extends AbstractConsumer
 
         if ($succeeded) {
             $lifecycle->succeeded($message, $this);
+        } elseif ($willRetry) {
+            $lifecycle->retrying($message, $this);
         } else {
-            $lifecycle->failed($message, $this, $willRetry);
+            $lifecycle->failed($message, $this);
         }
 
         return $succeeded;
