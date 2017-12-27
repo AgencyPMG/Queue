@@ -29,7 +29,7 @@ into a drivers specific queue.
     $router = new SimpleRouter('queueName');
 
     /** @var PMG\Queue\Driver $driver */
-    $producer = new DefaultProdicer($driver, $router);
+    $producer = new DefaultProducer($driver, $router);
 
 .. _routers:
 
