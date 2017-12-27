@@ -18,6 +18,13 @@ n/a
 
 - A new `MessageLifecycle::retrying` method was added that gets called whenever
   a message fails and is retrying.
+- `PMG\Queue\Lifecycle\DelegatingLifecycle` has a new named constructor:
+  `fromIterable`. This uses PHP 7.1's `iterable` pseudo type.
+
+### Deprecations
+
+- `PMG\Queue\Lifecycle\DelegatingLifecycle::fromArray`. Use `fromIterable`
+  instead.
 
 ## 4.2.0
 
