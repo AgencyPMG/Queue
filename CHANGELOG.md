@@ -3,11 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 4.NEXT (Unreleased)
+## 5.NEXT (Unreleased)
 
 ### Changed
 
-n/a
+- `MessageLifecycle::failed` no longer has an `$isRetrying` argument, instead
+  `MessageLifecycyle::retrying` will be called instead.
 
 ### Fixed
 
@@ -15,7 +16,15 @@ n/a
 
 ### Added
 
-n/a
+- A new `MessageLifecycle::retrying` method was added that gets called whenever
+  a message fails and is retrying.
+- `PMG\Queue\Lifecycle\DelegatingLifecycle` has a new named constructor:
+  `fromIterable`. This uses PHP 7.1's `iterable` pseudo type.
+
+### Deprecations
+
+- `PMG\Queue\Lifecycle\DelegatingLifecycle::fromArray`. Use `fromIterable`
+  instead.
 
 ## 4.2.0
 

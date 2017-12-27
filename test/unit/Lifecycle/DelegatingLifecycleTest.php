@@ -13,6 +13,9 @@
 
 namespace PMG\Queue\Lifecycle;
 
+/**
+ * @group lifecycles
+ */
 class DelegatingLifecycleTest extends LifecycleTestCase
 {
     public static function methods() : array
@@ -20,7 +23,8 @@ class DelegatingLifecycleTest extends LifecycleTestCase
         return [
             ['starting'],
             ['completed'],
-            ['failed', true],
+            ['retrying'],
+            ['failed'],
             ['succeeded'],
         ];
     }
@@ -28,16 +32,16 @@ class DelegatingLifecycleTest extends LifecycleTestCase
     /**
      * @dataProvider methods
      */
-    public function testLifecycleCallsChildLifecyclesWithProvidedArguments(string $method, ...$additional)
+    public function testLifecycleCallsChildLifecyclesWithProvidedArguments(string $method)
     {
         $lc = $this->mockLifecycle();
         $lc->expects($this->once())
             ->method($method)
-            ->with($this->isMessage(), $this->isConsumer(), ...$additional);
+            ->with($this->isMessage(), $this->isConsumer());
 
         $dl = new DelegatingLifecycle($lc);
 
-        call_user_func([$dl, $method], $this->message, $this->consumer, ...$additional);
+        call_user_func([$dl, $method], $this->message, $this->consumer);
     }
 
     public function testDelegatingLifecyclesCanBeCreatedFromAnArray()
@@ -47,6 +51,17 @@ class DelegatingLifecycleTest extends LifecycleTestCase
             $this->mockLifecycle(),
             $this->mockLifecycle(),
         ]);
+
+        $this->assertCount(3, $dl, 'should have three child lifecycles');
+    }
+
+    public function testDelegatingLifecyclesCanBeCreatedFromIterables()
+    {
+        $dl = DelegatingLifecycle::fromIterable((function () {
+            foreach (range(1, 3) as $i) {
+                yield $this->mockLifecycle();
+            }
+        })());
 
         $this->assertCount(3, $dl, 'should have three child lifecycles');
     }

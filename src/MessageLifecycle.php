@@ -43,7 +43,19 @@ interface MessageLifecycle
     public function completed(Message $message, Consumer $consumer);
 
     /**
-     * Called when a message errors.
+     * Called when a message failed and is retrying.
+     *
+     * No details about the error are provided because the consumer may not even
+     * have them.
+     *
+     * @param $message The message that errored and is retrying
+     * @param $consumer The consumer that did the work
+     * @return void
+     */
+    public function retrying(Message $message, Consumer $consumer);
+
+    /**
+     * Called when a message failed.
      *
      * No details about the error are provided here because consumers, specifically
      * the default consumer implementation may not have those details. For instance,
@@ -52,10 +64,9 @@ interface MessageLifecycle
      *
      * @param $message The message that errored
      * @param $consumer The consumer that did the work
-     * @param $isRetrying Whether the message is being retried.
      * @return void
      */
-    public function failed(Message $message, Consumer $consumer, bool $isRetrying);
+    public function failed(Message $message, Consumer $consumer);
 
     /**
      * Called when message processing was successful.

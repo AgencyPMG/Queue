@@ -16,6 +16,9 @@ namespace PMG\Queue\Lifecycle;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\Exception\InvalidArgumentException;
 
+/**
+ * @group lifecycles
+ */
 class MappingLifecycleTest extends LifecycleTestCase
 {
     private $child, $fallback, $lifecycle;
@@ -64,7 +67,8 @@ class MappingLifecycleTest extends LifecycleTestCase
         return [
             ['starting'],
             ['completed'],
-            ['failed', true],
+            ['retrying'],
+            ['failed'],
             ['succeeded'],
         ];
     }
@@ -72,22 +76,22 @@ class MappingLifecycleTest extends LifecycleTestCase
     /**
      * @dataProvider methods
      */
-    public function testLifecycleCallsFallbackIfMessageIsNotInMapping(string $method, ...$additional)
+    public function testLifecycleCallsFallbackIfMessageIsNotInMapping(string $method)
     {
         $message = new SimpleMessage('noope');
         $this->child->expects($this->never())
             ->method($method);
         $this->fallback->expects($this->once())
             ->method($method)
-            ->with($this->identicalTo($message), $this->isConsumer(), ...$additional);
+            ->with($this->identicalTo($message), $this->isConsumer());
 
-        call_user_func([$this->lifecycle, $method], $message, $this->consumer, ...$additional);
+        call_user_func([$this->lifecycle, $method], $message, $this->consumer);
     }
 
     /**
      * @dataProvider methods
      */
-    public function testLifecycleCanBeCreatedWithoutAFallbackAndStillWorksWithUnmappedMessages(string $method, ...$additional)
+    public function testLifecycleCanBeCreatedWithoutAFallbackAndStillWorksWithUnmappedMessages(string $method)
     {
         $message = new SimpleMessage('noope');
         $this->child->expects($this->never())
@@ -96,19 +100,19 @@ class MappingLifecycleTest extends LifecycleTestCase
             $this->message->getName() => $this->child,
         ]);
     
-        call_user_func([$lc, $method], $message, $this->consumer, ...$additional);
+        call_user_func([$lc, $method], $message, $this->consumer);
     }
 
     /**
      * @dataProvider methods
      */
-    public function testLifecycleCallsChildLifecycleIfMappingHasMessage(string $method, ...$additional)
+    public function testLifecycleCallsChildLifecycleIfMappingHasMessage(string $method)
     {
         $this->child->expects($this->once())
             ->method($method)
-            ->with($this->isMessage(), $this->isConsumer(), ...$additional);
+            ->with($this->isMessage(), $this->isConsumer());
 
-        call_user_func([$this->lifecycle, $method], $this->message, $this->consumer, ...$additional);
+        call_user_func([$this->lifecycle, $method], $this->message, $this->consumer);
     }
 
     protected function setUp()

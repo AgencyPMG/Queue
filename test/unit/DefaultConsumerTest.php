@@ -131,6 +131,7 @@ class DefaultConsumerTest extends UnitTestCase
 
     /**
      * @group https://github.com/AgencyPMG/Queue/issues/61
+     * @group lifecycles
      */
     public function testLifecycleOfSuccessfulMessageCallsExpectedLifecycleMethods()
     {
@@ -157,6 +158,7 @@ class DefaultConsumerTest extends UnitTestCase
 
     /**
      * @group https://github.com/AgencyPMG/Queue/issues/61
+     * @group lifecycles
      */
     public function testLifecycleOnFailedMessageCallsExpectedLifecycleMethods()
     {
@@ -169,7 +171,37 @@ class DefaultConsumerTest extends UnitTestCase
             ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer));
         $lifecycle->expects($this->once())
             ->method('failed')
-            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer), true);
+            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer));
+        $this->withMessage();
+        $this->retries->expects($this->atLeastOnce())
+            ->method('canRetry')
+            ->willReturn(false);
+        $this->handler->expects($this->once())
+            ->method('handle')
+            ->with($this->identicalTo($this->message))
+            ->willReturn(self::promise(false));
+
+        $result = $this->consumer->once(self::Q, $lifecycle);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * @group https://github.com/AgencyPMG/Queue/issues/69
+     * @group lifecycles
+     */
+    public function testLifecycleOnRetryingMessageCallsExpectedLifecycleMethods()
+    {
+        $lifecycle = $this->createMock(MessageLifecycle::class);
+        $lifecycle->expects($this->once())
+            ->method('starting')
+            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer));
+        $lifecycle->expects($this->once())
+            ->method('completed')
+            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer));
+        $lifecycle->expects($this->once())
+            ->method('retrying')
+            ->with($this->identicalTo($this->message), $this->identicalTo($this->consumer));
         $this->withMessage();
         $this->willRetry();
         $this->handler->expects($this->once())

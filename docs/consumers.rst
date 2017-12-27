@@ -176,14 +176,12 @@ sending a notification when a message fails and will not be retried.
 
         // constructor, etc
 
-        public function failed(Message $message, Consumer $consumer, bool $isRetrying)
+        public function failed(Message $message, Consumer $consumer)
         {
-            if (!$isRetrying) {
-                $this->notifier->send(new Notification(sprintf(
-                    '%s message failed',
-                    $message->getName()
-                )));
-            }
+            $this->notifier->send(new Notification(sprintf(
+                '%s message failed',
+                $message->getName()
+            )));
         }
     }
 
