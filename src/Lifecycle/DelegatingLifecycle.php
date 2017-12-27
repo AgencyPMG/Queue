@@ -40,6 +40,11 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
         return new self(...$lifecycles);
     }
 
+    public static function fromIterable(iterable $lifecycles) : self
+    {
+        return new self(...$lifecycles);
+    }
+
     /**
      * {@inheritdoc}
      */
