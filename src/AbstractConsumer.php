@@ -24,6 +24,8 @@ use Psr\Log\NullLogger;
  */
 abstract class AbstractConsumer implements Consumer
 {
+    use MessageNames;
+
     /**
      * @var LoggerInterface
      */

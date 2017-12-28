@@ -21,6 +21,8 @@ namespace PMG\Queue;
  */
 final class DefaultProducer implements Producer
 {
+    use MessageNames;
+
     /**
      * @var Driver
      */
@@ -44,7 +46,10 @@ final class DefaultProducer implements Producer
     {
         $queueName = $this->router->queueFor($message);
         if (!$queueName) {
-            throw new Exception\QueueNotFound(sprintf('Could not find a queue for "%s"', $message->getName()));
+            throw new Exception\QueueNotFound(sprintf(
+                'Could not find a queue for "%s"',
+                self::nameOf($message)
+            ));
         }
 
         $this->driver->enqueue($queueName, $message);
