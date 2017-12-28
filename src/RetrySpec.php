@@ -29,4 +29,11 @@ interface RetrySpec
      * @return  boolean True if the message should be retried.
      */
     public function canRetry(Envelope $env) : bool;
+
+    /**
+     * Get the number of seconds before an envelop can be retried.
+     *
+     * @since 5.0.0
+     */
+    public function retryDelay(Envelope $env): int;
 }

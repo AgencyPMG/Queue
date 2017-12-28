@@ -20,6 +20,10 @@ n/a
   a message fails and is retrying.
 - `PMG\Queue\Lifecycle\DelegatingLifecycle` has a new named constructor:
   `fromIterable`. This uses PHP 7.1's `iterable` pseudo type.
+- `RetrySpec::retryDelay` method added to allow a message to be delayed when
+  retrying, if the driver supports it.
+- `Driver::retry` now accepts an `int $delay` to support delayed retries. Not all
+  drivers will be able to support delaying.
 
 ### Deprecations
 

@@ -30,4 +30,9 @@ final class NeverSpec implements RetrySpec
     {
         return false;
     }
+
+    public function retryDelay(Envelope $env): int
+    {
+        return 0;
+    }
 }
