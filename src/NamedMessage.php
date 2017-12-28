@@ -14,17 +14,16 @@
 namespace PMG\Queue;
 
 /**
- * ABC for messages, implements `getName` as the class name.
+ * Defines a message that has a name other than its fully-qualified class name.
  *
- * @since   2015-06-11
+ * @since   5.0
  */
-trait MessageTrait
+interface NamedMessage extends Message
 {
     /**
-     * @see Message::getName
+     * Get the name of the message. This is used for routing things to queues.
+     *
+     * @return  string
      */
-    public function getName()
-    {
-        return get_class($this);
-    }
+    public function getName() : string;
 }

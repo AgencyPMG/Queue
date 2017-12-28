@@ -18,12 +18,12 @@ namespace PMG\Queue;
  *
  * @since   2.0
  */
-final class SimpleMessage implements Message
+final class SimpleMessage implements NamedMessage
 {
     private $name;
     private $payload;
 
-    public function __construct($name, $payload=null)
+    public function __construct(string $name, $payload=null)
     {
         $this->name = $name;
         $this->payload = $payload;
@@ -32,7 +32,7 @@ final class SimpleMessage implements Message
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }

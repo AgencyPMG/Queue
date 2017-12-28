@@ -20,10 +20,5 @@ namespace PMG\Queue;
  */
 interface Message
 {
-    /**
-     * Get the name of the message. This is used for routing things to queues.
-     *
-     * @return  string
-     */
-    public function getName();
+    // noop
 }

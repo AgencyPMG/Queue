@@ -17,6 +17,10 @@ trait MessageNames
 {
     protected static function nameOf(Message $message) : string
     {
-        return $message->getName();
+        if ($message instanceof NamedMessage) {
+            return $message->getName();
+        }
+
+        return get_class($message);
     }
 }

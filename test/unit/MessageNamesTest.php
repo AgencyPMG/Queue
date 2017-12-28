@@ -13,17 +13,29 @@
 
 namespace PMG\Queue;
 
+class _NamesTestMsg implements Message
+{
+
+}
+
 class MessageNamesTest extends UnitTestCase
 {
     use MessageNames;
 
     public function testNameOfReturnsTheValueOfMessageGetName()
     {
-        $msg = $this->createMock(Message::class);
+        $msg = $this->createMock(NamedMessage::class);
         $msg->expects($this->once())
             ->method('getName')
             ->willReturn('test');
 
         $this->assertSame('test', self::nameOf($msg));
+    }
+
+    public function testNameOfReturnsTheFullyQualifiedClassNameOfAMessageWhenNotNamed()
+    {
+        $name = self::nameOf(new _NamesTestMsg());
+
+        $this->assertSame(_NamesTestMsg::class, $name);
     }
 }
