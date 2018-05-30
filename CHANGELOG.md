@@ -27,13 +27,15 @@ n/a
   `fromIterable`. This uses PHP 7.1's `iterable` pseudo type.
 - A `PMG\Queue\NamedMessage` interface to enable the old behavior of
   `Message::getName`.
-
-### Removed
-
 - `RetrySpec::retryDelay` method added to allow a message to be delayed when
   retrying, if the driver supports it.
 - `Driver::retry` now accepts an `int $delay` to support delayed retries. Not all
   drivers will be able to support delaying.
+
+### Removed
+
+- `PMG\Queue\NullLifecycle` was removed (deprecated in version 4.2), use
+  `PMG\Queue\Lifecycle\NullLifecycle` instead.
 
 ### Deprecations
 
