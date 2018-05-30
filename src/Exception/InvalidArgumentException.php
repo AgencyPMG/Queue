@@ -28,4 +28,11 @@ final class InvalidArgumentException extends \InvalidArgumentException implement
             throw new self($message);
         }
     }
+
+    public static function assert(bool $ok, string $message, int $code=0) : void
+    {
+        if (!$ok) {
+            throw new self($message, $code);
+        }
+    }
 }

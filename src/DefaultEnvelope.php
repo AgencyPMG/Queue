@@ -13,6 +13,8 @@
 
 namespace PMG\Queue;
 
+use PMG\Queue\Exception\InvalidArgumentException as InvalidArg;
+
 /**
  * Default implementation of the `Envelop` with no extras.
  *
@@ -20,13 +22,27 @@ namespace PMG\Queue;
  */
 class DefaultEnvelope implements Envelope
 {
+    /**
+     * @var Message
+     */
     protected $message;
+
+    /**
+     * @var int
+     */
     protected $attempts;
 
-    public function __construct(Message $message, int $attempts=0)
+    /**
+     * @var int
+     */
+    private $delay;
+
+    public function __construct(Message $message, int $attempts=0, int $delay=Envelope::NO_DELAY)
     {
+        InvalidArg::assert($attempts >= 0, '$attempts must be >= 0');
         $this->message = $message;
         $this->attempts = $attempts;
+        $this->setDelay($delay);
     }
 
     /**
@@ -40,6 +56,14 @@ class DefaultEnvelope implements Envelope
     /**
      * {@inheritdoc}
      */
+    public function delay() : int
+    {
+        return $this->delay;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function unwrap() : Message
     {
         return $this->message;
@@ -48,10 +72,11 @@ class DefaultEnvelope implements Envelope
     /**
      * {@inheritdoc}
      */
-    public function retry() : Envelope
+    public function retry(int $delay=0) : Envelope
     {
         $new = clone $this;
         $new->attempts++;
+        $new->setDelay($delay);
 
         return $new;
     }
@@ -73,5 +98,11 @@ class DefaultEnvelope implements Envelope
                 get_class($this->message)
             ));
         }
+    }
+
+    protected function setDelay(int $delay) : void
+    {
+        InvalidArg::assert($delay >= 0, '$delay must be >= 0');
+        $this->delay = $delay;
     }
 }
