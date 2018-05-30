@@ -12,6 +12,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - The `Message` interface no longer has a `getName` method.
   Instead the *name* of a message is its fully qualified class name. Should the
   old behavior still be desired, implement `PMG\Queue\NamedMessage` instead.
+- The `PMG\Queue\MessageTrait` has been deprecated. The behavior it provided (using
+  the fully qualified class name as the message name) is now the default.
 
 ### Fixed
 
@@ -28,8 +30,6 @@ n/a
 
 ### Removed
 
-- The `PMG\Queue\MessageTrait` has been removed. The behavior it provided (using
-  the fully qualified class name as the message name) is now the default.
 - `RetrySpec::retryDelay` method added to allow a message to be delayed when
   retrying, if the driver supports it.
 - `Driver::retry` now accepts an `int $delay` to support delayed retries. Not all
