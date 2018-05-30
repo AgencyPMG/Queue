@@ -28,14 +28,14 @@ interface Envelope
      *
      * @return  int
      */
-    public function attempts();
+    public function attempts() : int;
 
     /**
      * Get the wrapped message.
      *
      * @return  Message
      */
-    public function unwrap();
+    public function unwrap() : Message;
 
     /**
      * Returns a new envelop with all the same attributes but an incremented
@@ -43,5 +43,5 @@ interface Envelope
      *
      * @return  Envelop
      */
-    public function retry();
+    public function retry() : Envelope;
 }

@@ -23,7 +23,7 @@ class DefaultEnvelope implements Envelope
     protected $message;
     protected $attempts;
 
-    public function __construct(Message $message, $attempts=0)
+    public function __construct(Message $message, int $attempts=0)
     {
         $this->message = $message;
         $this->attempts = $attempts;
@@ -32,7 +32,7 @@ class DefaultEnvelope implements Envelope
     /**
      * {@inheritdoc}
      */
-    public function attempts()
+    public function attempts() : int
     {
         return $this->attempts;
     }
@@ -40,7 +40,7 @@ class DefaultEnvelope implements Envelope
     /**
      * {@inheritdoc}
      */
-    public function unwrap()
+    public function unwrap() : Message
     {
         return $this->message;
     }
@@ -48,7 +48,7 @@ class DefaultEnvelope implements Envelope
     /**
      * {@inheritdoc}
      */
-    public function retry()
+    public function retry() : Envelope
     {
         $new = clone $this;
         $new->attempts++;
