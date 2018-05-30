@@ -13,12 +13,14 @@
 
 namespace PMG\Queue;
 
-/**
- * A marker interface for messages.
- *
- * @since   2.0
- */
-interface Message
+trait MessageNames
 {
-    // noop
+    protected static function nameOf(Message $message) : string
+    {
+        if ($message instanceof NamedMessage) {
+            return $message->getName();
+        }
+
+        return get_class($message);
+    }
 }

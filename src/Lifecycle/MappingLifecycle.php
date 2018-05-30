@@ -17,6 +17,7 @@ namespace PMG\Queue\Lifecycle;
 use PMG\Queue\Consumer;
 use PMG\Queue\Message;
 use PMG\Queue\MessageLifecycle;
+use PMG\Queue\MessageNames;
 use PMG\Queue\Exception\InvalidArgumentException;
 
 /**
@@ -27,6 +28,8 @@ use PMG\Queue\Exception\InvalidArgumentException;
  */
 final class MappingLifecycle implements MessageLifecycle
 {
+    use MessageNames;
+
     /**
      * A mapping of message names to lifecycles. [$messageName => $lifecycle]
      *
@@ -110,7 +113,7 @@ final class MappingLifecycle implements MessageLifecycle
 
     private function lifecycleFor(Message $message) : MessageLifecycle
     {
-        $name = $message->getName();
+        $name = self::nameOf($message);
         return $this->has($name) ? $this->mapping[$name] : $this->fallback;
     }
 }

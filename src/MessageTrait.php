@@ -13,6 +13,8 @@
 
 namespace PMG\Queue;
 
+@trigger_error(sprintf('The "%s" trait is deprecated since pmg/queue 5.0, a message\'s FQCN as the message name is the default in 5.0', MessageTrait::class));
+
 /**
  * ABC for messages, implements `getName` as the class name.
  *
@@ -21,9 +23,9 @@ namespace PMG\Queue;
 trait MessageTrait
 {
     /**
-     * @see Message::getName
+     * @see NamedMessage::getName
      */
-    public function getName()
+    public function getName() : string
     {
         return get_class($this);
     }

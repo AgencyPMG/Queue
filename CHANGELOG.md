@@ -9,6 +9,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - `MessageLifecycle::failed` no longer has an `$isRetrying` argument, instead
   `MessageLifecycyle::retrying` will be called instead.
+- The `Message` interface no longer has a `getName` method.
+  Instead the *name* of a message is its fully qualified class name. Should the
+  old behavior still be desired, implement `PMG\Queue\NamedMessage` instead.
+- The `PMG\Queue\MessageTrait` has been deprecated. The behavior it provided (using
+  the fully qualified class name as the message name) is now the default.
 
 ### Fixed
 
@@ -20,6 +25,11 @@ n/a
   a message fails and is retrying.
 - `PMG\Queue\Lifecycle\DelegatingLifecycle` has a new named constructor:
   `fromIterable`. This uses PHP 7.1's `iterable` pseudo type.
+- A `PMG\Queue\NamedMessage` interface to enable the old behavior of
+  `Message::getName`.
+
+### Removed
+
 - `RetrySpec::retryDelay` method added to allow a message to be delayed when
   retrying, if the driver supports it.
 - `Driver::retry` now accepts an `int $delay` to support delayed retries. Not all

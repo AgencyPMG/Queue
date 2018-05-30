@@ -116,7 +116,7 @@ class DefaultConsumer extends AbstractConsumer
         $result = false;
         $message = $envelope->unwrap();
 
-        $this->getLogger()->debug('Handling message {msg}', ['msg' => $message->getName()]);
+        $this->getLogger()->debug('Handling message {msg}', ['msg' => self::nameOf($message)]);
         try {
             $result = $this->handleMessage($message);
         } catch (Exception\MustStop $e) {
@@ -125,7 +125,7 @@ class DefaultConsumer extends AbstractConsumer
         } catch (Exception\ShouldReleaseMessage $e) {
             $this->driver->release($queueName, $envelope);
             $this->getLogger()->debug('Releasing message {msg} due to {cls} exception: {err}', [
-                'msg' => $message->getName(),
+                'msg' => self::nameOf($message),
                 'cls' => get_class($e),
                 'err' => $e->getMessage(),
             ]);
@@ -137,20 +137,20 @@ class DefaultConsumer extends AbstractConsumer
             // throws exceptions on failure (see PcntlForkingHandler).
             $this->getLogger()->critical('Unexpected {cls} exception handling {name} message: {msg}', [
                 'cls'   => get_class($e),
-                'name'  => $message->getName(),
+                'name'  => self::nameOf($message),
                 'msg'   => $e->getMessage()
             ]);
             $result = false;
         }
-        $this->getLogger()->debug('Handled message {msg}', ['msg' => $message->getName()]);
+        $this->getLogger()->debug('Handled message {msg}', ['msg' => self::nameOf($message)]);
 
         if ($result) {
             $willRetry = false;
             $this->driver->ack($queueName, $envelope);
-            $this->getLogger()->debug('Acknowledged message {msg}', ['msg' => $message->getName()]);
+            $this->getLogger()->debug('Acknowledged message {msg}', ['msg' => self::nameOf($message)]);
         } else {
             $willRetry = $this->failed($queueName, $envelope);
-            $this->getLogger()->debug('Failed message {msg}', ['msg' => $message->getName()]);
+            $this->getLogger()->debug('Failed message {msg}', ['msg' => self::nameOf($message)]);
         }
 
         return [$result, $willRetry];

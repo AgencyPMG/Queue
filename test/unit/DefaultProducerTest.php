@@ -19,7 +19,7 @@ class DefaultProducerTest extends UnitTestCase
 
     public function testProducerRoutesMessageAndPutsItIntoAQueue()
     {
-        $msg = $this->createMock(Message::class);
+        $msg = new SimpleMessage('test');
         $this->router->expects($this->once())
             ->method('queueFor')
             ->with($this->identicalTo($msg))
@@ -36,7 +36,7 @@ class DefaultProducerTest extends UnitTestCase
      */
     public function testProducerErrorsWhenNoQueueIsFound()
     {
-        $msg = $this->createMock(Message::class);
+        $msg = new SimpleMessage('test');
         $this->router->expects($this->once())
             ->method('queueFor')
             ->with($this->identicalTo($msg))

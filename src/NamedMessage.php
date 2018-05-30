@@ -14,11 +14,16 @@
 namespace PMG\Queue;
 
 /**
- * A marker interface for messages.
+ * Defines a message that has a name other than its fully-qualified class name.
  *
- * @since   2.0
+ * @since   5.0
  */
-interface Message
+interface NamedMessage extends Message
 {
-    // noop
+    /**
+     * Get the name of the message. This is used for routing things to queues.
+     *
+     * @return  string
+     */
+    public function getName() : string;
 }

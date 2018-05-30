@@ -13,6 +13,7 @@
 
 namespace PMG\Queue\Lifecycle;
 
+use PMG\Queue\MessageNames;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\Exception\InvalidArgumentException;
 
@@ -21,6 +22,8 @@ use PMG\Queue\Exception\InvalidArgumentException;
  */
 class MappingLifecycleTest extends LifecycleTestCase
 {
+    use MessageNames;
+
     private $child, $fallback, $lifecycle;
 
     public static function badMappings() : array
@@ -97,7 +100,7 @@ class MappingLifecycleTest extends LifecycleTestCase
         $this->child->expects($this->never())
             ->method($method);
         $lc = new MappingLifecycle([
-            $this->message->getName() => $this->child,
+            self::nameOf($this->message) => $this->child,
         ]);
     
         call_user_func([$lc, $method], $message, $this->consumer);
@@ -121,7 +124,7 @@ class MappingLifecycleTest extends LifecycleTestCase
         $this->child = $this->mockLifecycle();
         $this->fallback = $this->mockLifecycle();
         $this->lifecycle = new MappingLifecycle([
-            $this->message->getName() => $this->child,
+            self::nameOf($this->message) => $this->child,
         ], $this->fallback);
     }
 }
