@@ -198,3 +198,47 @@ final class CustomRouter implements Router
     }
 }
 ```
+
+## Drivers Should No Longer Call `Envelope::retry`
+
+In 4.X (and lower) drivers were required to call `$envelope->retry()` on any
+envelope passed in `Driver::retry`.
+
+That should now happen in implements of `PMG\Queue\Consumer` instead.
+
+#### Version 4.X Driver
+
+```php
+use PMG\Queue\Driver;
+use PMG\Queue\Envelope;
+
+final class SomeDriver implements Driver
+{
+    // ...
+
+    public function retry(string $queueName, Envelope $envelope) : Envelope
+    {
+        $e = $envelope->retry();
+        $this->queueUpTheMessageSomehow($queueName, $e);
+
+        return $e;
+    }
+}
+```
+
+#### Version 5.X Driver
+
+```php
+use PMG\Queue\Driver;
+use PMG\Queue\Envelope;
+
+final class SomeDriver implements Driver
+{
+    // ...
+
+    public function retry(string $queueName, Envelope $envelope) : void
+    {
+        $this->queueUpTheMessageSomehow($queueName, $envelope);
+    }
+}
+```
