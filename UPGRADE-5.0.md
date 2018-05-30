@@ -156,11 +156,45 @@ class CustomLifecycle extends NullLifecycle
         // do retrying thing
     }
 
-    public function failed(Message $message, Consumer $consumer, bool $isRetrying)
+    public function failed(Message $message, Consumer $consumer)
     {
         // do failed thing
     }
 
     // ...
+}
+```
+
+## `Router::queueFor` Has a Return Type
+
+Any custom implementations of `PMG\Queue\Router` will need to be updated.
+
+#### Version 4.X
+
+```php
+use PMG\Queue\Message;
+use PMG\Queue\Router;
+
+final class CustomRouter implements Router
+{
+    public function queueFor(Message $message)
+    {
+        return '...';
+    }
+}
+```
+
+#### Version 5.X
+
+```php
+use PMG\Queue\Message;
+use PMG\Queue\Router;
+
+final class CustomRouter implements Router
+{
+    public function queueFor(Message $message) : ?string
+    {
+        return '...';
+    }
 }
 ```

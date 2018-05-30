@@ -50,7 +50,7 @@ final class MappingRouter implements \PMG\Queue\Router
     /**
      * {@inheritdoc}
      */
-    public function queueFor(Message $message)
+    public function queueFor(Message $message) : ?string
     {
         $name = self::nameOf($message);
         return isset($this->map[$name]) ? $this->map[$name] : null;

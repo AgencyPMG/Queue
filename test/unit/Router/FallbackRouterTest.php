@@ -43,7 +43,7 @@ class FallbackRouterTest extends \PMG\Queue\UnitTestCase
         $this->message = new SimpleMessage('test');
     }
 
-    private function wrappedRouterReturns($value)
+    private function wrappedRouterReturns(?string $value)
     {
         $this->wrapped->expects($this->once())
             ->method('queueFor')

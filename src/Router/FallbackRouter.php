@@ -43,7 +43,7 @@ final class FallbackRouter implements \PMG\Queue\Router
     /**
      * {@inheritdoc}
      */
-    public function queueFor(Message $message)
+    public function queueFor(Message $message) : ?string
     {
         return $this->wrapped->queueFor($message) ?: $this->fallbackQueue;
     }

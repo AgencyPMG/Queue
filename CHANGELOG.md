@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   old behavior still be desired, implement `PMG\Queue\NamedMessage` instead.
 - The `PMG\Queue\MessageTrait` has been deprecated. The behavior it provided (using
   the fully qualified class name as the message name) is now the default.
+- `PMG\Queue\Router::queueFor` now has a `?string` return type.
 
 ### Fixed
 
