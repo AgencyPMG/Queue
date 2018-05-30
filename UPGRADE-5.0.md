@@ -16,7 +16,41 @@ interface which still includes the `getName` method.
 The `PMG\Queue\MessageTrait` which provided the FQCN as a name behavior was also
 removed.
 
-#### Version 4.X
+#### Version 4.X (with FQCN as Message Name)
+
+```php
+
+namespace Acme\QueueExample;
+
+use PMG\Queue\Message;
+
+final class SomeMessage implements Message
+{
+    public function getName()
+    {
+        return __CLASS__;
+    }
+
+    // ...
+}
+```
+
+#### Version 5.X (with FQCN as Message Name)
+
+```php
+
+namespace Acme\QueueExample;
+
+use PMG\Queue\Message;
+
+final class SomeMessage implements Message
+{
+    // message name is now `Acme\QueueExample\SomeMessage`
+    // ...
+}
+```
+
+#### Version 4.X (with Custom Message Name)
 
 ```php
 
@@ -35,17 +69,21 @@ final class SomeMessage implements Message
 }
 ```
 
-#### Version 5.X
+#### Version 5.X (with Custom Message Name)
 
 ```php
 
 namespace Acme\QueueExample;
 
-use PMG\Queue\Message;
+use PMG\Queue\NamedMessage;
 
-final class SomeMessage implements Message
+final class SomeMessage implements NamedMessage
 {
-    // message name is now `Acme\QueueExample\SomeMessage`
+    public function getName()
+    {
+        return 'SomeMessage';
+    }
+
     // ...
 }
 ```
