@@ -26,8 +26,9 @@ final class LimitedSpec implements RetrySpec
     const DEFAULT_ATTEMPTS = 5;
 
     private $maxAttempts;
+    private $retryDelay;
 
-    public function __construct($maxAttempts=null)
+    public function __construct(int $maxAttempts=null, int $retryDelay=0)
     {
         if (null !== $maxAttempts && $maxAttempts < 1) {
             throw new \InvalidArgumentException(sprintf(
@@ -36,7 +37,15 @@ final class LimitedSpec implements RetrySpec
             ));
         }
 
+        if ($retryDelay < 0) {
+            throw new \InvalidArgumentException(sprintf(
+                '$retryDelay must be a positive integer, got "%s"',
+                $retryDelay
+            ));
+        }
+
         $this->maxAttempts = $maxAttempts ?: self::DEFAULT_ATTEMPTS;
+        $this->retryDelay = $retryDelay;
     }
 
     /**
@@ -45,5 +54,13 @@ final class LimitedSpec implements RetrySpec
     public function canRetry(Envelope $env) : bool
     {
         return $env->attempts() < $this->maxAttempts;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function retryDelay(Envelope $env): int
+    {
+        return $this->retryDelay;
     }
 }

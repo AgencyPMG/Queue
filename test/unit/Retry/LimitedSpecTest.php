@@ -35,6 +35,14 @@ class LimitSpecTest extends \PMG\Queue\UnitTestCase
         new LimitedSpec($attempts);
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testCreatingLimitSpecFailsWithInvalidDelay()
+    {
+        new LimitedSpec(5, -5);
+    }
+
     public function testCanRetryReturnsTrueWhenAttemptsAreBelowLimit()
     {
         $spec = new LimitedSpec();
@@ -51,5 +59,23 @@ class LimitSpecTest extends \PMG\Queue\UnitTestCase
         $env = new DefaultEnvelope(new SimpleMessage('test'), 1);
 
         $this->assertFalse($spec->canRetry($env));
+    }
+
+    public function testRetryDelayReturnsZeroWithoutSpecifiedDelay()
+    {
+        $spec = new LimitedSpec();
+
+        $env = new DefaultEnvelope(new SimpleMessage('test'));
+
+        $this->assertSame(0, $spec->retryDelay($env));
+    }
+
+    public function testRetryDelayReturnsAsConfigured()
+    {
+        $spec = new LimitedSpec(null, $expectedDelay = rand(1, 60));
+
+        $env = new DefaultEnvelope(new SimpleMessage('test'));
+
+        $this->assertSame($expectedDelay, $spec->retryDelay($env));
     }
 }

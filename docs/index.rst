@@ -48,20 +48,15 @@ READ THIS: Glossary & Core Concepts
   processing.
 - A **producer** adds messages to the queue backend via a *driver* and a
   *router*.
-- A **consumer** pulls messages out of the queue via *driver* and executes them
-  with *handlers* and *executors*.
-- A **driver** is PHP representation of the queue backend. There are two built
-  in: memory and `beanstalkd <http://kr.github.io/beanstalkd/>`_. Drivers
-  implement ``PMG\Queue\Driver``.
+- A **consumer** pulls messages out of the queue via *driver* and processes
+  them via *handlers*.
 - A **driver** is PHP representation of the queue backend. There is an in memory
   driver included in this library as an example (and for testing), and an
   implementation of a `beanstalkd <http://kr.github.io/beanstalkd/>`_ driver
   `available <https://github.com/AgencyPMG/queue-pheanstalk>`_.
-- A **router** looks up the correct queue name for a message based on its name.
-- An **executor** runs the message *handler*. This is a simple abstraction to
-  allow folks to fork and run jobs if they desire.
-- A **handler** is a callable that does the work defined by a message.
-- **handler resolvers** find handlers based on the *message* name.
+- A **router** is used by a producer to look up the correct queue for a message.
+- A **message handler** is used by the default *consumer* to actually do the work
+  of processing a message
 - An **envelope** is used internally to wrap up messages with retry information
   as well as metadata specific to drivers. Users need not worry about this
   unless they are implementing their own *driver*.

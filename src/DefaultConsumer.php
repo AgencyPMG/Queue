@@ -165,9 +165,10 @@ class DefaultConsumer extends AbstractConsumer
      */
     protected function failed(string $queueName, Envelope $env) : bool
     {
-        $retry = $this->canRetry($env);
+        $retry = $this->retries->canRetry($env);
         if ($retry) {
-            $this->getDriver()->retry($queueName, $env);
+            $delay = $this->retries->retryDelay($env);
+            $this->getDriver()->retry($queueName, $env, $delay);
         } else {
             $this->getDriver()->fail($queueName, $env);
         }
@@ -186,11 +187,6 @@ class DefaultConsumer extends AbstractConsumer
         } finally {
             $this->currentPromise = null;
         }
-    }
-
-    protected function canRetry(Envelope $env) : bool
-    {
-        return $this->retries->canRetry($env);
     }
 
     protected function getHandler()

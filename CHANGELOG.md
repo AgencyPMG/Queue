@@ -30,6 +30,10 @@ n/a
 
 - The `PMG\Queue\MessageTrait` has been removed. The behavior it provided (using
   the fully qualified class name as the message name) is now the default.
+- `RetrySpec::retryDelay` method added to allow a message to be delayed when
+  retrying, if the driver supports it.
+- `Driver::retry` now accepts an `int $delay` to support delayed retries. Not all
+  drivers will be able to support delaying.
 
 ### Deprecations
 
