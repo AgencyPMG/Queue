@@ -62,7 +62,7 @@ final class MemoryDriver implements \PMG\Queue\Driver
     /**
      * {@inheritdoc}
      */
-    public function retry(string $queueName, Envelope $envelope, int $delay=0) : Envelope
+    public function retry(string $queueName, Envelope $envelope) : Envelope
     {
         $this->enqueueEnvelope($queueName, $envelope);
         return $envelope;

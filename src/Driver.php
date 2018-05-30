@@ -64,11 +64,10 @@ interface Driver
      * @param   string $queueName The queue from whcih the message came
      * @param   $envelope The message envelope -- should be the same instance
      *          returned from `dequeue`
-     * @param   int $delay The number of seconds to wait before retrying
      * @throws  Exception\DriverError when something goes wrong
      * @return  Envelope The new envelope for the retried job.
      */
-    public function retry(string $queueName, Envelope $envelope, int $delay=0) : Envelope;
+    public function retry(string $queueName, Envelope $envelope) : Envelope;
 
     /**
      * Fail a job -- this called when no more retries can be attempted.
