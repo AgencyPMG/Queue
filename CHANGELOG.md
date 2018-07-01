@@ -33,6 +33,10 @@ n/a
   retrying, if the driver supports it.
 - `Envelope::retry` now accepts an `int $delay` to support delayed retries. Not all
   drivers will be able to support delaying.
+- Similarly, `PMG\Queue\Driver` implementations must no longer call
+  `Envelope::retry` as they were required to do previously. See `UPGRADE-5.0.md`
+  for more details. Instead `PMG\Queue\Consumer` implementations should call
+  `Envelope::retry`.
 
 ### Removed
 

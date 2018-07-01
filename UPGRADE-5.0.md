@@ -199,7 +199,12 @@ final class CustomRouter implements Router
 }
 ```
 
-## Drivers Should No Longer Call `Envelope::retry`
+## Internals
+
+All changes here are only relevant to authors of `PMG\Queue\Driver`,
+`PMG\Queue\Consumer`, or `PMG\Queue\Producer` implementations.
+
+### Drivers Should No Longer Call `Envelope::retry`
 
 In 4.X (and lower) drivers were required to call `$envelope->retry()` on any
 envelope passed in `Driver::retry`.
@@ -239,6 +244,89 @@ final class SomeDriver implements Driver
     public function retry(string $queueName, Envelope $envelope) : void
     {
         $this->queueUpTheMessageSomehow($queueName, $envelope);
+    }
+}
+```
+
+#### Version 4.X Consumer
+
+```php
+use PMG\Queue\Consumer;
+use PMG\Queue\MessageLifecycle;
+use PMG\Queue\RetrySpec;
+
+final class SomeConsumer implements Consumer
+{
+    /**
+     * @var Driver
+     */
+    private $driver;
+
+    /**
+     * @var RetrySpec
+     */
+    private $retries;
+
+    // ...
+
+    public function once(string $queueName, MessageLifecycle $lifecycle=null)
+    {
+        $envelope = $this->driver->dequeue($queueName);
+        if (!$envelope) {
+            return null;
+        }
+
+        try {
+            $this->processTheMessageSomehow($
+        } catch (\Exception $e) {
+            if ($this->retries->canRetry($envelope)) {
+                $this->driver->retry($envelope); // <-- No `$envelope->retry(...)`
+            } else {
+                $this->driver->fail($envelope);
+            }
+        }
+    }
+}
+```
+
+#### Version 5.X Consumer
+
+```php
+use PMG\Queue\Consumer;
+use PMG\Queue\MessageLifecycle;
+use PMG\Queue\RetrySpec;
+
+final class SomeConsumer implements Consumer
+{
+    /**
+     * @var Driver
+     */
+    private $driver;
+
+    /**
+     * @var RetrySpec
+     */
+    private $retries;
+
+    // ...
+
+    public function once(string $queueName, MessageLifecycle $lifecycle=null)
+    {
+        $envelope = $this->driver->dequeue($queueName);
+        if (!$envelope) {
+            return null;
+        }
+
+        try {
+            $this->processTheMessageSomehow($
+        } catch (\Exception $e) {
+            if ($this->retries->canRetry($envelope)) {
+                $delay = $this->retries->retryDelay($envelope);
+                $this->driver->retry($envelope->retry($delay)); // <-- Call `$envelope->retry(...)`
+            } else {
+                $this->driver->fail($envelope);
+            }
+        }
     }
 }
 ```
