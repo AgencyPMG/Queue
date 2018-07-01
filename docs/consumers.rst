@@ -73,8 +73,12 @@ Retrying Messages
 When a message fails -- by throwing an exception or returns false from a
 ``MessageHandler`` -- the consumer puts it back in the queue to retry up to 5
 times by default. This behavior can be adjusted by providing a ``RetrySpec`` as
-the third argument to ``DefaultConsumers`` constructor. `pmg/queue` provides a
-few by default.
+the third argument to the ``DefaultConsumer`` constructor. `pmg/queue` provides a
+few by default. Additionally, ``RetrySpec`` provides a method for calculating
+how long a message should be delayed before it can be retried.
+
+    Not all :ref:`drivers <drivers>` support retry delays. Check the driver's
+    documentation for more details.
 
 Retry specs look at ``PMG\Queue\Envelope`` instances, not raw messages. See the
 :ref:`internals documentation <envelopes>` for more info about them.
@@ -91,6 +95,16 @@ Retry specs look at ``PMG\Queue\Envelope`` instances, not raw messages. See the
         :param $env: The message envelope to check
         :returns: true if the message can be retried, false otherwise.
         :rtype: boolean
+
+    .. php:method: retryDelay(PMG\\Queue\Envelope $env)
+
+        Determines how long the message should be delays before retrying again.
+        Not all queue drivers will support retry delays.
+
+        :param $env: The message envelope for which the delay should be calculated
+        :returns: The delay in seconds
+        :rtype: boolean
+
 
 Limited Retries
 """""""""""""""
@@ -110,8 +124,13 @@ Use ``PMG\\Queue\\Retry\\LimitedSpec``.
     // Or limit to a specific number of retries
     $retry = new LimitedSpec(2);
 
+    // May specify a delay as well, the default is no delay
+    // here the delay is 20 seconds and limited to five retries
+    $retry = new LimitedSpec(5, 20);
+
     // $driver and $handler as above
     $consumer = new DefaultConsumer($driver, $handler, $retry);
+
 
 Never Retry a Message
 """""""""""""""""""""
@@ -230,7 +249,7 @@ moves.
     );
 
     // Or create from an array
-    $lifecycle = DelegatingLifecycle::fromArray([
+    $lifecycle = DelegatingLifecycle::fromIterable([
         new NotifyingLifecycle(/* ... */),
         new SomeOtherLifecycle(),
     ]);
