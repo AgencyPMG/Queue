@@ -12,9 +12,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - The `Message` interface no longer has a `getName` method.
   Instead the *name* of a message is its fully qualified class name. Should the
   old behavior still be desired, implement `PMG\Queue\NamedMessage` instead.
-- The `PMG\Queue\MessageTrait` has been deprecated. The behavior it provided (using
-  the fully qualified class name as the message name) is now the default.
 - `PMG\Queue\Router::queueFor` now has a `?string` return type.
+- Drivers should no longer call `Envelope::retry` instead, instead consumers
+  should call this method along with any delay required from the `RetrySpec`.
+  See `UPGRADE-5.0.md` for more details.
 
 ### Fixed
 
@@ -30,8 +31,12 @@ n/a
   `Message::getName`.
 - `RetrySpec::retryDelay` method added to allow a message to be delayed when
   retrying, if the driver supports it.
-- `Driver::retry` now accepts an `int $delay` to support delayed retries. Not all
+- `Envelope::retry` now accepts an `int $delay` to support delayed retries. Not all
   drivers will be able to support delaying.
+- Similarly, `PMG\Queue\Driver` implementations must no longer call
+  `Envelope::retry` as they were required to do previously. See `UPGRADE-5.0.md`
+  for more details. Instead `PMG\Queue\Consumer` implementations should call
+  `Envelope::retry`.
 
 ### Removed
 
@@ -42,6 +47,8 @@ n/a
 
 - `PMG\Queue\Lifecycle\DelegatingLifecycle::fromArray`. Use `fromIterable`
   instead.
+- The `PMG\Queue\MessageTrait` has been deprecated. The behavior it provided (using
+  the fully qualified class name as the message name) is now the default.
 
 ## 4.2.0
 

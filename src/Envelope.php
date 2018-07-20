@@ -23,25 +23,35 @@ namespace PMG\Queue;
  */
 interface Envelope
 {
+    const NO_DELAY = 0;
+
     /**
      * Get the number of times the message has been attempted.
      *
      * @return  int
      */
-    public function attempts();
+    public function attempts() : int;
+
+    /**
+     * Get the number of seconds which the message should be delayed.
+     *
+     * @return int
+     */
+    public function delay() : int;
 
     /**
      * Get the wrapped message.
      *
      * @return  Message
      */
-    public function unwrap();
+    public function unwrap() : Message;
 
     /**
      * Returns a new envelop with all the same attributes but an incremented
      * attempt count.
      *
+     * @param $delay The amount number of seconds the message should be delayed before retrying
      * @return  Envelop
      */
-    public function retry();
+    public function retry(int $delay=0) : Envelope;
 }

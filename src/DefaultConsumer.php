@@ -168,7 +168,7 @@ class DefaultConsumer extends AbstractConsumer
         $retry = $this->retries->canRetry($env);
         if ($retry) {
             $delay = $this->retries->retryDelay($env);
-            $this->getDriver()->retry($queueName, $env, $delay);
+            $this->getDriver()->retry($queueName, $env->retry($delay));
         } else {
             $this->getDriver()->fail($queueName, $env);
         }

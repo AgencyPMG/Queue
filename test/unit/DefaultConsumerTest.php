@@ -55,7 +55,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->willRetry();
         $this->driver->expects($this->once())
             ->method('retry')
-            ->with(self::Q, $this->identicalTo($this->envelope));
+            ->with(self::Q, $this->envelope->retry());
         $this->handler->expects($this->once())
             ->method('handle')
             ->with($this->identicalTo($this->message))
@@ -86,7 +86,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->willRetry();
         $this->driver->expects($this->once())
             ->method('retry')
-            ->with(self::Q, $this->identicalTo($this->envelope));
+            ->with(self::Q, $this->envelope->retry());
         $this->handler->expects($this->once())
             ->method('handle')
             ->with($this->identicalTo($this->message))
@@ -212,6 +212,28 @@ class DefaultConsumerTest extends UnitTestCase
         $result = $this->consumer->once(self::Q, $lifecycle);
 
         $this->assertFalse($result);
+    }
+
+    /**
+     * @group https://github.com/AgencyPMG/Queue/issues/58
+     */
+    public function testRetriedMessagesUseTheDelayFromTheRetrySpec()
+    {
+        $this->withMessage();
+        $this->willRetry();
+        $this->retries->expects($this->once())
+            ->method('retryDelay')
+            ->with($this->envelope)
+            ->willReturn(10);
+        $this->driver->expects($this->once())
+            ->method('retry')
+            ->with(self::Q, $this->envelope->retry(10));
+        $this->handler->expects($this->once())
+            ->method('handle')
+            ->with($this->identicalTo($this->message))
+            ->willReturn(self::promise(false));
+
+        $this->consumer->once(self::Q);
     }
 
     protected function setUp()
