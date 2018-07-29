@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- PHP 7.2+ is required.
 - `MessageLifecycle::failed` no longer has an `$isRetrying` argument, instead
   `MessageLifecycyle::retrying` will be called instead.
 - The `Message` interface no longer has a `getName` method.

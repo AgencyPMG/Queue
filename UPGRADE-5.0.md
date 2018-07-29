@@ -1,8 +1,8 @@
 # Upgrade from 4.X to 5.X
 
-## PHP Version Requirement Bumped to ~7.1
+## PHP Version Requirement Bumped to ~7.2
 
-Stick with version 4.X should PHP 7.0 support be required.
+Stick with version 4.X should PHP 7.0 or 7.1 support be required.
 
 ## No More `Message` Names by Default
 
