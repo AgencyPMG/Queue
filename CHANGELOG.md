@@ -43,6 +43,7 @@ n/a
 
 - `PMG\Queue\NullLifecycle` was removed (deprecated in version 4.2), use
   `PMG\Queue\Lifecycle\NullLifecycle` instead.
+- `PMG\Queue\Exception\MessageFailed` was removed (it was unused in the core).
 
 ### Deprecations
 
