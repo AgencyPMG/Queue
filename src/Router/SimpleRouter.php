@@ -35,7 +35,7 @@ final class SimpleRouter implements \PMG\Queue\Router
     /**
      * {@inheritdoc}
      */
-    public function queueFor(Message $message) : ?string
+    public function queueFor(object $message) : ?string
     {
         return $this->queueName;
     }
