@@ -42,8 +42,10 @@ final class DefaultProducer implements Producer
     /**
      * {@inheritdoc}
      */
-    public function send(Message $message)
+    public function send(object $messageOrEnvelope) : void
     {
+        $message = $messageOrEnvelope instanceof Envelope ? $messageOrEnvelope->unwrap() : $messageOrEnvelope;
+
         $queueName = $this->router->queueFor($message);
         if (!$queueName) {
             throw new Exception\QueueNotFound(sprintf(
@@ -52,6 +54,6 @@ final class DefaultProducer implements Producer
             ));
         }
 
-        $this->driver->enqueue($queueName, $message);
+        $this->driver->enqueue($queueName, $messageOrEnvelope);
     }
 }

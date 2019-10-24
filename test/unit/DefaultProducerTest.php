@@ -13,6 +13,8 @@
 
 namespace PMG\Queue;
 
+use PMG\Queue\Exception\QueueNotFound;
+
 class DefaultProducerTest extends UnitTestCase
 {
     private $router, $driver, $producer;
@@ -31,11 +33,10 @@ class DefaultProducerTest extends UnitTestCase
         $this->producer->send($msg);
     }
 
-    /**
-     * @expectedException PMG\Queue\Exception\QueueNotFound
-     */
     public function testProducerErrorsWhenNoQueueIsFound()
     {
+        $this->expectException(QueueNotFound::class);
+
         $msg = new SimpleMessage('test');
         $this->router->expects($this->once())
             ->method('queueFor')
@@ -45,6 +46,37 @@ class DefaultProducerTest extends UnitTestCase
             ->method('enqueue');
 
         $this->producer->send($msg);
+    }
+
+    public function testProducerUnwrapsEnvelopsToDetermineRouteThenPassesEnvelopeToTheDriver()
+    {
+        $msg = new SimpleMessage('test');
+        $env = new DefaultEnvelope($msg);
+        $this->router->expects($this->once())
+            ->method('queueFor')
+            ->with($this->identicalTo($msg))
+            ->willReturn('q');
+        $this->driver->expects($this->once())
+            ->method('enqueue')
+            ->with('q', $this->identicalTo($env));
+
+        $this->producer->send($env);
+    }
+
+    public function testEnvelopeWithMessageMissingQueueCausesError()
+    {
+        $this->expectException(QueueNotFound::class);
+
+        $msg = new SimpleMessage('test');
+        $env = new DefaultEnvelope($msg);
+        $this->router->expects($this->once())
+            ->method('queueFor')
+            ->with($this->identicalTo($msg))
+            ->willReturn(null);
+        $this->driver->expects($this->never())
+            ->method('enqueue');
+
+        $this->producer->send($env);
     }
 
     protected function setUp()

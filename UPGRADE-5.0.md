@@ -224,56 +224,57 @@ Any custom implementation of `MessageHandler` will need to be udpated.
 All changes here are only relevant to authors of `PMG\Queue\Driver`,
 `PMG\Queue\Consumer`, or `PMG\Queue\Producer` implementations.
 
-### `Driver::enqueue` Now Takes an `object` instead of a `Message`
+### `Producer::send` Now Takes an `object` Instead of a `Message`
+
+And `send` now has a `void` return type as well.
+
+This is part of a broader change (see above) around pmg/queue dealing with
+plain `object` without the requirement of a `Message` implementation.
+
+```diff
+-use PMG\Queue\Message;
+ use PMG\Queue\Producer;
+
+ class SomeProducer implements Producer
+ {
+
+-   public function send(Message $message)
++   public function send(object $message) : void
+    {
+        // ...
+    }
+ }
+```
+
+### `Driver::enqueue` Now Takes an `object` Instead of a `Message`
 
 Drivers should handle receiving an `Envelope` instance in this method as well.
 Should that happen the driver *must* use that envelope instead of creating its
 own.
 
-#### Version 4.X Driver
 
-```php
-use PMG\Queue\Driver;
-use PMG\Queue\DefaultEnvelope;
-use PMG\Queue\Envelope;
+```diff
+ use PMG\Queue\Driver;
+ use PMG\Queue\DefaultEnvelope;
+-use PMG\Queue\Message;
+ use PMG\Queue\Envelope;
 
-final class SomeDriver implements Driver
-{
-    // ...
+ final class SomeDriver implements Driver
+ {
+     // ...
 
-    public function enqueue(string $queueName, Message $message) : Envelope
-    {
-        $e = new DefaultEnvelope($message);
-
-        $this->queueUpTheMessageSomehow($queueName, $e);
-
-        return $e;
-    }
-}
-```
-
-#### Version 5.X Driver
-
-```php
-use PMG\Queue\Driver;
-use PMG\Queue\DefaultEnvelope;
-use PMG\Queue\Envelope;
-
-final class SomeDriver implements Driver
-{
-    // ...
-
-    public function enqueue(string $queueName, object $message) : Envelope
-    {
-        $e = $message instanceof Envelope ? $message : new DefaultEnvelope($message);
+-    public function enqueue(string $queueName, Message $message) : Envelope
++    public function enqueue(string $queueName, object $message) : Envelope
+     {
+-       $e = new DefaultEnvelope($message);
++       $e = $message instanceof Envelope ? $message : new DefaultEnvelope($message);
 
         $this->queueUpTheMessageSomehow($queueName, $e);
 
         return $e;
-    }
-}
+     }
+ }
 ```
-
 
 ### Drivers Should No Longer Call `Envelope::retry`
 
