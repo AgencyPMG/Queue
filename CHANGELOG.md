@@ -8,6 +8,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - PHP 7.2+ is required.
+- `PMG\Queue\Router::queueFor` now typehints against `object` instead of
+  `Message`.
+- All `PMG\Queue\MessageLifecycle` methods now typehint against `object`.
 - `MessageLifecycle::failed` no longer has an `$isRetrying` argument, instead
   `MessageLifecycyle::retrying` will be called instead.
 - The `Message` interface no longer has a `getName` method.

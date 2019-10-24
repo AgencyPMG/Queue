@@ -30,7 +30,7 @@ class NullLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function starting(Message $message, Consumer $consumer)
+    public function starting(object $message, Consumer $consumer)
     {
         // noop
     }
@@ -38,7 +38,7 @@ class NullLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function completed(Message $message, Consumer $consumer)
+    public function completed(object $message, Consumer $consumer)
     {
         // noop
     }
@@ -46,7 +46,7 @@ class NullLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function retrying(Message $message, Consumer $consumer)
+    public function retrying(object $message, Consumer $consumer)
     {
         // noop
     }
@@ -54,7 +54,7 @@ class NullLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function failed(Message $message, Consumer $consumer)
+    public function failed(object $message, Consumer $consumer)
     {
         // noop
     }
@@ -62,7 +62,7 @@ class NullLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function succeeded(Message $message, Consumer $consumer)
+    public function succeeded(object $message, Consumer $consumer)
     {
         // noop
     }
