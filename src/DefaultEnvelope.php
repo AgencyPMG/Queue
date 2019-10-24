@@ -23,7 +23,7 @@ use PMG\Queue\Exception\InvalidArgumentException as InvalidArg;
 class DefaultEnvelope implements Envelope
 {
     /**
-     * @var Message
+     * @var object
      */
     protected $message;
 
@@ -37,7 +37,7 @@ class DefaultEnvelope implements Envelope
      */
     private $delay;
 
-    public function __construct(Message $message, int $attempts=0, int $delay=Envelope::NO_DELAY)
+    public function __construct(object $message, int $attempts=0, int $delay=Envelope::NO_DELAY)
     {
         InvalidArg::assert($attempts >= 0, '$attempts must be >= 0');
         $this->message = $message;
@@ -64,7 +64,7 @@ class DefaultEnvelope implements Envelope
     /**
      * {@inheritdoc}
      */
-    public function unwrap() : Message
+    public function unwrap() : object
     {
         return $this->message;
     }
@@ -79,25 +79,6 @@ class DefaultEnvelope implements Envelope
         $new->setDelay($delay);
 
         return $new;
-    }
-
-    /**
-     * checks to make sure the `$message` property is really a message. Serializers
-     * may (optionally) whitelist classes. If we don't get a message back the 
-     * envelope is kind of ****ed.
-     *
-     * @return void
-     */
-    public function __wakeup()
-    {
-        if (!$this->message instanceof Message) {
-            throw new Exception\SerializationError(sprintf(
-                '%s expected its message property to be unserialized with an instance of %s, got "%s"',
-                __CLASS__,
-                Message::class,
-                get_class($this->message)
-            ));
-        }
     }
 
     protected function setDelay(int $delay) : void
