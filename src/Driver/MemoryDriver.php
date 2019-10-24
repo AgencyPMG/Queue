@@ -32,11 +32,13 @@ final class MemoryDriver implements \PMG\Queue\Driver
     /**
      * {@inheritdoc}
      */
-    public function enqueue(string $queueName, Message $message) : Envelope
+    public function enqueue(string $queueName, object $message) : Envelope
     {
-        $e = new DefaultEnvelope($message);
-        $this->enqueueEnvelope($queueName, $e);
-        return $e;
+        $envelope = $message instanceof Envelope ? $message : new DefaultEnvelope($message);
+
+        $this->enqueueEnvelope($queueName, $envelope);
+
+        return $envelope;
     }
 
     /**

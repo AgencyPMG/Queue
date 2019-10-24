@@ -13,6 +13,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - All `PMG\Queue\MessageLifecycle` methods now typehint against `object`.
 - `PMG\Queue\Envelope` and `DefaultEnvelope` now deal with `object` messages
   only and do not typehint again `Message`.
+- `PMG\Queue\Driver::enqueue` now typehints agains `object` instead of message.
+  if a driver gets an `Envelope` instance it should use that instead of creating
+  its own envelope. See [`UPGRADE-5.0.md`](/UPGRADE-5.0.md) for more details.
 - `MessageLifecycle::failed` no longer has an `$isRetrying` argument, instead
   `MessageLifecycyle::retrying` will be called instead.
 - The `Message` interface no longer has a `getName` method.

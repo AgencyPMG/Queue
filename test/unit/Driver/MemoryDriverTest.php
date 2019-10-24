@@ -13,6 +13,7 @@
 
 namespace PMG\Queue\Driver;
 
+use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\Envelope;
 use PMG\Queue\SimpleMessage;
 
@@ -25,6 +26,17 @@ class MemoryDriverTest extends \PMG\Queue\UnitTestCase
     public function testEmptyQueueReturnsNullWhenDequeued()
     {
         $this->assertNull($this->driver->dequeue(self::Q));
+    }
+
+    public function testEnvelopesCanBeEnqueuedAndDequeued()
+    {
+        $m = new DefaultEnvelope(new SimpleMessage('test'));
+
+        $result = $this->driver->enqueue(self::Q, $m);
+
+        $this->assertSame($m, $result);
+
+        $this->assertSame($m, $this->driver->dequeue(self::Q));
     }
 
     public function testMessagesCanBeEnqueuedAndDequeued()

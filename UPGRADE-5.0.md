@@ -204,6 +204,57 @@ final class CustomRouter implements Router
 All changes here are only relevant to authors of `PMG\Queue\Driver`,
 `PMG\Queue\Consumer`, or `PMG\Queue\Producer` implementations.
 
+### `Driver::enqueue` Now Takes an `object` instead of a `Message`
+
+Drivers should handle receiving an `Envelope` instance in this method as well.
+Should that happen the driver *must* use that envelope instead of creating its
+own.
+
+#### Version 4.X Driver
+
+```php
+use PMG\Queue\Driver;
+use PMG\Queue\DefaultEnvelope;
+use PMG\Queue\Envelope;
+
+final class SomeDriver implements Driver
+{
+    // ...
+
+    public function enqueue(string $queueName, Message $message) : Envelope
+    {
+        $e = new DefaultEnvelope($message);
+
+        $this->queueUpTheMessageSomehow($queueName, $e);
+
+        return $e;
+    }
+}
+```
+
+#### Version 5.X Driver
+
+```php
+use PMG\Queue\Driver;
+use PMG\Queue\DefaultEnvelope;
+use PMG\Queue\Envelope;
+
+final class SomeDriver implements Driver
+{
+    // ...
+
+    public function enqueue(string $queueName, object $message) : Envelope
+    {
+        $e = $message instanceof Envelope ? $message : new DefaultEnvelope($message);
+
+        $this->queueUpTheMessageSomehow($queueName, $e);
+
+        return $e;
+    }
+}
+```
+
+
 ### Drivers Should No Longer Call `Envelope::retry`
 
 In 4.X (and lower) drivers were required to call `$envelope->retry()` on any
