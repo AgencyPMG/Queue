@@ -38,4 +38,11 @@ class MessageNamesTest extends UnitTestCase
 
         $this->assertSame(_NamesTestMsg::class, $name);
     }
+
+    public function testAnyObjectCanBePassedAndNameOfReturnsFqcn()
+    {
+        $name = self::nameOf($this);
+
+        $this->assertSame(__CLASS__, $name);
+    }
 }
