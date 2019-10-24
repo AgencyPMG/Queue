@@ -49,6 +49,25 @@ class DefaultConsumerTest extends UnitTestCase
         $this->assertTrue($this->consumer->once(self::Q));
     }
 
+    public function testPlainObjectMessagesCanBeHandled()
+    {
+        $message = new class {};
+        $envelope = new DefaultEnvelope($message);
+        $this->driver->expects($this->once())
+            ->method('dequeue')
+            ->with(self::Q)
+            ->willReturn($envelope);
+        $this->driver->expects($this->once())
+            ->method('ack')
+            ->with(self::Q, $this->identicalTo($envelope));
+        $this->handler->expects($this->once())
+            ->method('handle')
+            ->with($this->identicalTo($message))
+            ->willReturn(self::promise(true));
+
+        $this->assertTrue($this->consumer->once(self::Q));
+    }
+
     public function testOnceWithAFailedMessageAndValidRetryPutsTheMessageBackInTheQueue()
     {
         $this->withMessage();

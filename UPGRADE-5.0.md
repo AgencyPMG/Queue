@@ -199,6 +199,26 @@ final class CustomRouter implements Router
 }
 ```
 
+## `MessageHandler::handle` Now Accept an Object
+
+Any custom implementation of `MessageHandler` will need to be udpated.
+
+```diff
+ use GuzzleHttp\Promise\PromiseInterface;
+ use PMG\Queue\MessageHandler;
+-use PMG\Queue\Message;
+
+ class SomeHandler implements MessageHandler
+ {
+-   public function handle(Message $message, array $options=[]) : PromiseInterface
++   public function handle(object $message, array $options=[]) : PromiseInterface
+    {
+        // ...
+    }
+ }
+```
+
+
 ## Internals
 
 All changes here are only relevant to authors of `PMG\Queue\Driver`,

@@ -176,7 +176,7 @@ class DefaultConsumer extends AbstractConsumer
         return $retry;
     }
 
-    protected function handleMessage(Message $message)
+    protected function handleMessage(object $message)
     {
         try {
             $this->currentPromise = $this->getHandler()->handle(

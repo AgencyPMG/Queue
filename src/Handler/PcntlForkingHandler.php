@@ -59,7 +59,7 @@ final class PcntlForkingHandler implements MessageHandler
      * `MessageHandler`. Just be sure to return `false` (the job failed) so it
      * can be retried.
      */
-    public function handle(Message $message, array $options=[]) : PromiseInterface
+    public function handle(object $message, array $options=[]) : PromiseInterface
     {
         // this is outside the promise so both the cancel and wait
         // callbacks have access to the child's PID
