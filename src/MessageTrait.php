@@ -26,7 +26,7 @@ namespace PMG\Queue;
 trait MessageTrait
 {
     /**
-     * @see NamedMessage::getName
+     * @see Message::getName
      */
     public function getName() : string
     {

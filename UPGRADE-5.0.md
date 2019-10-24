@@ -4,93 +4,21 @@
 
 Stick with version 4.X should PHP 7.0 or 7.1 support be required.
 
-## No More `Message` Names by Default
+## Message No Longer Need to Implement `PMG\Queue\Message`
 
-Previously the `PMG\Queue\Message` interface required a `getName` method. It
-no longer does. Instead the names default to the fully qualified class name
-(FQCN) of the message.
+Producers and consumers can now deal with plain objects. By default the *message name*
+for plain object messgaes is the fully qualified class name (FQCN).
 
-Should the old behavior still be desired, implement the `PMG\Queue\NamedMessage`
-interface which still includes the `getName` method.
+You may, however, implement `PMG\Queue\Message` (and its `getName` method) should
+you want to continue using message names other than FQCNs.
 
 The `PMG\Queue\MessageTrait` which provided the FQCN as a name behavior was also
 removed.
 
-#### Version 4.X (with FQCN as Message Name)
-
-```php
-
-namespace Acme\QueueExample;
-
-use PMG\Queue\Message;
-
-final class SomeMessage implements Message
-{
-    public function getName()
-    {
-        return __CLASS__;
-    }
-
-    // ...
-}
-```
-
-#### Version 5.X (with FQCN as Message Name)
-
-```php
-
-namespace Acme\QueueExample;
-
-use PMG\Queue\Message;
-
-final class SomeMessage implements Message
-{
-    // message name is now `Acme\QueueExample\SomeMessage`
-    // ...
-}
-```
-
-#### Version 4.X (with Custom Message Name)
-
-```php
-
-namespace Acme\QueueExample;
-
-use PMG\Queue\Message;
-
-final class SomeMessage implements Message
-{
-    public function getName()
-    {
-        return 'SomeMessage';
-    }
-
-    // ...
-}
-```
-
-#### Version 5.X (with Custom Message Name)
-
-```php
-
-namespace Acme\QueueExample;
-
-use PMG\Queue\NamedMessage;
-
-final class SomeMessage implements NamedMessage
-{
-    public function getName()
-    {
-        return 'SomeMessage';
-    }
-
-    // ...
-}
-```
-
 ### Router Updates for Message Names
 
-Additionally, the producers routing configuration may need to be updated.
+The producers routing configuration may need to be updated should you choose to
+use FQCNs as the message names.
 
 #### Version 4.X
 

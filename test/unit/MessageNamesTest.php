@@ -13,9 +13,9 @@
 
 namespace PMG\Queue;
 
-class _NamesTestMsg implements Message
+class _NamesTestMsg
 {
-
+    // noop
 }
 
 class MessageNamesTest extends UnitTestCase
@@ -24,7 +24,7 @@ class MessageNamesTest extends UnitTestCase
 
     public function testNameOfReturnsTheValueOfMessageGetName()
     {
-        $msg = $this->createMock(NamedMessage::class);
+        $msg = $this->createMock(Message::class);
         $msg->expects($this->once())
             ->method('getName')
             ->willReturn('test');
@@ -32,7 +32,7 @@ class MessageNamesTest extends UnitTestCase
         $this->assertSame('test', self::nameOf($msg));
     }
 
-    public function testNameOfReturnsTheFullyQualifiedClassNameOfAMessageWhenNotNamed()
+    public function testNameOfReturnsTheFullyQualifiedClassNameOfAWhenNotImplementingMessage()
     {
         $name = self::nameOf(new _NamesTestMsg());
 
