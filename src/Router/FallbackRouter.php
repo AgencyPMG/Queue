@@ -13,7 +13,6 @@
 
 namespace PMG\Queue\Router;
 
-use PMG\Queue\Message;
 use PMG\Queue\Router;
 
 /**

@@ -13,9 +13,7 @@
 
 namespace PMG\Queue\Lifecycle;
 
-
 use PMG\Queue\Consumer;
-use PMG\Queue\Message;
 use PMG\Queue\MessageLifecycle;
 
 /**

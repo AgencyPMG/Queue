@@ -13,9 +13,7 @@
 
 namespace PMG\Queue\Lifecycle;
 
-
 use PMG\Queue\Consumer;
-use PMG\Queue\Message;
 use PMG\Queue\MessageLifecycle;
 use PMG\Queue\MessageNames;
 use PMG\Queue\Exception\InvalidArgumentException;
@@ -111,7 +109,7 @@ final class MappingLifecycle implements MessageLifecycle
         return isset($this->mapping[$messageName]);
     }
 
-    private function lifecycleFor(Message $message) : MessageLifecycle
+    private function lifecycleFor(object $message) : MessageLifecycle
     {
         $name = self::nameOf($message);
         return $this->has($name) ? $this->mapping[$name] : $this->fallback;

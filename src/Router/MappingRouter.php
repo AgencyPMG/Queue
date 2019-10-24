@@ -13,8 +13,8 @@
 
 namespace PMG\Queue\Router;
 
-use PMG\Queue\Message;
 use PMG\Queue\MessageNames;
+use PMG\Queue\Router;
 use PMG\Queue\Exception\InvalidArgumentException;
 
 /**
@@ -23,7 +23,7 @@ use PMG\Queue\Exception\InvalidArgumentException;
  *
  * @since   2.0
  */
-final class MappingRouter implements \PMG\Queue\Router
+final class MappingRouter implements Router
 {
     use MessageNames;
 

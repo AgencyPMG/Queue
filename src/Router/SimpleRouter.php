@@ -13,14 +13,14 @@
 
 namespace PMG\Queue\Router;
 
-use PMG\Queue\Message;
+use PMG\Queue\Router;
 
 /**
  * A router that always returns the same queue name for every message.
  *
  * @since   2.0
  */
-final class SimpleRouter implements \PMG\Queue\Router
+final class SimpleRouter implements Router
 {
     /**
      * @var string
