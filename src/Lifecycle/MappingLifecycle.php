@@ -13,9 +13,7 @@
 
 namespace PMG\Queue\Lifecycle;
 
-
 use PMG\Queue\Consumer;
-use PMG\Queue\Message;
 use PMG\Queue\MessageLifecycle;
 use PMG\Queue\MessageNames;
 use PMG\Queue\Exception\InvalidArgumentException;
@@ -63,7 +61,7 @@ final class MappingLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function starting(Message $message, Consumer $consumer)
+    public function starting(object $message, Consumer $consumer)
     {
         $this->lifecycleFor($message)->starting($message, $consumer);
     }
@@ -71,7 +69,7 @@ final class MappingLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function completed(Message $message, Consumer $consumer)
+    public function completed(object $message, Consumer $consumer)
     {
         $this->lifecycleFor($message)->completed($message, $consumer);
     }
@@ -79,7 +77,7 @@ final class MappingLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function retrying(Message $message, Consumer $consumer)
+    public function retrying(object $message, Consumer $consumer)
     {
         $this->lifecycleFor($message)->retrying($message, $consumer);
     }
@@ -87,7 +85,7 @@ final class MappingLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function failed(Message $message, Consumer $consumer)
+    public function failed(object $message, Consumer $consumer)
     {
         $this->lifecycleFor($message)->failed($message, $consumer);
     }
@@ -95,7 +93,7 @@ final class MappingLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function succeeded(Message $message, Consumer $consumer)
+    public function succeeded(object $message, Consumer $consumer)
     {
         $this->lifecycleFor($message)->succeeded($message, $consumer);
     }
@@ -111,7 +109,7 @@ final class MappingLifecycle implements MessageLifecycle
         return isset($this->mapping[$messageName]);
     }
 
-    private function lifecycleFor(Message $message) : MessageLifecycle
+    private function lifecycleFor(object $message) : MessageLifecycle
     {
         $name = self::nameOf($message);
         return $this->has($name) ? $this->mapping[$name] : $this->fallback;

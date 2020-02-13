@@ -31,7 +31,7 @@ interface MessageLifecycle
      * @param $consumer The consumer that's doing the work
      * @return void
      */
-    public function starting(Message $message, Consumer $consumer);
+    public function starting(object $message, Consumer $consumer);
 
     /**
      * Called when a message completes regardless of whether it was successful.
@@ -40,7 +40,7 @@ interface MessageLifecycle
      * @param $consumer The consumer that did the work
      * @return void
      */
-    public function completed(Message $message, Consumer $consumer);
+    public function completed(object $message, Consumer $consumer);
 
     /**
      * Called when a message failed and is retrying.
@@ -52,7 +52,7 @@ interface MessageLifecycle
      * @param $consumer The consumer that did the work
      * @return void
      */
-    public function retrying(Message $message, Consumer $consumer);
+    public function retrying(object $message, Consumer $consumer);
 
     /**
      * Called when a message failed.
@@ -66,7 +66,7 @@ interface MessageLifecycle
      * @param $consumer The consumer that did the work
      * @return void
      */
-    public function failed(Message $message, Consumer $consumer);
+    public function failed(object $message, Consumer $consumer);
 
     /**
      * Called when message processing was successful.
@@ -75,5 +75,5 @@ interface MessageLifecycle
      * @param $consumer The consumer that did the work
      * @return void
      */
-    public function succeeded(Message $message, Consumer $consumer);
+    public function succeeded(object $message, Consumer $consumer);
 }

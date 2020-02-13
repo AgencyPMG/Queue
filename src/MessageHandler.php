@@ -33,5 +33,5 @@ interface MessageHandler
      *         or false if the handler failed. Since handlers may process messages
      *         outside the current thread, we're limited to a boolean here.
      */
-    public function handle(Message $message, array $options=[]) : PromiseInterface;
+    public function handle(object $message, array $options=[]) : PromiseInterface;
 }

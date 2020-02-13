@@ -43,7 +43,7 @@ final class CallableHandler implements MessageHandler
      * This *always* resolves with the values from the callback. If the callback
      * throws something that will result in a rejected promise.
      */
-    public function handle(Message $message, array $options=[]) : PromiseInterface
+    public function handle(object $message, array $options=[]) : PromiseInterface
     {
         $promise = new Promise(function () use (&$promise, $message, $options) {
             $promise->resolve(call_user_func(

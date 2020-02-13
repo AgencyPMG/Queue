@@ -42,9 +42,9 @@ interface Envelope
     /**
      * Get the wrapped message.
      *
-     * @return  Message
+     * @return object the actual message
      */
-    public function unwrap() : Message;
+    public function unwrap() : object;
 
     /**
      * Returns a new envelop with all the same attributes but an incremented

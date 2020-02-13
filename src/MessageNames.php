@@ -15,9 +15,9 @@ namespace PMG\Queue;
 
 trait MessageNames
 {
-    protected static function nameOf(Message $message) : string
+    protected static function nameOf(object $message) : string
     {
-        if ($message instanceof NamedMessage) {
+        if ($message instanceof Message) {
             return $message->getName();
         }
 

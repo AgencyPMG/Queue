@@ -13,8 +13,8 @@
 
 namespace PMG\Queue\Router;
 
-use PMG\Queue\Message;
 use PMG\Queue\MessageNames;
+use PMG\Queue\Router;
 use PMG\Queue\Exception\InvalidArgumentException;
 
 /**
@@ -23,7 +23,7 @@ use PMG\Queue\Exception\InvalidArgumentException;
  *
  * @since   2.0
  */
-final class MappingRouter implements \PMG\Queue\Router
+final class MappingRouter implements Router
 {
     use MessageNames;
 
@@ -50,7 +50,7 @@ final class MappingRouter implements \PMG\Queue\Router
     /**
      * {@inheritdoc}
      */
-    public function queueFor(Message $message) : ?string
+    public function queueFor(object $message) : ?string
     {
         $name = self::nameOf($message);
         return isset($this->map[$name]) ? $this->map[$name] : null;

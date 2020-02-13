@@ -4,93 +4,21 @@
 
 Stick with version 4.X should PHP 7.0 or 7.1 support be required.
 
-## No More `Message` Names by Default
+## Message No Longer Need to Implement `PMG\Queue\Message`
 
-Previously the `PMG\Queue\Message` interface required a `getName` method. It
-no longer does. Instead the names default to the fully qualified class name
-(FQCN) of the message.
+Producers and consumers can now deal with plain objects. By default the *message name*
+for plain object messgaes is the fully qualified class name (FQCN).
 
-Should the old behavior still be desired, implement the `PMG\Queue\NamedMessage`
-interface which still includes the `getName` method.
+You may, however, implement `PMG\Queue\Message` (and its `getName` method) should
+you want to continue using message names other than FQCNs.
 
 The `PMG\Queue\MessageTrait` which provided the FQCN as a name behavior was also
 removed.
 
-#### Version 4.X (with FQCN as Message Name)
-
-```php
-
-namespace Acme\QueueExample;
-
-use PMG\Queue\Message;
-
-final class SomeMessage implements Message
-{
-    public function getName()
-    {
-        return __CLASS__;
-    }
-
-    // ...
-}
-```
-
-#### Version 5.X (with FQCN as Message Name)
-
-```php
-
-namespace Acme\QueueExample;
-
-use PMG\Queue\Message;
-
-final class SomeMessage implements Message
-{
-    // message name is now `Acme\QueueExample\SomeMessage`
-    // ...
-}
-```
-
-#### Version 4.X (with Custom Message Name)
-
-```php
-
-namespace Acme\QueueExample;
-
-use PMG\Queue\Message;
-
-final class SomeMessage implements Message
-{
-    public function getName()
-    {
-        return 'SomeMessage';
-    }
-
-    // ...
-}
-```
-
-#### Version 5.X (with Custom Message Name)
-
-```php
-
-namespace Acme\QueueExample;
-
-use PMG\Queue\NamedMessage;
-
-final class SomeMessage implements NamedMessage
-{
-    public function getName()
-    {
-        return 'SomeMessage';
-    }
-
-    // ...
-}
-```
-
 ### Router Updates for Message Names
 
-Additionally, the producers routing configuration may need to be updated.
+The producers routing configuration may need to be updated should you choose to
+use FQCNs as the message names.
 
 #### Version 4.X
 
@@ -199,10 +127,82 @@ final class CustomRouter implements Router
 }
 ```
 
+## `MessageHandler::handle` Now Accept an Object
+
+Any custom implementation of `MessageHandler` will need to be udpated.
+
+```diff
+ use GuzzleHttp\Promise\PromiseInterface;
+ use PMG\Queue\MessageHandler;
+-use PMG\Queue\Message;
+
+ class SomeHandler implements MessageHandler
+ {
+-   public function handle(Message $message, array $options=[]) : PromiseInterface
++   public function handle(object $message, array $options=[]) : PromiseInterface
+    {
+        // ...
+    }
+ }
+```
+
+
 ## Internals
 
 All changes here are only relevant to authors of `PMG\Queue\Driver`,
 `PMG\Queue\Consumer`, or `PMG\Queue\Producer` implementations.
+
+### `Producer::send` Now Takes an `object` Instead of a `Message`
+
+And `send` now has a `void` return type as well.
+
+This is part of a broader change (see above) around pmg/queue dealing with
+plain `object` without the requirement of a `Message` implementation.
+
+```diff
+-use PMG\Queue\Message;
+ use PMG\Queue\Producer;
+
+ class SomeProducer implements Producer
+ {
+
+-   public function send(Message $message)
++   public function send(object $message) : void
+    {
+        // ...
+    }
+ }
+```
+
+### `Driver::enqueue` Now Takes an `object` Instead of a `Message`
+
+Drivers should handle receiving an `Envelope` instance in this method as well.
+Should that happen the driver *must* use that envelope instead of creating its
+own.
+
+
+```diff
+ use PMG\Queue\Driver;
+ use PMG\Queue\DefaultEnvelope;
+-use PMG\Queue\Message;
+ use PMG\Queue\Envelope;
+
+ final class SomeDriver implements Driver
+ {
+     // ...
+
+-    public function enqueue(string $queueName, Message $message) : Envelope
++    public function enqueue(string $queueName, object $message) : Envelope
+     {
+-       $e = new DefaultEnvelope($message);
++       $e = $message instanceof Envelope ? $message : new DefaultEnvelope($message);
+
+        $this->queueUpTheMessageSomehow($queueName, $e);
+
+        return $e;
+     }
+ }
+```
 
 ### Drivers Should No Longer Call `Envelope::retry`
 

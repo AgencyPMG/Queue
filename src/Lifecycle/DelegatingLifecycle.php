@@ -13,9 +13,7 @@
 
 namespace PMG\Queue\Lifecycle;
 
-
 use PMG\Queue\Consumer;
-use PMG\Queue\Message;
 use PMG\Queue\MessageLifecycle;
 
 /**
@@ -54,7 +52,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function starting(Message $message, Consumer $consumer)
+    public function starting(object $message, Consumer $consumer)
     {
         $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
             $ml->starting($message, $consumer);
@@ -64,7 +62,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function completed(Message $message, Consumer $consumer)
+    public function completed(object $message, Consumer $consumer)
     {
         $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
             $ml->completed($message, $consumer);
@@ -74,7 +72,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function retrying(Message $message, Consumer $consumer)
+    public function retrying(object $message, Consumer $consumer)
     {
         $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
             $ml->retrying($message, $consumer);
@@ -84,7 +82,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function failed(Message $message, Consumer $consumer)
+    public function failed(object $message, Consumer $consumer)
     {
         $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
             $ml->failed($message, $consumer);
@@ -94,7 +92,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function succeeded(Message $message, Consumer $consumer)
+    public function succeeded(object $message, Consumer $consumer)
     {
         $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
             $ml->succeeded($message, $consumer);

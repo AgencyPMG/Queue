@@ -27,5 +27,5 @@ interface Router
      * @param   $message The message to look up.
      * @return  string|null The queue name if found or `null` otherwise.
      */
-    public function queueFor(Message $message) : ?string;
+    public function queueFor(object $message) : ?string;
 }

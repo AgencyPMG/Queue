@@ -18,7 +18,7 @@ namespace PMG\Queue;
  *
  * @since   2.0
  */
-final class SimpleMessage implements NamedMessage
+final class SimpleMessage implements Message
 {
     private $name;
     private $payload;

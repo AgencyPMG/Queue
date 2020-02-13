@@ -8,11 +8,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - PHP 7.2+ is required.
+- Implementing `PMG\Queue\Message` is no longer required! Messages passed
+  to the the producer and handled by the consumer can be any PHP object now.
+  In the cases where a plain object is used, the message *name* is the full
+  qualified class name. However, you may implement `Message` should you desire to
+  keep the old behavior of having a specific message name that differs from the
+  FQCN.
+- `PMG\Queue\Router::queueFor` now typehints against `object` instead of
+  `Message`.
+- All `PMG\Queue\MessageLifecycle` methods now typehint against `object`.
+- `PMG\Queue\Envelope` and `DefaultEnvelope` now deal with `object` messages
+  only and do not typehint again `Message`.
+- `PMG\Queue\Driver::enqueue` now typehints agains `object` instead of message.
+  if a driver gets an `Envelope` instance it should use that instead of creating
+  its own envelope. See [`UPGRADE-5.0.md`](/UPGRADE-5.0.md) for more details.
+- `PMG\Queue\MessageHandler::handle` now typehints against `object` instead of
+  `Message`.
+- `PMG\Queue\Producer::send` now typehints against `object` instead of `Message`.
 - `MessageLifecycle::failed` no longer has an `$isRetrying` argument, instead
   `MessageLifecycyle::retrying` will be called instead.
-- The `Message` interface no longer has a `getName` method.
-  Instead the *name* of a message is its fully qualified class name. Should the
-  old behavior still be desired, implement `PMG\Queue\NamedMessage` instead.
 - `PMG\Queue\Router::queueFor` now has a `?string` return type.
 - Drivers should no longer call `Envelope::retry` instead, instead consumers
   should call this method along with any delay required from the `RetrySpec`.
@@ -28,8 +42,6 @@ n/a
   a message fails and is retrying.
 - `PMG\Queue\Lifecycle\DelegatingLifecycle` has a new named constructor:
   `fromIterable`. This uses PHP 7.1's `iterable` pseudo type.
-- A `PMG\Queue\NamedMessage` interface to enable the old behavior of
-  `Message::getName`.
 - `RetrySpec::retryDelay` method added to allow a message to be delayed when
   retrying, if the driver supports it.
 - `Envelope::retry` now accepts an `int $delay` to support delayed retries. Not all
@@ -43,6 +55,7 @@ n/a
 
 - `PMG\Queue\NullLifecycle` was removed (deprecated in version 4.2), use
   `PMG\Queue\Lifecycle\NullLifecycle` instead.
+- `PMG\Queue\Exception\MessageFailed` was removed (it was unused in the core).
 
 ### Deprecations
 

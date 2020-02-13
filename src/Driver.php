@@ -36,7 +36,7 @@ interface Driver
      * @throws  Exception\DriverError when something goes wrong
      * @return  Envelope An envelop representing the message in the queue.
      */
-    public function enqueue(string $queueName, Message $message) : Envelope;
+    public function enqueue(string $queueName, object $message) : Envelope;
 
     /**
      * Pull a message out of the queue.

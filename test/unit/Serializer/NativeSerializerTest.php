@@ -58,19 +58,6 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
         $this->serializer->unserialize('invalid|'.$this->envMessage);
     }
 
-    public function testUnserializeErrorsWhenTheEnvelopeGetsAnUnexpectedValue()
-    {
-        $this->expectException(SerializationError::class);
-        $this->expectExceptionMessage('expected its message property to be unserialized with an instance of PMG\Queue\Message');
-        $s = new NativeSerializer($this->signer, [DefaultEnvelope::class]);
-        $this->willVerifyMessage($this->envMessage);
-
-        // Causes the error. We can serialize whatever, but `SimpleMessage` isn't
-        // in the unserialization whitelist. This causes the envelope to get an
-        // instance of __PHP_Incomplete_Class
-        $s->unserialize($this->sigMessage);
-    }
-
     public function testUnserializeErrorsWhenTheSerializedStringIsInvalid()
     {
         $this->expectException(SerializationError::class);
