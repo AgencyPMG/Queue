@@ -1,8 +1,8 @@
 # Upgrade from 4.X to 5.X
 
-## PHP Version Requirement Bumped to ~7.2
+## PHP Version Requirement Bumped to ~7.3
 
-Stick with version 4.X should PHP 7.0 or 7.1 support be required.
+Stick with version 4.X should PHP 7.0, 7.1, or 7.2 support be required.
 
 ## Message No Longer Need to Implement `PMG\Queue\Message`
 

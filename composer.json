@@ -6,7 +6,7 @@
         { "name": "Christopher Davis", "email": "chris@pmg.com" }
     ],
     "require": {
-        "php": "~7.2",
+        "php": "~7.3",
         "psr/log": "~1.0",
         "guzzlehttp/promises": "~1.3"
 
