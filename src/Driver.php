@@ -45,7 +45,7 @@ interface Driver
      * @throws  Exception\DriverError when something goes wrong
      * @return  Envelope|null An envelope if a message is found, null otherwise
      */
-    public function dequeue(string $queueName);
+    public function dequeue(string $queueName) : ?Envelope;
 
     /**
      * Acknowledge a message as complete.
@@ -56,7 +56,7 @@ interface Driver
      * @throws  Exception\DriverError when something goes wrong
      * @return  void
      */
-    public function ack(string $queueName, Envelope $envelope);
+    public function ack(string $queueName, Envelope $envelope) : void;
 
     /**
      * Retry a job -- put it back in the queue for retrying.
@@ -78,7 +78,7 @@ interface Driver
      * @throws  Exception\DriverError when something goes wrong
      * @return  void
      */
-    public function fail(string $queueName, Envelope $envelope);
+    public function fail(string $queueName, Envelope $envelope) : void;
 
     /**
      * Release a message back to a ready state. This is used by the consumer
@@ -91,5 +91,5 @@ interface Driver
      * @throws Exception\DriverError if something goes wrong
      * @return void
      */
-    public function release(string $queueName, Envelope $envelope);
+    public function release(string $queueName, Envelope $envelope) : void;
 }

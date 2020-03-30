@@ -330,3 +330,10 @@ final class SomeConsumer implements Consumer
     }
 }
 ```
+
+### Drivers Have Stricter Return Types
+
+Everything but `Driver::enqueue` and `Driver::dequeue` now have `void` return
+types.
+
+`Driver::dequeue` has an `?Envelope` return type.
