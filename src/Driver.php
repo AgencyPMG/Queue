@@ -65,9 +65,10 @@ interface Driver
      * @param   $envelope The message envelope -- should be the same instance
      *          returned from `dequeue`
      * @throws  Exception\DriverError when something goes wrong
-     * @return  void
+     * @return  Envelope The envelope that was retried. This can be the same
+     *          envelope passed in or a new one depending on the drivers needs.
      */
-    public function retry(string $queueName, Envelope $envelope) : void;
+    public function retry(string $queueName, Envelope $envelope) : Envelope;
 
     /**
      * Fail a job -- this called when no more retries can be attempted.

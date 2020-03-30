@@ -241,9 +241,11 @@ final class SomeDriver implements Driver
 {
     // ...
 
-    public function retry(string $queueName, Envelope $envelope) : void
+    public function retry(string $queueName, Envelope $envelope) : Envelope
     {
         $this->queueUpTheMessageSomehow($queueName, $envelope);
+
+        return $envelope;
     }
 }
 ```
@@ -333,7 +335,8 @@ final class SomeConsumer implements Consumer
 
 ### Drivers Have Stricter Return Types
 
-Everything but `Driver::enqueue` and `Driver::dequeue` now have `void` return
-types.
 
-`Driver::dequeue` has an `?Envelope` return type.
+`Driver::{enqueue,dequeue,retry}` all have an `Envelope` return type (or
+`?Envelope` in the case of `dequeue`).
+
+`Driver::{ack,fail,release}` all have a `void` return type.
