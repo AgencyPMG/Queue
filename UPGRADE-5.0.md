@@ -79,12 +79,12 @@ use PMG\Queue\Lifecycle\NullLifecycle;
 
 class CustomLifecycle extends NullLifecycle
 {
-    public function retrying(Message $message, Consumer $consumer)
+    public function retrying(object $message, Consumer $consumer)
     {
         // do retrying thing
     }
 
-    public function failed(Message $message, Consumer $consumer)
+    public function failed(object $message, Consumer $consumer)
     {
         // do failed thing
     }
@@ -277,7 +277,7 @@ final class SomeConsumer implements Consumer
         }
 
         try {
-            $this->processTheMessageSomehow($
+            $this->processTheMessageSomehow($queueName, $envelope);
         } catch (\Exception $e) {
             if ($this->retries->canRetry($envelope)) {
                 $this->driver->retry($envelope); // <-- No `$envelope->retry(...)`
@@ -318,7 +318,7 @@ final class SomeConsumer implements Consumer
         }
 
         try {
-            $this->processTheMessageSomehow($
+            $this->processTheMessageSomehow($queueName, $envelope);
         } catch (\Exception $e) {
             if ($this->retries->canRetry($envelope)) {
                 $delay = $this->retries->retryDelay($envelope);
