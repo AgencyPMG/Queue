@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- PHP 7.2+ is required.
+- PHP 7.3+ is required.
 - Implementing `PMG\Queue\Message` is no longer required! Messages passed
   to the the producer and handled by the consumer can be any PHP object now.
   In the cases where a plain object is used, the message *name* is the full
