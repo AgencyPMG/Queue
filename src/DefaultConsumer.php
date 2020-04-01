@@ -128,6 +128,7 @@ class DefaultConsumer extends AbstractConsumer
                 'msg' => self::nameOf($message),
                 'cls' => get_class($e),
                 'err' => $e->getMessage(),
+                'exception' => $e,
             ]);
             return [$result, true];
         } catch (\Exception $e) {
@@ -138,7 +139,8 @@ class DefaultConsumer extends AbstractConsumer
             $this->getLogger()->critical('Unexpected {cls} exception handling {name} message: {msg}', [
                 'cls'   => get_class($e),
                 'name'  => self::nameOf($message),
-                'msg'   => $e->getMessage()
+                'msg'   => $e->getMessage(),
+                'exception' => $e,
             ]);
             $result = false;
         }

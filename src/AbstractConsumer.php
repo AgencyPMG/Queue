@@ -66,6 +66,7 @@ abstract class AbstractConsumer implements Consumer
             } catch (Exception\MustStop $e) {
                 $this->getLogger()->warning('Caught a must stop exception, exiting: {msg}', [
                     'msg'   => $e->getMessage(),
+                    'exception' => $e,
                 ]);
                 $this->stop($e->getCode());
             } catch (\Throwable $e) {
@@ -95,11 +96,12 @@ abstract class AbstractConsumer implements Consumer
         return $this->logger;
     }
 
-    protected function logFatalAndStop($exception)
+    protected function logFatalAndStop(\Throwable $exception)
     {
         $this->getLogger()->emergency('Caught an unexpected {cls} exception, exiting: {msg}', [
             'cls' => get_class($exception),
             'msg' => $exception->getMessage(),
+            'exception' => $exception,
         ]);
         $this->stop(self::EXIT_ERROR);
     }
