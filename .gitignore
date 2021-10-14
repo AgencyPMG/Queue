@@ -1,6 +1,7 @@
 /vendor*
 /coverage*
 composer.lock
+.phpunit.result.cache
 *.swp
 *.dmg
 *.gz

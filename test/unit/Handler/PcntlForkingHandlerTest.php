@@ -155,7 +155,7 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
         }
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->message = new SimpleMessage(self::NAME);
     }

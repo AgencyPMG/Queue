@@ -39,7 +39,7 @@ class ForkingHandlerIntTest extends IntegrationTestCase
         $this->assertSame(1, $exitCode);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         pcntl_signal(SIGALRM, SIG_DFL);
         pcntl_async_signals(true);

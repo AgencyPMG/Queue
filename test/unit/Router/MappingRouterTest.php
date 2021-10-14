@@ -14,6 +14,7 @@
 namespace PMG\Queue\Router;
 
 use PMG\Queue\SimpleMessage;
+use PMG\Queue\Exception\InvalidArgumentException;
 
 class MappingRouterTest extends \PMG\Queue\UnitTestCase
 {
@@ -55,10 +56,10 @@ class MappingRouterTest extends \PMG\Queue\UnitTestCase
 
     /**
      * @dataProvider invalidMappings
-     * @expectedException PMG\Queue\Exception\InvalidArgumentException
      */
     public function testRouterCannotBeCreatedWithInvalidMapping($map)
     {
+        $this->expectException(InvalidArgumentException::class);
         new MappingRouter($map);
     }
 }

@@ -15,6 +15,7 @@ namespace PMG\Queue\Retry;
 
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\SimpleMessage;
+use PMG\Queue\Exception\InvalidArgumentException;
 
 class LimitSpecTest extends \PMG\Queue\UnitTestCase
 {
@@ -27,19 +28,19 @@ class LimitSpecTest extends \PMG\Queue\UnitTestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
      * @dataProvider badAttempts
      */
     public function testCreatingLimitSpecFailsWithInvalidAttempts($attempts)
     {
+        $this->expectException(InvalidArgumentException::class);
+
         new LimitedSpec($attempts);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testCreatingLimitSpecFailsWithInvalidDelay()
     {
+        $this->expectException(InvalidArgumentException::class);
+
         new LimitedSpec(5, -5);
     }
 

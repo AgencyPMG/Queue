@@ -118,7 +118,7 @@ class MappingLifecycleTest extends LifecycleTestCase
         call_user_func([$this->lifecycle, $method], $this->message, $this->consumer);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->child = $this->mockLifecycle();

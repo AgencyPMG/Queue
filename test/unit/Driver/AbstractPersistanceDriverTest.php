@@ -82,7 +82,7 @@ class AbstractPersistanceDriverTest extends \PMG\Queue\UnitTestCase
         $this->createInvalidDriver()->unserialize(serialize($this->envelope));
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->envelope = new DefaultEnvelope(new SimpleMessage('Test'));
     }

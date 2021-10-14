@@ -35,15 +35,9 @@ use PMG\Queue\Handler\Pcntl\Pcntl;
  */
 final class PcntlForkingHandler implements MessageHandler
 {
-    /**
-     * @var MessageHandler
-     */
-    private $wrapped;
+    private MessageHandler $wrapped;
 
-    /**
-     * @var Pcntl
-     */
-    private $pcntl;
+    private Pcntl $pcntl;
 
     public function __construct(MessageHandler $wrapped, Pcntl $pcntl=null)
     {
@@ -74,6 +68,7 @@ final class PcntlForkingHandler implements MessageHandler
 
         $promise = new Promise(function () use (&$promise, $child) {
             $result = $this->pcntl->wait($child);
+
             // this happens when the promise is cancelled. We don't want to
             // to try and change the promise to resolved if that happens.
             if ($promise->getState() !== PromiseInterface::PENDING) {

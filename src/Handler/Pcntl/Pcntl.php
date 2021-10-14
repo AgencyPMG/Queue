@@ -16,7 +16,7 @@ namespace PMG\Queue\Handler\Pcntl;
 use PMG\Queue\Exception\AbnormalExit;
 
 /**
- * A very thing wrapper around the the `pcntl_*` functions and `exit` to deal
+ * A very thin wrapper around the the `pcntl_*` functions and `exit` to deal
  * with forking processes. This exists simply so we can mock it and validate that
  * `PcntlForkingHandler` works.
  *

@@ -79,7 +79,7 @@ class DefaultProducerTest extends UnitTestCase
         $this->producer->send($env);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->router = $this->createMock(Router::class);
         $this->driver = $this->createMock(Driver::class);

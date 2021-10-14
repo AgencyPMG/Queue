@@ -115,8 +115,8 @@ class DefaultConsumerTest extends UnitTestCase
         $messages = $this->logger->getMessages(LogLevel::CRITICAL);
 
         $this->assertCount(1, $messages);
-        $this->assertContains('oops', $messages[0]);
-        $this->assertContains('TestMessage', $messages[0]);
+        $this->assertStringContainsString('oops', $messages[0]);
+        $this->assertStringContainsString('TestMessage', $messages[0]);
     }
 
     public function testFailureWithMustStopAcksMessagesAndRethrows()
@@ -255,7 +255,7 @@ class DefaultConsumerTest extends UnitTestCase
         $this->consumer->once(self::Q);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->driver = $this->createMock(Driver::class);
         $this->handler = $this->createMock(MessageHandler::class);

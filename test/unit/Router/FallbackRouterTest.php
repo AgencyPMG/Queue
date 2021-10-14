@@ -36,7 +36,7 @@ class FallbackRouterTest extends \PMG\Queue\UnitTestCase
         $this->assertEquals(self::FALLBACK, $this->router->queueFor($this->message));
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->wrapped = $this->createMock(Router::class);
         $this->router = new FallbackRouter($this->wrapped, self::FALLBACK);

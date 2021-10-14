@@ -48,7 +48,7 @@ class DefaultEnvelopeTest extends UnitTestCase
         $e->retry(-1);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->message = new SimpleMessage('test');
     }

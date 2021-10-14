@@ -23,7 +23,7 @@ abstract class SignerTestCase extends \PMG\Queue\UnitTestCase
     {
         $mac = $this->signer->sign('hello, world');
 
-        $this->assertInternalType('string', $mac);
+        $this->assertIsString($mac);
         $this->assertNotEmpty($mac);
     }
 
@@ -45,7 +45,7 @@ abstract class SignerTestCase extends \PMG\Queue\UnitTestCase
         $this->assertFalse($result);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->signer = $this->createSigner();
     }
