@@ -62,7 +62,7 @@ class PcntlTest extends \PMG\Queue\UnitTestCase
         }
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->pcntl = new Pcntl();
     }

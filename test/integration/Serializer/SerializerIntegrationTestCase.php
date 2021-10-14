@@ -30,7 +30,7 @@ abstract class SerializerIntegrationTestCase extends \PMG\Queue\IntegrationTestC
     public function testSerializeReturnsAStringThatCanBeUnserialized()
     {
         $s = $this->serializer->serialize($this->env);
-        $this->assertInternalType('string', $s);
+        $this->assertIsString($s);
 
         $env = $this->serializer->unserialize($s);
         $this->assertEquals($this->env, $env);
@@ -56,7 +56,7 @@ abstract class SerializerIntegrationTestCase extends \PMG\Queue\IntegrationTestC
         $this->serializer->unserialize($str);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->serializer = $this->createSerializer();
         $this->env = new DefaultEnvelope(new SimpleMessage('t'));

@@ -15,6 +15,7 @@ namespace PMG\Queue\Retry;
 
 use PMG\Queue\Envelope;
 use PMG\Queue\RetrySpec;
+use PMG\Queue\Exception\InvalidArgumentException;
 
 /**
  * Retry a message a limited number of times.
@@ -31,14 +32,14 @@ final class LimitedSpec implements RetrySpec
     public function __construct(int $maxAttempts=null, int $retryDelay=0)
     {
         if (null !== $maxAttempts && $maxAttempts < 1) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 '$maxAttempts must be a positive integer, got "%s"',
                 $maxAttempts
             ));
         }
 
         if ($retryDelay < 0) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 '$retryDelay must be a positive integer, got "%s"',
                 $retryDelay
             ));

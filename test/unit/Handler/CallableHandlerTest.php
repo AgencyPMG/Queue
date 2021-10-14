@@ -50,7 +50,7 @@ class CallableHandlerTest extends \PMG\Queue\UnitTestCase
         $this->assertSame($calledWith, ['one' => true]);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->message = new SimpleMessage(self::NAME);
     }

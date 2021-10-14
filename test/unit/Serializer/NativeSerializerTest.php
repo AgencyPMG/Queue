@@ -34,8 +34,8 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
 
         $result = $this->serializer->serialize($this->env);
 
-        $this->assertContains(self::SIG, $result);
-        $this->assertContains($this->envMessage, $result);
+        $this->assertStringContainsString(self::SIG, $result);
+        $this->assertStringContainsString($this->envMessage, $result);
     }
 
     public function testUnserializeErrorsWhenTheMessageSignatureIsNotPresent()
@@ -87,7 +87,7 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
         $this->assertEquals($this->env, $result);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->signer = $this->createMock(Signer::class);
         $this->serializer = new NativeSerializer($this->signer);

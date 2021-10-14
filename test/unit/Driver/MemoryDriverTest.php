@@ -67,7 +67,7 @@ class MemoryDriverTest extends \PMG\Queue\UnitTestCase
         $this->assertSame($e, $e2);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->driver = new MemoryDriver();
     }

@@ -27,33 +27,33 @@ class AbstractConsumerTest extends UnitTestCase
      */
     public function testRunConsumesMessagesUntilConsumerIsStopped()
     {
-        $this->consumer->expects($this->at(0))
-            ->method('once')
-            ->with(self::Q);
-        $this->consumer->expects($this->at(1))
+        $this->consumer->expects($this->exactly(2))
             ->method('once')
             ->with(self::Q)
-            ->willThrowException(new Exception\SimpleMustStop('oops', 1));
+            ->will($this->onConsecutiveCalls(
+                true, // successful :tada:
+                $this->throwException(new Exception\SimpleMustStop('oops', 1))
+            ));
 
         $this->assertEquals(1, $this->consumer->run(self::Q));
     }
 
     public function testRunStopsWhenADriverErrorIsThrown()
     {
-        $this->consumer->expects($this->at(0))
-            ->method('once')
-            ->with(self::Q);
-        $this->consumer->expects($this->at(1))
+        $this->consumer->expects($this->exactly(2))
             ->method('once')
             ->with(self::Q)
-            ->willThrowException(new Exception\SerializationError('broke'));
+            ->will($this->onConsecutiveCalls(
+                true, // successful :tada:
+                $this->throwException(new Exception\SerializationError('broke'))
+            ));
 
         $result = $this->consumer->run(self::Q);
         $messages = $this->logger->getMessages(LogLevel::EMERGENCY);
 
         $this->assertEquals(DefaultConsumer::EXIT_ERROR, $result);
         $this->assertCount(1, $messages);
-        $this->assertContains('broke', $messages[0]);
+        $this->assertStringContainsString('broke', $messages[0]);
     }
 
     /**
@@ -61,23 +61,20 @@ class AbstractConsumerTest extends UnitTestCase
      */
     public function testRunStopsWhenAThrowableisCaught()
     {
-        $this->consumer->expects($this->at(0))
-            ->method('once')
-            ->with(self::Q);
-        $this->consumer->expects($this->at(1))
+        $this->consumer->expects($this->exactly(2))
             ->method('once')
             ->with(self::Q)
-            ->willReturnCallback(function () {
-                // phpunit can't take an `Error` class in `willThrowException`
-                throw new \Error('oops');
-            });
+            ->will($this->onConsecutiveCalls(
+                true, // successful :tada:
+                $this->throwException(new \Error('oops'))
+            ));
 
         $result = $this->consumer->run(self::Q);
         $messages = $this->logger->getMessages(LogLevel::EMERGENCY);
 
         $this->assertEquals(DefaultConsumer::EXIT_ERROR, $result);
         $this->assertCount(1, $messages);
-        $this->assertContains('oops', $messages[0]);
+        $this->assertStringContainsString('oops', $messages[0]);
     }
 
     public function testConsumerWithoutLoggerPassedInCreatesANullLoggerOnDemand()
@@ -99,18 +96,19 @@ class AbstractConsumerTest extends UnitTestCase
     public function testRunPassesGivenMessageLifecycleToOnce()
     {
         $lifecycle = $this->createMock(MessageLifecycle::class);
-        $this->consumer->expects($this->at(0))
-            ->method('once')
-            ->with(self::Q, $this->identicalTo($lifecycle));
-        $this->consumer->expects($this->at(1))
+        $this->consumer->expects($this->exactly(2))
             ->method('once')
             ->with(self::Q, $this->identicalTo($lifecycle))
-            ->willThrowException(new Exception\SimpleMustStop('oops', 1));
+            ->will($this->onConsecutiveCalls(
+                true, // successful :tada:
+                $this->throwException(new Exception\SimpleMustStop('oops', 1))
+            ));
+
 
         $this->assertEquals(1, $this->consumer->run(self::Q, $lifecycle));
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->logger = new CollectingLogger();
         $this->consumer = $this->getMockForAbstractClass(AbstractConsumer::class, [$this->logger]);

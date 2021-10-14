@@ -21,7 +21,7 @@ abstract class LifecycleTestCase extends \PMG\Queue\UnitTestCase
 {
     protected $consumer, $message;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->consumer = $this->createMock(Consumer::class);
         $this->message = new SimpleMessage('example');
