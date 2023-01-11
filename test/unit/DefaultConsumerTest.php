@@ -13,6 +13,7 @@
 
 namespace PMG\Queue;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use GuzzleHttp\Promise\FulfilledPromise;
 use Psr\Log\LogLevel;
 use PMG\Queue\Exception\SimpleMustStop;
@@ -21,7 +22,28 @@ class DefaultConsumerTest extends UnitTestCase
 {
     const Q = 'TestQueue';
 
-    private $driver, $handler, $retries, $consumer;
+    /**
+     * @var Driver&MockObject
+     */
+    private Driver $driver;
+
+    /**
+     * @var MessageHandler&MockObject
+     */
+    private MessageHandler $handler;
+   
+    /**
+     * @var RetrySpec&MockObject
+     */
+    private RetrySpec $retries;
+
+    private CollectingLogger $logger;
+
+    private DefaultConsumer $consumer;
+
+    private SimpleMessage $message;
+
+    private DefaultEnvelope $envelope;
 
     public function testOnceDoesNothingWhenTheQueueIsEmpty()
     {

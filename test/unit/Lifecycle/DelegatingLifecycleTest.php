@@ -44,17 +44,6 @@ class DelegatingLifecycleTest extends LifecycleTestCase
         call_user_func([$dl, $method], $this->message, $this->consumer);
     }
 
-    public function testDelegatingLifecyclesCanBeCreatedFromAnArray()
-    {
-        $dl = DelegatingLifecycle::fromArray([
-            $this->mockLifecycle(),
-            $this->mockLifecycle(),
-            $this->mockLifecycle(),
-        ]);
-
-        $this->assertCount(3, $dl, 'should have three child lifecycles');
-    }
-
     public function testDelegatingLifecyclesCanBeCreatedFromIterables()
     {
         $dl = DelegatingLifecycle::fromIterable((function () {
