@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.0.0
+
+See [the upgrade guide](UPGRADE-6.0.md) for more information.
+
+### Changed
+
+- PHP 8.0+ is required
+- Various interfaces have tightened return types
+
 ## 5.1.0
 
 ### Added

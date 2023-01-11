@@ -61,7 +61,7 @@ final class MappingLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function starting(object $message, Consumer $consumer)
+    public function starting(object $message, Consumer $consumer) : void
     {
         $this->lifecycleFor($message)->starting($message, $consumer);
     }
@@ -69,7 +69,7 @@ final class MappingLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function completed(object $message, Consumer $consumer)
+    public function completed(object $message, Consumer $consumer) : void
     {
         $this->lifecycleFor($message)->completed($message, $consumer);
     }
@@ -77,7 +77,7 @@ final class MappingLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function retrying(object $message, Consumer $consumer)
+    public function retrying(object $message, Consumer $consumer) : void
     {
         $this->lifecycleFor($message)->retrying($message, $consumer);
     }
@@ -85,7 +85,7 @@ final class MappingLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function failed(object $message, Consumer $consumer)
+    public function failed(object $message, Consumer $consumer) : void
     {
         $this->lifecycleFor($message)->failed($message, $consumer);
     }
@@ -93,7 +93,7 @@ final class MappingLifecycle implements MessageLifecycle
     /**
      * {@inheritdoc}
      */
-    public function succeeded(object $message, Consumer $consumer)
+    public function succeeded(object $message, Consumer $consumer) : void
     {
         $this->lifecycleFor($message)->succeeded($message, $consumer);
     }

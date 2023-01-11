@@ -17,12 +17,15 @@ final class CollectingLogger extends \Psr\Log\AbstractLogger
 {
     private $messages = [];
 
-    public function log($level, $msg, array $context=array())
+    public function log($level, $msg, array $context=array()) : void
     {
         $this->messages[$level][] = strtr($msg, $this->makeReplacements($context));
     }
 
-    public function getMessages($level=null)
+    /**
+     * @return string[]
+     */
+    public function getMessages($level=null) : array
     {
         if (null === $level) {
             return array_merge(...$this->messages);
@@ -32,6 +35,10 @@ final class CollectingLogger extends \Psr\Log\AbstractLogger
     }
 
 
+    /**
+     * @param array<string, mixed> $context
+     * @return array<string, string>
+     */
     private function makeReplacements(array $context)
     {
         $rv = [];

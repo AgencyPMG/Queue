@@ -71,7 +71,7 @@ class Pcntl
      * @param bool $successful If true `exit(0)` otherwise `exit(1)`
      * @return void
      */
-    public function quit($successful)
+    public function quit($successful) : void
     {
         exit($successful ? 0 : 1);
     }
@@ -83,7 +83,7 @@ class Pcntl
      * @param $sig The signal to send.
      * @return void
      */
-    public function signal(int $child, int $sig)
+    public function signal(int $child, int $sig) : void
     {
         posix_kill($child, $sig);
     }

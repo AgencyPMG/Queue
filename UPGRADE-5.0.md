@@ -4,7 +4,7 @@
 
 Stick with version 4.X should PHP 7.0, 7.1, or 7.2 support be required.
 
-## Message No Longer Need to Implement `PMG\Queue\Message`
+## Messages No Longer Need to Implement `PMG\Queue\Message`
 
 Producers and consumers can now deal with plain objects. By default the *message name*
 for plain object messgaes is the fully qualified class name (FQCN).

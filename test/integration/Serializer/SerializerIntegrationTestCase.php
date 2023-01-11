@@ -25,7 +25,9 @@ use PMG\Queue\Signer\HmacSha256;
  */
 abstract class SerializerIntegrationTestCase extends \PMG\Queue\IntegrationTestCase
 {
-    protected $serializer;
+    protected Serializer $serializer;
+
+    protected DefaultEnvelope $env;
 
     public function testSerializeReturnsAStringThatCanBeUnserialized()
     {

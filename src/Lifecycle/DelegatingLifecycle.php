@@ -33,17 +33,6 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
         $this->lifecycles = $lifecycles;
     }
 
-    public static function fromArray(array $lifecycles) : self
-    {
-        @trigger_error(sprintf(
-            '%s is deprecated as of version 5.0 and will be removed in 6.0, use %s::fromIterable instead',
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-
-        return new self(...$lifecycles);
-    }
-
     public static function fromIterable(iterable $lifecycles) : self
     {
         return new self(...$lifecycles);
@@ -52,7 +41,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function starting(object $message, Consumer $consumer)
+    public function starting(object $message, Consumer $consumer) : void
     {
         $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
             $ml->starting($message, $consumer);
@@ -62,7 +51,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function completed(object $message, Consumer $consumer)
+    public function completed(object $message, Consumer $consumer) : void
     {
         $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
             $ml->completed($message, $consumer);
@@ -72,7 +61,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function retrying(object $message, Consumer $consumer)
+    public function retrying(object $message, Consumer $consumer) : void
     {
         $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
             $ml->retrying($message, $consumer);
@@ -82,7 +71,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function failed(object $message, Consumer $consumer)
+    public function failed(object $message, Consumer $consumer) : void
     {
         $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
             $ml->failed($message, $consumer);
@@ -92,7 +81,7 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function succeeded(object $message, Consumer $consumer)
+    public function succeeded(object $message, Consumer $consumer) : void
     {
         $this->apply(function (MessageLifecycle $ml) use ($message, $consumer) {
             $ml->succeeded($message, $consumer);
@@ -102,12 +91,12 @@ final class DelegatingLifecycle implements MessageLifecycle, \Countable
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count() : int
     {
         return count($this->lifecycles);
     }
 
-    private function apply(callable $fn)
+    private function apply(callable $fn) : void
     {
         foreach ($this->lifecycles as $lifecycle) {
             $fn($lifecycle);

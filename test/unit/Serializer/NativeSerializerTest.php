@@ -13,6 +13,7 @@
 
 namespace PMG\Queue\Serializer;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PMG\Queue\Envelope;
 use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\SimpleMessage;
@@ -26,7 +27,18 @@ class NativeSerializerTest extends \PMG\Queue\UnitTestCase
 {
     const SIG = 'someHmac';
 
-    private $signer, $serializer, $env, $envMessage;
+    /**
+     * @var Signer&MockObject
+     */
+    private Signer $signer;
+
+    private NativeSerializer $serializer;
+
+    private DefaultEnvelope $env;
+
+    private string $envMessage;
+
+    private string $sigMessage;
 
     public function testSerializeNativeSerializersAndSignsTheMessageBeforeReturningIt()
     {
