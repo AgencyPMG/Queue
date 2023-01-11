@@ -66,7 +66,7 @@ class DefaultConsumer extends AbstractConsumer
     /**
      * {@inheritdoc}
      */
-    public function once(string $queueName, MessageLifecycle $lifecycle=null)
+    public function once(string $queueName, MessageLifecycle $lifecycle=null) : ?bool
     {
         $envelope = $this->driver->dequeue($queueName);
         if (!$envelope) {
@@ -96,7 +96,7 @@ class DefaultConsumer extends AbstractConsumer
     /**
      * {@inheritdoc}
      */
-    public function stop(int $code=null)
+    public function stop(int $code=null) : void
     {
         if ($this->currentPromise) {
             $this->currentPromise->cancel();
