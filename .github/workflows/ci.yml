@@ -1,0 +1,50 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    name: test
+    runs-on: "ubuntu-20.04"
+
+    strategy:
+      matrix:
+        include:
+          - php-version: 8.0
+          - php-version: 8.1
+          - php-version: 8.2
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: PHP
+        uses: ./.github/actions/setup-php
+        with:
+          php-version: "${{ matrix.php-version }}"
+      - name: tests
+        run: make test
+
+  test:
+    name: test
+    runs-on: "ubuntu-20.04"
+
+    strategy:
+      matrix:
+        include:
+          - php-version: 8.0
+          - php-version: 8.1
+          - php-version: 8.2
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: PHP
+        uses: ./.github/actions/setup-php
+        with:
+          php-version: "${{ matrix.php-version }}"
+
+      - name: examples
+        run: make examples
