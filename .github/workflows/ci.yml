@@ -27,8 +27,8 @@ jobs:
       - name: tests
         run: make test
 
-  test:
-    name: test
+  examples:
+    name: examples
     runs-on: "ubuntu-20.04"
 
     strategy:
