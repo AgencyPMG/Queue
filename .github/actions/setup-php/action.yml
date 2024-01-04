@@ -6,8 +6,8 @@ inputs:
   php-version:
     required: false
     type: string
-    description: the php version to use, defaults to 8.2
-    default: '8.2'
+    description: the php version to use, defaults to 8.3
+    default: '8.3'
 
 runs:
   using: composite
