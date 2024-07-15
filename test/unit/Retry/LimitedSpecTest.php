@@ -17,7 +17,7 @@ use PMG\Queue\DefaultEnvelope;
 use PMG\Queue\SimpleMessage;
 use PMG\Queue\Exception\InvalidArgumentException;
 
-class LimitSpecTest extends \PMG\Queue\UnitTestCase
+class LimitedSpecTest extends \PMG\Queue\UnitTestCase
 {
     public static function badAttempts()
     {
