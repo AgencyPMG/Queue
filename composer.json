@@ -33,7 +33,10 @@
     "autoload": {
         "psr-4": {
             "PMG\\Queue\\": "src/"
-        }
+        },
+        "files": [
+            "src/Otel/_register.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -41,10 +44,7 @@
                 "test/unit/",
                 "test/integration/"
             ]
-        },
-        "files": [
-            "src/Otel/_register.php"
-        ]
+        }
     },
     "extra": {
         "branch-alias": {
