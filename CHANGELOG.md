@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.1.1
+
+### Fixed
+
+- Fixed the open telemetry `_register.php` file autoload
+
 ## 6.1.0
 
 ### Added
