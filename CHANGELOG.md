@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.1.0
+
+### Added
+
+- Added open telemetry instrumentation around `Consumer::once` and
+  `Driver::enqueue`. These respect [messaging span](https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/)
+  semantic conventions.
+
 ## 6.0.0
 
 See [the upgrade guide](UPGRADE-6.0.md) for more information.
