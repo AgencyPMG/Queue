@@ -13,10 +13,22 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
-        "symfony/phpunit-bridge": "^5.4"
+        "symfony/phpunit-bridge": "^5.4",
+        "open-telemetry/api": "^1.0",
+        "open-telemetry/context": "^1.0",
+        "open-telemetry/sem-conv": "^1.25",
+        "open-telemetry/sdk": "^1.0",
+        "symfony/http-client": "^7.1",
+        "nyholm/psr7": "^1.8"
     },
     "suggest": {
-        "pmg/queue-pheanstalk": "Power pmg/queue with Beanstalkd"
+        "pmg/queue-pheanstalk": "Power pmg/queue with Beanstalkd",
+        "open-telemetry/api": "enables open telemetry auto instrumentation",
+        "open-telemetry/context": "enables open telemetry auto instrumentation",
+        "open-telemetry/sem-conv": "enables open telemetry auto instrumentation"
+    },
+    "conflict": {
+        "open-telemetry/sem-conv": "<1.25"
     },
     "autoload": {
         "psr-4": {
@@ -29,13 +41,21 @@
                 "test/unit/",
                 "test/integration/"
             ]
-        }
+        },
+        "files": [
+            "src/Otel/_register.php"
+        ]
     },
     "extra": {
         "branch-alias": {
             "dev-master": "4.0-dev",
             "dev-version-3": "3.0-dev",
             "dev-version-2": "2.0-dev"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
         }
     }
 }
