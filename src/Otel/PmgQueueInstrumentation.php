@@ -112,6 +112,8 @@ final class PmgQueueInstrumentation
                     $span->setStatus(StatusCode::STATUS_ERROR, $exception->getMessage());
                 } elseif ($result === false) {
                     $span->setStatus(StatusCode::STATUS_ERROR, 'Message was not handled successfully');
+                } elseif ($result === null) {
+                    $span->updateName($queueName.' empty-receive');
                 }
 
                 $span->end();
