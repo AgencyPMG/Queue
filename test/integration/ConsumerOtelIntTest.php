@@ -43,7 +43,7 @@ class ConsumerOtelIntTest extends OtelIntegrationTestCase
         $this->assertFalse($called);
         $this->assertCount(1, $this->spans);
         $span = $this->spans[0];
-        $this->assertSame(self::Q.' receive', $span->getName());
+        $this->assertSame(self::Q.' empty-receive', $span->getName());
         $attr = $span->getAttributes();
         $this->assertSame(self::Q, $attr->get(TraceAttributes::MESSAGING_DESTINATION_NAME));
         $this->assertSame('receive', $attr->get(PmgQueueInstrumentation::OPERATION_TYPE));
