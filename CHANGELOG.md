@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.1.2
+
+### Fixed
+
+- `once` calls with no message handled will have an `{queueName} empty-receive`
+  span name.
+
 ## 6.1.1
 
 ### Fixed
