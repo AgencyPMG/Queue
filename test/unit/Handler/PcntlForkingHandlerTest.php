@@ -160,7 +160,7 @@ class PcntlForkingHandlerTest extends \PMG\Queue\UnitTestCase
         $this->message = new SimpleMessage(self::NAME);
     }
 
-    private function createHandler(callable $callback, Pcntl $pcntl=null)
+    private function createHandler(callable $callback, ?Pcntl $pcntl=null)
     {
         return new PcntlForkingHandler(new CallableHandler($callback), $pcntl);
     }

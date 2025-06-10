@@ -41,13 +41,13 @@ final class NativeSerializer implements Serializer
      */
     private $signer;
 
-    public function __construct(Signer $signer, array $allowedClasses=null)
+    public function __construct(Signer $signer, ?array $allowedClasses=null)
     {
         $this->signer = $signer;
         $this->allowedClasses = $allowedClasses;
     }
 
-    public static function fromSigningKey(string $key, array $allowedClasses=null)
+    public static function fromSigningKey(string $key, ?array $allowedClasses=null)
     {
         return new self(new HmacSha256($key), $allowedClasses);
     }

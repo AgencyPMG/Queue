@@ -24,7 +24,7 @@ use PMG\Queue\Serializer\Serializer;
 // not called
 abstract class _DriverAbc extends AbstractPersistanceDriver
 {
-    public function __construct(Serializer $serializer=null)
+    public function __construct(?Serializer $serializer=null)
     {
         if ($serializer) {
             parent::__construct($serializer);
