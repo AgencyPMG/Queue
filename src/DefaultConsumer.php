@@ -54,8 +54,8 @@ class DefaultConsumer extends AbstractConsumer
     public function __construct(
         Driver $driver,
         MessageHandler $handler,
-        RetrySpec $retries=null,
-        LoggerInterface $logger=null
+        ?RetrySpec $retries=null,
+        ?LoggerInterface $logger=null
     ) {
         parent::__construct($logger);
         $this->driver = $driver;
@@ -66,7 +66,7 @@ class DefaultConsumer extends AbstractConsumer
     /**
      * {@inheritdoc}
      */
-    public function once(string $queueName, MessageLifecycle $lifecycle=null) : ?bool
+    public function once(string $queueName, ?MessageLifecycle $lifecycle=null) : ?bool
     {
         $envelope = $this->driver->dequeue($queueName);
         if (!$envelope) {
@@ -96,7 +96,7 @@ class DefaultConsumer extends AbstractConsumer
     /**
      * {@inheritdoc}
      */
-    public function stop(int $code=null) : void
+    public function stop(?int $code=null) : void
     {
         if ($this->currentPromise) {
             $this->currentPromise->cancel();

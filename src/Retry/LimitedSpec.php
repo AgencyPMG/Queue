@@ -29,7 +29,7 @@ final class LimitedSpec implements RetrySpec
     private $maxAttempts;
     private $retryDelay;
 
-    public function __construct(int $maxAttempts=null, int $retryDelay=0)
+    public function __construct(?int $maxAttempts=null, int $retryDelay=0)
     {
         if (null !== $maxAttempts && $maxAttempts < 1) {
             throw new InvalidArgumentException(sprintf(

@@ -39,7 +39,7 @@ final class PcntlForkingHandler implements MessageHandler
 
     private Pcntl $pcntl;
 
-    public function __construct(MessageHandler $wrapped, Pcntl $pcntl=null)
+    public function __construct(MessageHandler $wrapped, ?Pcntl $pcntl=null)
     {
         $this->wrapped = $wrapped;
         $this->pcntl = $pcntl ?: new Pcntl();
