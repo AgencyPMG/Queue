@@ -13,13 +13,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - php-version: 8.3
           - php-version: 8.4
+          - php-version: 8.5
 
 
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: PHP
         uses: ./.github/actions/setup-php
         with:
@@ -34,12 +34,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - php-version: 8.3
           - php-version: 8.4
+          - php-version: 8.5
 
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: PHP
         uses: ./.github/actions/setup-php
         with:
