@@ -20,7 +20,7 @@ figure out how to deal with each message appropriately.
         :param $options: A set of options from the consumer.
         :return: A promise resolving to a boolean indicating whether the message
             was handled successfully.
-        :rtype: PromiseInterface
+        :rtype: GuzzleHttp\\Promise\\PromiseInterface
 
 
 Callable Handler
