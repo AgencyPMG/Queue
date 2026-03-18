@@ -98,7 +98,8 @@ final class NativeSerializer implements Serializer
      * when it is configured.
      *
      * @param string $str The string to unserialize
-     * @return object|false
+     * @return mixed Any value returned by `unserialize()`
+     * @throws SerializationError If unserialization fails
      */
     private function doUnserialize($str)
     {
