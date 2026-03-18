@@ -29,7 +29,8 @@ interface MessageHandler
      * @param $message The message to process.
      * @param array $options A freeform set of options that may be passed from the
      *        consumer.
-     * @return A promise object that resolves to `true` if the handler was
+     * @return PromiseInterface A promise object that resolves to `true` if the
+     *         handler was
      *         successful, or `false` if the handler failed. Since handlers may
      *         process messages outside the current thread, we're limited to a
      *         boolean here.
