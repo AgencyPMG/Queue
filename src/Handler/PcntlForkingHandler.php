@@ -26,8 +26,8 @@ use PMG\Queue\Handler\Pcntl\Pcntl;
  * A message handler decorator that forks a child process to handle the message.
  *
  * Use with caution, and be aware that forking will mess with things like open
- * connections and resources (sockets, files, etc). Best bet is to wrap this
- * around a `CallableHandler` and bootstrap your entire application for each
+ * connections and resources (sockets, files, etc). The safest approach is to
+ * wrap this around a `CallableHandler` and bootstrap your entire application for each
  * message handled. Or implement your own `MessageHandler` that bootstraps the
  * entire application each time.
  *
@@ -47,9 +47,9 @@ final class PcntlForkingHandler implements MessageHandler
 
     /**
      * {@inheritdoc}
-     * This does not really deal with or log exceptions. It just swallows them
-     * and makes sure that the child process exits with an error (1). Should
-     * you want to do any specialized logging, that should happen in the wrapped
+     * This does not log exceptions directly. It swallows them and makes sure
+     * that the child process exits with an error (1). If you want to do any
+     * specialized logging, that should happen in the wrapped
      * `MessageHandler`. Just be sure to return `false` (the job failed) so it
      * can be retried.
      */
@@ -69,8 +69,8 @@ final class PcntlForkingHandler implements MessageHandler
         $promise = new Promise(function () use (&$promise, $child) {
             $result = $this->pcntl->wait($child);
 
-            // this happens when the promise is cancelled. We don't want to
-            // to try and change the promise to resolved if that happens.
+            // this happens when the promise is cancelled. We do not want to
+            // try to change the promise to resolved if that happens.
             if ($promise->getState() !== PromiseInterface::PENDING) {
                 return;
             }

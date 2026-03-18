@@ -19,7 +19,7 @@ class DefaultEnvelopeTest extends UnitTestCase
 {
     private $message;
 
-    public function testEnvelopeCannotBeCreatedWithAttempsLessThanZero()
+    public function testEnvelopeCannotBeCreatedWithAttemptsLessThanZero()
     {
         $this->expectException(InvalidArg::class);
         new DefaultEnvelope($this->message, -1);

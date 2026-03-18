@@ -2,12 +2,12 @@
 
 ## PHP Version Requirement Bumped to ~7.0
 
-Support for PHP 5.6+ dropped. Stick with 3.X need PHP 5 support is still
+Support for PHP 5.6+ was dropped. Stick with 3.X if PHP 5 support is still
 necessary.
 
 ## `NativeSerializer` Now Requires a `Signer` Instance
 
-Previously one could pass a key to `NativeSerializer` directly. Now a `Signer`
+Previously, you could pass a key to `NativeSerializer` directly. Now a `Signer`
 instance is required. A named constructor is provided if the 3.X behavior is
 still desired.
 
@@ -33,9 +33,9 @@ for more info.
 
 ## For Handler Authors
 
-Implementation of `MessageHandler` now requires a `GuzzleHttp\Promise\PromiseInterface`
-be returned from the `handle` method. This lets consumers do much more graceful
-stopping. If your handler does not *really* need a promise, use `FulfilledPromise`:
+Implementing `MessageHandler` now requires returning a `GuzzleHttp\Promise\PromiseInterface`
+from the `handle` method. This lets consumers stop much more gracefully.
+If your handler does not *really* need a promise, use `FulfilledPromise`:
 
 ```php
 use GuzzleHttp\Promise\FulfilledPromise;
@@ -62,7 +62,7 @@ for the updated method signatures.
 
 ### `Driver::release` was Added
 
-This is a method that should skip the retry system for the given
+This method should skip the retry system for the given
 envelope/message and put it back into a ready state immediately.
 
 ### `assureSerializer` was renamed in `AbstractPersistanceDriver`

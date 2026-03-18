@@ -14,11 +14,11 @@
 namespace PMG\Queue;
 
 /**
- * Defines a driver backend for persistant queues.
+ * Defines a driver backend for persistent queues.
  *
- * Drivers make no promises or guarantees about ordering of messages. Some drivers
- * will be LIFO others will be FIFO and some have no ordering. Don't build systems
- * that depend on those charactertistics.
+ * Drivers make no promises or guarantees about message ordering. Some drivers
+ * will be LIFO, others will be FIFO, and some have no ordering guarantees.
+ * Don't build systems that depend on those characteristics.
  *
  * Additionally, drivers know nothing about configuring a backend. If special steps
  * are required to create a queue, those should be done elsewhere.
@@ -34,7 +34,7 @@ interface Driver
      * @param   string $queueName The name of the queue to put the message in.
      * @param   $message The message to add.
      * @throws  Exception\DriverError when something goes wrong
-     * @return  Envelope An envelop representing the message in the queue.
+     * @return  Envelope An envelope representing the message in the queue.
      */
     public function enqueue(string $queueName, object $message) : Envelope;
 
@@ -51,7 +51,7 @@ interface Driver
      * Acknowledge a message as complete.
      *
      * @param   string $queueName The queue from which the message came
-     * @param   $envelope The message envelop -- should be the same instance
+     * @param   $envelope The message envelope -- should be the same instance
      *          returned by `dequeue`
      * @throws  Exception\DriverError when something goes wrong
      * @return  void
@@ -61,19 +61,19 @@ interface Driver
     /**
      * Retry a job -- put it back in the queue for retrying.
      *
-     * @param   string $queueName The queue from whcih the message came
+     * @param   string $queueName The queue from which the message came
      * @param   $envelope The message envelope -- should be the same instance
      *          returned from `dequeue`
      * @throws  Exception\DriverError when something goes wrong
      * @return  Envelope The envelope that was retried. This can be the same
-     *          envelope passed in or a new one depending on the drivers needs.
+     *          envelope passed in or a new one depending on the driver's needs.
      */
     public function retry(string $queueName, Envelope $envelope) : Envelope;
 
     /**
-     * Fail a job -- this called when no more retries can be attempted.
+     * Fail a job. This is called when no more retries can be attempted.
      *
-     * @param   string $queueName The queue from whcih the message came
+     * @param   string $queueName The queue from which the message came
      * @param   $envelope The message envelope -- should be the same instance
      *          returned from `dequeue`
      * @throws  Exception\DriverError when something goes wrong

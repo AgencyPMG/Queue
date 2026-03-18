@@ -55,7 +55,7 @@ class HmacSha256NativeSerializerTest extends SerializerIntegrationTestCase
     }
 
     /**
-     * @group regresion
+     * @group regression
      */
     public function testMessagesSerializedInVersion2xCanStillBeUnserialized()
     {

@@ -47,11 +47,11 @@ interface Envelope
     public function unwrap() : object;
 
     /**
-     * Returns a new envelop with all the same attributes but an incremented
+     * Returns a new envelope with all the same attributes but an incremented
      * attempt count.
      *
-     * @param $delay The amount number of seconds the message should be delayed before retrying
-     * @return  Envelop
+     * @param $delay The number of seconds the message should be delayed before retrying
+     * @return  Envelope
      */
     public function retry(int $delay=0) : Envelope;
 }

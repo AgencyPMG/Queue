@@ -15,8 +15,8 @@ $driver = new Queue\Driver\MemoryDriver();
 $router = new Queue\Router\SimpleRouter('q');
 $producer = new Queue\DefaultProducer($driver, $router);
 
-// an example callback handler. If you're doing something like this in your
-// own application consider using `pmg/queue-mapping-handler`
+// An example callback handler. If you're doing something like this in your
+// own application, consider using `pmg/queue-mapping-handler`.
 $handler = new Queue\Handler\CallableHandler(function (object $msg) {
     var_dump($msg);
     return true;
@@ -24,7 +24,7 @@ $handler = new Queue\Handler\CallableHandler(function (object $msg) {
 $consumer = new Queue\DefaultConsumer(
     $driver,
     $handler,
-    new Queue\Retry\NeverSpec(), // allow never retry messages
+    new Queue\Retry\NeverSpec(), // disable retries
     new StreamLogger()
 );
 

@@ -24,7 +24,7 @@ final class SodiumCryptoAuth implements Signer
 
     /**
      * Constructor. This tries to sign a dummy message immediately to validate
-     * that the key okay for libsodium.
+     * that the key works with libsodium.
      *
      * @param $key The key with which messages will be signed.
      */

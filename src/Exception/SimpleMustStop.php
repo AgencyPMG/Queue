@@ -14,7 +14,7 @@
 namespace PMG\Queue\Exception;
 
 /**
- * A simple must stop exception. Uses in tests.
+ * A simple must-stop exception used in tests.
  *
  * @since   2.0
  */

@@ -10,16 +10,16 @@ The biggest change is the extraction of the `PheanstalkDriver` into its own
 library. Rather than `composer require pmg/queue`, you'll want to require the
 pheanstalk driver instead: `composer require pmg/queue-pheanstalk`.
 
-## Introduction of `MessageHandler` and removal of Exectors & Resolvers
+## Introduction of `MessageHandler` and Removal of Executors & Resolvers
 
-Previously you gave the consumer an instance of a `MessageExector` that wrapped
+Previously, you gave the consumer an instance of a `MessageExecutor` that wrapped
 up a `HandlerResolver`. The point of this was to map callables to message names.
 
-In 3.0, we replace those two things with a single `MessageHandler` interface.
-There are two built in: a `CallableHandler` and `PcntlForkingHandler`.
+In 3.0, those two pieces are replaced by a single `MessageHandler` interface.
+There are two built-in options: a `CallableHandler` and `PcntlForkingHandler`.
 
-This was done to better reflect how PMG is using the Queue (and how we think it
-should be used).
+This change better reflects how PMG uses Queue and how we think it should be
+used.
 
 ### 2.X
 
@@ -65,7 +65,7 @@ No problem, it was moved into its own library.
 composer require pmg/queue-mapping-handler
 ```
 
-And use it like so:
+Use it like this:
 
 ```php
 use PMG\Queue as Q;

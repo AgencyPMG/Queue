@@ -1,7 +1,7 @@
 Producers
 =========
 
-Producers add messages to a driver backed for the :doc:`consumer <consumers>` to
+Producers add messages to a driver backend for the :doc:`consumer <consumers>` to
 pick up and handle.
 
 .. php:interface:: Producer
@@ -17,7 +17,7 @@ pick up and handle.
 
 The default producer implementation takes a driver and a router as its
 constructor arguments and uses the router (explained below) to send its messages
-into a drivers specific queue.
+into a driver-specific queue.
 
 .. code-block:: php
 
@@ -36,9 +36,8 @@ into a drivers specific queue.
 Routers
 -------
 
-``pmg/queue`` is built with multi-queue support in in mind. To accomplish that
-on the producer side of things an implementation of ``PMG\Queue\Router`` is
-used.
+``pmg/queue`` is built with multi-queue support in mind. To support that on the
+producer side, an implementation of ``PMG\Queue\Router`` is used.
 
 .. php:interface:: Router
 
@@ -46,14 +45,14 @@ used.
 
     .. php:method:: queueFor(PMG\\Queue\\Message $message)
 
-        Looks a queue name for a given message.
+        Looks up a queue name for a given message.
 
         :param $message: the message to route
         :returns: A string queue name if found, ``null`` otherwise.
         :rtype: string or null
 
 
-Routing all Message to a Single Queue
+Routing All Messages to a Single Queue
 """""""""""""""""""""""""""""""""""""
 
 Use ``PMG\Queue\SimpleRouter``, which takes a queue name in the constructor
@@ -64,7 +63,7 @@ and always returns it.
     <?php
     use PMG\Queue\Router\SimpleRouter;
 
-    // all message will go in the "queueName" queue
+    // all messages will go into the "queueName" queue
     $router = new SimpleRouter('queueName');
 
 

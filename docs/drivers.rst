@@ -10,11 +10,11 @@ Drivers
 -------
 
 Drivers are the queue backend hidden behind the ``PMG\Queue\Driver`` interface.
-``pmg/queue`` comes with two drivers built in: *memory* and *pheanstalk*
+``pmg/queue`` comes with two built-in drivers: *memory* and *pheanstalk*
 (beanstalkd).
 
-Drivers have method for enqueuing and dequeueing messages as well as methods for
-acknowledging a message is complete, retrying a message, or marking a message
+Drivers have methods for enqueuing and dequeueing messages as well as methods
+for acknowledging that a message is complete, retrying a message, or marking a message
 as failed.
 
 .. _envelopes:
@@ -25,7 +25,7 @@ Envelopes
 Envelopes wrap up :doc:`messages <messages>` to allow drivers to add additional
 metadata. One example of such metadata is a :ref:`retry count <retrying>` that
 the :doc:`consumers <consumers>` may use to determine if a message should be
-retried. The :ref:`pheanstalk driver <pheanstalk-driver>` implements its own envelop
+retried. The :ref:`pheanstalk driver <pheanstalk-driver>` implements its own envelope
 class so it can track the beanstalkd job identifier for the message.
 
 Drivers are free to do whatever they need to do as long as their envelope
@@ -34,7 +34,7 @@ implements ``PMG\Queue\Envelope``.
 Driver Implementations
 ----------------------
 
-The core ``pmg/queue`` library provides a in memory driver and PMG maintains a
+The core ``pmg/queue`` library provides an in-memory driver, and PMG maintains a
 `driver for beanstalkd <https://github.com/AgencyPMG/queue-pheanstalk/tree/master/examples>`_
 that uses the `pheanstalk <https://github.com/pda/pheanstalk>`_ library.
 
@@ -61,9 +61,9 @@ keeps messages in memory.
     // $handler instanceof PMG\Queue\MessageHandler
     $consumer = new DefaultConsumer($driver, $handler);
 
-The memory driver is not very useful outside of testing. For instance,
-while doing end to end tests, you may want to switch out your producers library
-to use the memory driver then verify the expected messages when into it.
+The memory driver is not especially useful outside of testing. For instance,
+while doing end-to-end tests, you may want your producer layer to use the
+memory driver and then verify that the expected messages went into it.
 
 .. code-block:: php
 
@@ -79,7 +79,8 @@ to use the memory driver then verify the expected messages when into it.
 
         public function testSomething()
         {
-            // imagine some stuff happened before this, now we need to verify that
+            // imagine some setup happened before this; now we need to verify
+            // that the expected message is in the queue.
 
             $envelope = $this->driver->dequeue(self::TESTQ);
             
@@ -131,13 +132,13 @@ and :doc:`messages <messages>` to something the persistent backend can store.
 Similarly, whatever is stored in the queue backend needs to be turned back into
 a message. **Serializers** make that happen.
 
-All serializers implements ``PMG\Queue\Serializer\Serializer`` and one
-implementation is provied by default: ``NativeSerializer``.
+All serializers implement ``PMG\Queue\Serializer\Serializer``, and one
+implementation is provided by default: ``NativeSerializer``.
 
-``NativeSerializer`` uses PHP's build in ``serialize`` and ``unserialize``
+``NativeSerializer`` uses PHP's built-in ``serialize`` and ``unserialize``
 functions. Serialized envelopes are base64 encoded and signed (via a ``Signer``).
-The signature is a way to authenticate the message: make sure it came from a
-known source and hasn't been tampered with
+The signature authenticates the message and helps ensure it came from a known
+source and has not been tampered with.
 
 .. code-block:: php
 
@@ -151,8 +152,8 @@ known source and hasn't been tampered with
 
     // ...
 
-Should want to use ``ext-libsodium`` or the built in libsodium support in PHP
-7.2+ there is also a ``SodiumCryptoAuth`` signer.
+If you want to use ``ext-libsodium`` or the built-in libsodium support in PHP
+7.2+, there is also a ``SodiumCryptoAuth`` signer.
 
 .. code-block:: php
 
@@ -196,5 +197,5 @@ Implementing Your Own Drivers
 -----------------------------
 
 Persistent drivers are not required to use serializers (or anything else), but
-if they do ``PMG\Queue\Driver\AbstractPersistanceDriver`` provides helpers for
-the usage of serializers.
+if they do, ``PMG\Queue\Driver\AbstractPersistanceDriver`` provides helpers for
+using serializers.

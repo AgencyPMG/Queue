@@ -26,12 +26,13 @@ interface MessageHandler
      * Handle a message. What that means depends on the implementation, but it
      * probably means interact with the user's system based on the given message.
      *
-     * @param $message That message to process.
+     * @param $message The message to process.
      * @param array $options A freeform set of options that may be passed from the
      *        consumer.
-     * @return a promise object that resolves to `true` if the the handler was successful.
-     *         or false if the handler failed. Since handlers may process messages
-     *         outside the current thread, we're limited to a boolean here.
+     * @return A promise object that resolves to `true` if the handler was
+     *         successful, or `false` if the handler failed. Since handlers may
+     *         process messages outside the current thread, we're limited to a
+     *         boolean here.
      */
     public function handle(object $message, array $options=[]) : PromiseInterface;
 }
