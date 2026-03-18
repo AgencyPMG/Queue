@@ -35,11 +35,10 @@ class Pcntl
     }
 
     /**
-     * Fork a new process and return the current process's ID. In the parent
-     * thread, this will be the child process's ID, and the child thread will
-     * see a `0`.
+     * Fork a new process using `pcntl_fork()`.
      *
-     * @return int
+     * @return int The child PID in the parent process, `0` in the child
+     *             process, or `-1` on failure.
      */
     public function fork() : int
     {
@@ -52,7 +51,7 @@ class Pcntl
      * result object. If there was a non-normal exit (like a segfault), this
      * will throw.
      *
-     * @return bool True if the child exited successfully.
+     * @return WaitResult The child process exit result.
      */
     public function wait($child) : WaitResult
     {
