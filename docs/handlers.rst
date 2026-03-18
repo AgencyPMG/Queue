@@ -27,7 +27,8 @@ Callable Handler
 ----------------
 
 The simplest handler could just be a callable that invokes the provided callback
-with the message.
+with the message. This example assumes your messages implement
+``PMG\Queue\Message`` because it relies on ``getName()``.
 
 .. code-block:: php
 
