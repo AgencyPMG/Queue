@@ -29,8 +29,7 @@ use PMG\Queue\Signer\HmacSha256;
 final class NativeSerializer implements Serializer
 {
     /**
-     * Only applicable to PHP 7+. This is a set of allowed classes passed
-     * to the second argument of `unserialize`.
+     * A set of allowed classes passed to the second argument of `unserialize`.
      *
      * @var string[]
      */
@@ -96,9 +95,9 @@ final class NativeSerializer implements Serializer
 
     /**
      * Small wrapper around `unserialize` so we can pass in `$allowedClasses`
-     * if the PHP version is 7+
+     * when it is configured.
      *
-     * @param string $str the string to unserialize
+     * @param string $str The string to unserialize
      * @return object|false
      */
     private function doUnserialize($str)
