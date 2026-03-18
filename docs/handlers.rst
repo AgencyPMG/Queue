@@ -132,7 +132,7 @@ Use the same command bus with each message.
     $consumer = new DefaultConsumer($driver, $handler);
 
 Alternatively, you can create a new command bus to handle each message with
-`CreatingTacticianHandler`. This is useful if you're using
+``CreatingTacticianHandler``. This is useful if you're using
 :ref:`forking child processes <forking_handler>` to handle messages.
 
 .. code-block:: php

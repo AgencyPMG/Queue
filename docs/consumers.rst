@@ -35,8 +35,8 @@ which your :doc:`producer <producers>` puts messages.
             with the underlying driver. Generally this happens if the persistent
             backend goes down or is unreachable. Without the driver, the consumer
             can't do its work.
-        :returns: True or false to indicate whether the message was handled successfully.
-            Null if no message was handled.
+        :returns: ``true`` or ``false`` to indicate whether the message was handled successfully.
+            ``null`` if no message was handled.
         :rtype: boolean or null
 
     .. php:method:: stop(int $code)
