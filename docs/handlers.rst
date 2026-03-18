@@ -14,12 +14,13 @@ figure out how to deal with each message appropriately.
 
     An object that can handle (process or act upon) a single message.
 
-    .. php:method:: handle(PMG\\Queue\\Message $handle, array $options=[])
+    .. php:method:: handle(object $message, array $options=[])
 
-        :param $handle: The message to handle.
+        :param $message: The message to handle.
         :param $options: A set of options from the consumer.
-        :return: A boolean indicating whether the message was handled successfully.
-        :rtype: boolean
+        :return: A promise resolving to a boolean indicating whether the message
+            was handled successfully.
+        :rtype: PromiseInterface
 
 
 Callable Handler
