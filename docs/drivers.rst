@@ -10,8 +10,9 @@ Drivers
 -------
 
 Drivers are the queue backend hidden behind the ``PMG\Queue\Driver`` interface.
-``pmg/queue`` comes with two built-in drivers: *memory* and *pheanstalk*
-(beanstalkd).
+The core ``pmg/queue`` library ships with a single built-in driver: *memory*.
+PMG also maintains an external *pheanstalk* (beanstalkd) driver in the
+``pmg/queue-pheanstalk`` package.
 
 Drivers have methods for enqueuing and dequeueing messages as well as methods
 for acknowledging that a message is complete, retrying a message, or marking a message

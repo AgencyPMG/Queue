@@ -176,7 +176,7 @@ decorator.
 Forking is useful for memory management, but requires some consideration. For
 instance, database connections might need to be re-opened in the forked process.
 In such cases, create the resources on demand. That is why the
-``TacticianHandler`` above takes a factory callable by default.
+``CreatingTacticianHandler`` above takes a factory callable by default.
 
 In cases where a process fails to fork, a ``PMG\Queue\Exception\CouldNotFork``
 exception will be thrown and the consumer will exit with an unsuccessful status
