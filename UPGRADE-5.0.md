@@ -2,22 +2,23 @@
 
 ## PHP Version Requirement Bumped to ~7.3
 
-Stick with version 4.X should PHP 7.0, 7.1, or 7.2 support be required.
+Stick with version 4.X if PHP 7.0, 7.1, or 7.2 support is required.
 
 ## Messages No Longer Need to Implement `PMG\Queue\Message`
 
-Producers and consumers can now deal with plain objects. By default the *message name*
-for plain object messgaes is the fully qualified class name (FQCN).
+Producers and consumers can now deal with plain objects. By default, the
+*message name* for plain object messages is the fully qualified class name
+(FQCN).
 
 You may, however, implement `PMG\Queue\Message` (and its `getName` method) should
 you want to continue using message names other than FQCNs.
 
-The `PMG\Queue\MessageTrait` which provided the FQCN as a name behavior was also
+The `PMG\Queue\MessageTrait`, which provided FQCN-based naming, was also
 removed.
 
 ### Router Updates for Message Names
 
-The producers routing configuration may need to be updated should you choose to
+The producer's routing configuration may need to be updated should you choose to
 use FQCNs as the message names.
 
 #### Version 4.X
@@ -43,8 +44,8 @@ $router = new MappingRouter([
 
 ## `MessageLifecycle` Has a New `retrying` Method
 
-Rather than have an `$isRetrying` flag in the `failed` method. If the message is
-being retried the `retrying` method will be invoked, otherwise `failed` will.
+Instead of using an `$isRetrying` flag in the `failed` method, the consumer now
+calls `retrying` when a message is being retried and `failed` otherwise.
 
 This should be a pretty easy upgrade:
 
@@ -127,9 +128,9 @@ final class CustomRouter implements Router
 }
 ```
 
-## `MessageHandler::handle` Now Accept an Object
+## `MessageHandler::handle` Now Accepts an Object
 
-Any custom implementation of `MessageHandler` will need to be udpated.
+Any custom implementation of `MessageHandler` will need to be updated.
 
 ```diff
  use GuzzleHttp\Promise\PromiseInterface;
@@ -156,8 +157,8 @@ All changes here are only relevant to authors of `PMG\Queue\Driver`,
 
 And `send` now has a `void` return type as well.
 
-This is part of a broader change (see above) around pmg/queue dealing with
-plain `object` without the requirement of a `Message` implementation.
+This is part of a broader change (see above) around `pmg/queue` handling plain
+objects without requiring a `Message` implementation.
 
 ```diff
 -use PMG\Queue\Message;
@@ -177,7 +178,7 @@ plain `object` without the requirement of a `Message` implementation.
 ### `Driver::enqueue` Now Takes an `object` Instead of a `Message`
 
 Drivers should handle receiving an `Envelope` instance in this method as well.
-Should that happen the driver *must* use that envelope instead of creating its
+If that happens, the driver *must* use that envelope instead of creating its
 own.
 
 
@@ -209,7 +210,7 @@ own.
 In 4.X (and lower) drivers were required to call `$envelope->retry()` on any
 envelope passed in `Driver::retry`.
 
-That should now happen in implements of `PMG\Queue\Consumer` instead.
+That should now happen in implementations of `PMG\Queue\Consumer` instead.
 
 #### Version 4.X Driver
 

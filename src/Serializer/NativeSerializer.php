@@ -22,15 +22,14 @@ use PMG\Queue\Signer\Signer;
 use PMG\Queue\Signer\HmacSha256;
 
 /**
- * A serializer implemtnation that uses PHP's native serialize and unserialize.
+ * A serializer implementation that uses PHP's native serialize and unserialize.
  *
  * @since   2.0
  */
 final class NativeSerializer implements Serializer
 {
     /**
-     * Only applicable to PHP 7+. This is a set of allowed classes passed
-     * to the second argument of `unserialize`.
+     * A set of allowed classes passed to the second argument of `unserialize`.
      *
      * @var string[]
      */
@@ -96,10 +95,11 @@ final class NativeSerializer implements Serializer
 
     /**
      * Small wrapper around `unserialize` so we can pass in `$allowedClasses`
-     * if the PHP verison 7+
+     * when it is configured.
      *
-     * @param string $str the string to unserialize
-     * @return object|false
+     * @param string $str The string to unserialize
+     * @return mixed Any value returned by `unserialize()`
+     * @throws SerializationError If unserialization fails
      */
     private function doUnserialize($str)
     {

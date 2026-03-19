@@ -14,18 +14,18 @@
 namespace PMG\Queue;
 
 /**
- * Provides a way to hook into the life of a message as it moves through
- * a consumer.
+ * Provides a way to hook into a message's lifecycle as it moves through a
+ * consumer.
  *
- * This provides a way to extend the lifecycle of a message without tying you
- * to a specific thing (like an event library, etc).
+ * This lets you extend a message's lifecycle without tying it to a specific
+ * system, such as an event library.
  *
  * @since 4.0
  */
 interface MessageLifecycle
 {
     /**
-     * Called when a message starts its processing in the consumer.
+     * Called when a consumer starts processing a message.
      *
      * @param $message The message that's starting
      * @param $consumer The consumer that's doing the work
@@ -57,8 +57,9 @@ interface MessageLifecycle
     /**
      * Called when a message failed.
      *
-     * No details about the error are provided here because consumers, specifically
-     * the default consumer implementation may not have those details. For instance,
+     * No details about the error are provided here because consumers,
+     * specifically the default consumer implementation, may not have those
+     * details. For instance,
      * if a handler forks the child process will not pass any exception info up
      * to the parent. It's up to your handlers to deal with logging and accountability.
      *
@@ -69,9 +70,9 @@ interface MessageLifecycle
     public function failed(object $message, Consumer $consumer) : void;
 
     /**
-     * Called when message processing was successful.
+     * Called when message processing succeeds.
      *
-     * @param $message The message that errored
+     * @param $message The message that succeeded
      * @param $consumer The consumer that did the work
      * @return void
      */

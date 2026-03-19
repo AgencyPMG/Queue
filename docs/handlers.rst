@@ -3,7 +3,7 @@ Message Handlers
 
 A message handler is used by ``DefaultConsumer`` to do the actual work of
 processing a message. Handlers implement ``PMG\Queue\MessageHandler`` which
-accepts a message and a set of options from the the consumer as its arguments.
+accepts a message and a set of options from the consumer as its arguments.
 
 Every single message goes through a single handler. It's up to that handler to
 figure out how to deal with each message appropriately.
@@ -14,19 +14,21 @@ figure out how to deal with each message appropriately.
 
     An object that can handle (process or act upon) a single message.
 
-    .. php:method:: handle(PMG\\Queue\\Message $handle, array $options=[])
+    .. php:method:: handle(object $message, array $options=[])
 
-        :param $handle: The message to handle.
+        :param $message: The message to handle.
         :param $options: A set of options from the consumer.
-        :return: A boolean indicated whether the message was handled successfully.
-        :rtype: boolean
+        :return: A promise resolving to a boolean indicating whether the message
+            was handled successfully.
+        :rtype: GuzzleHttp\\Promise\\PromiseInterface
 
 
 Callable Handler
 ----------------
 
 The simplest handler could just be a callable that invokes the provided callback
-with the message.
+with the message. This example assumes your messages implement
+``PMG\Queue\Message`` because it relies on ``getName()``.
 
 .. code-block:: php
 
@@ -53,7 +55,7 @@ with the message.
 Multiple Handlers with Mapping Handler
 --------------------------------------
 
-The above `switch` statement is a lot of boilerplaint, so PMG provies a
+The above `switch` statement is a lot of boilerplate, so PMG provides a
 `mapping handler <https://github.com/AgencyPMG/queue-mapping-handler>`_
 that looks up callables for a message based on its name. For example,
 here's a callable for the :ref:`send alert message <example-message>`.
@@ -87,7 +89,7 @@ here's a callable for the :ref:`send alert message <example-message>`.
         }
     }
 
-Now pull in the mapping handler with ``composer require pmg/queue-mapping-handler`` 
+Now pull in the mapping handler with ``composer require pmg/queue-mapping-handler``
 and we can integrate the callable above with it.
 
 .. code-block:: php
@@ -110,11 +112,11 @@ Using Tactician to Handle Messages
 ----------------------------------
 
 `Tactician <https://tactician.thephpleague.com/>`_ is a command bus from The PHP
-League. You can use it to do message handling with the queue.
+League. You can use it to handle messages with the queue.
 
 .. code-block:: bash
 
-    composer install pmg/queue-tactician
+    composer require pmg/queue-tactician
 
 Use the same command bus with each message.
 
@@ -124,15 +126,15 @@ Use the same command bus with each message.
 
     use League\Tactician\CommandBus;
     use PMG\Queue\DefaultConsumer;
-    use PMG\Queue\Handler\TaticianHandler;
+    use PMG\Queue\Handler\TacticianHandler;
 
     $handler = new TacticianHandler(new CommandBus(/* ... */));
 
     /** @var PMG\Queue\Driver $driver */
     $consumer = new DefaultConsumer($driver, $handler);
 
-Alternative, you can create a new command bus to handle each message with
-`CreatingTacticianHandler`. This is useful if you're using
+Alternatively, you can create a new command bus to handle each message with
+``CreatingTacticianHandler``. This is useful if you're using
 :ref:`forking child processes <forking_handler>` to handle messages.
 
 .. code-block:: php
@@ -141,9 +143,9 @@ Alternative, you can create a new command bus to handle each message with
 
     use League\Tactician\CommandBus;
     use PMG\Queue\DefaultConsumer;
-    use PMG\Queue\Handler\CreatingTaticianHandler;
+    use PMG\Queue\Handler\CreatingTacticianHandler;
 
-    $handler = new TacticianHandler(function () {
+    $handler = new CreatingTacticianHandler(function () {
         return new CommandBus(/* ... */);
     });
 
@@ -155,7 +157,7 @@ Alternative, you can create a new command bus to handle each message with
 Handling Messages in Separate Processes
 ---------------------------------------
 
-To handle messages in a forked process use the ``PcntlForkingHandler``
+To handle messages in a forked process, use the ``PcntlForkingHandler``
 decorator.
 
 .. code-block:: php
@@ -175,10 +177,10 @@ decorator.
 
 Forking is useful for memory management, but requires some consideration. For
 instance, database connections might need to be re-opened in the forked process.
-In such cases, the best bet is to simply create the resources on demand. that's
-why the ``TaticianHandler`` above takes a factory callable by default.
+In such cases, create the resources on demand. That is why the
+``CreatingTacticianHandler`` above takes a factory callable by default.
 
 In cases where a process fails to fork, a ``PMG\Queue\Exception\CouldNotFork``
 exception will be thrown and the consumer will exit with an unsuccessful status
-code. Your process manager (supervisord, upstart, systemd, etc) should be
+code. Your process manager (supervisord, upstart, systemd, etc.) should be
 configured to restart the consumer when that happens.

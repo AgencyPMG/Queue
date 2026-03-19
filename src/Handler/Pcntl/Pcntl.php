@@ -16,7 +16,7 @@ namespace PMG\Queue\Handler\Pcntl;
 use PMG\Queue\Exception\AbnormalExit;
 
 /**
- * A very thin wrapper around the the `pcntl_*` functions and `exit` to deal
+ * A very thin wrapper around the `pcntl_*` functions and `exit` to deal
  * with forking processes. This exists simply so we can mock it and validate that
  * `PcntlForkingHandler` works.
  *
@@ -35,10 +35,10 @@ class Pcntl
     }
 
     /**
-     * Fork a new process and return the current processes ID. In the parent thead
-     * this will be the child process' ID and the child thread will see a `0`.
+     * Fork a new process using `pcntl_fork()`.
      *
-     * @return int
+     * @return int The child PID in the parent process, `0` in the child
+     *             process, or `-1` on failure.
      */
     public function fork() : int
     {
@@ -46,12 +46,12 @@ class Pcntl
     }
 
     /**
-     * Wait for the child process to finish and report wether its exit status
-     * was successful or not. If the child process exits normally this is
-     * will return a bool. If there was a non-normal exit (like a segfault)
-     * this will throw.
+     * Wait for the child process to finish and report whether it exited
+     * successfully. If the child process exits normally, this returns a
+     * result object. If there was a non-normal exit (like a segfault), this
+     * will throw.
      *
-     * @return bool True if the child existed successfully.
+     * @return WaitResult The child process exit result.
      */
     public function wait($child) : WaitResult
     {
@@ -66,7 +66,7 @@ class Pcntl
 
     /**
      * Quit the current process by calling `exit`. The exit code is defined by
-     * whather the $succesful value is true.
+     * whether the `$successful` value is true.
      *
      * @param bool $successful If true `exit(0)` otherwise `exit(1)`
      * @return void

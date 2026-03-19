@@ -23,15 +23,15 @@ namespace PMG\Queue;
 interface RetrySpec
 {
     /**
-     * Given an envelop check whether or not it can be retried.
+     * Given an envelope, check whether or not it can be retried.
      *
-     * @param   $env The envelop to check
+     * @param   $env The envelope to check
      * @return  boolean True if the message should be retried.
      */
     public function canRetry(Envelope $env) : bool;
 
     /**
-     * Get the number of seconds before an envelop can be retried.
+     * Get the number of seconds before an envelope can be retried.
      *
      * @since 5.0.0
      */

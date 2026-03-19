@@ -30,21 +30,21 @@ Example Message
         }
     }
 
-Because messages are serialized to be put in a persistent backend they shouldn't
-include objects that require state. In the example above the message just
-contains a user's identifier rather than the full object. The :doc:`handler <handlers>`
+Because messages are serialized and stored in a persistent backend, they should
+not include objects that require state. In the example above, the message
+contains only a user's identifier rather than the full object. The :doc:`handler <handlers>`
 would then look up the user.
 
 See :doc:`consumers` and :doc:`producers` for more information about handlers
-and messages fit into the system as a whole.
+and how messages fit into the system as a whole.
 
 Message Names
 -------------
 
 To work with routing messages into certain queues in the :doc:`producers <producers>`
-we rely on *message names*. By default a message name is an objects full
-qualified class name (FQCN). Should a message need a different name, implement
-the `PMG\Queue\Message` which has a single method: `getName`.
+we rely on *message names*. By default, a message name is an object's fully
+qualified class name (FQCN). If a message needs a different name, implement
+``PMG\Queue\Message``, which has a single method: ``getName``.
 
 .. code-block:: php
 

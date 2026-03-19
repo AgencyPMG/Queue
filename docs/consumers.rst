@@ -1,12 +1,12 @@
 Consumers
 =========
 
-Implementations of ``PMG\Queue\Consumer`` pull message out of a driver backend
-and handle (process) them in some way. The default consumer accomplishes this a
-:doc:`message handler <handlers>`.
+Implementations of ``PMG\Queue\Consumer`` pull messages out of a driver backend
+and handle (process) them in some way. The default consumer accomplishes this
+through a :doc:`message handler <handlers>`.
 
-In all cases ``$queueName`` in the consume should correspond to queues into
-which your :doc:`producer <producers>` put messages.
+In all cases, ``$queueName`` in the consumer should correspond to queues into
+which your :doc:`producer <producers>` puts messages.
 
 .. php:interface:: Consumer
 
@@ -18,30 +18,30 @@ which your :doc:`producer <producers>` put messages.
 
         :param string $queueName: The queue from which the messages will be processed.
         :param MessageLifecycle|null $lifecycle: An optional message lifecycle.
-        :throws: ``PMG\Queue\Exception\DriverError`` If some things goes wrong
+        :throws: ``PMG\Queue\Exception\DriverError`` If something goes wrong
             with the underlying driver. Generally this happens if the persistent
-            backend goes down or is unreachable. Without the driver the consumer
+            backend goes down or is unreachable. Without the driver, the consumer
             can't do its work.
         :returns: An exit code
         :rtype: int
 
     .. php:method:: once($queueName, MessageLifecycle $lifecycle=null)
 
-        Consume and handle a single message from $queueName
+        Consume and handle a single message from $queueName.
 
         :param string $queueName: The queue from which the messages will be processed.
         :param MessageLifecycle|null $lifecycle: An optional message lifecycle.
-        :throws: PMG\\Queue\\Exception\\DriverError If some things goes wrong
+        :throws: PMG\\Queue\\Exception\\DriverError If something goes wrong
             with the underlying driver. Generally this happens if the persistent
-            backend goes down or is unreachable. Without the driver the consumer
+            backend goes down or is unreachable. Without the driver, the consumer
             can't do its work.
-        :returns: True or false to indicate if the message was handled successfully.
-            null if no message was handled.
+        :returns: ``true`` or ``false`` to indicate whether the message was handled successfully.
+            ``null`` if no message was handled.
         :rtype: boolean or null
 
     .. php:method:: stop(int $code)
 
-        Used on a running consumer this will tell it to gracefully stop on its
+        Calling this on a running consumer tells it to stop gracefully on its
         next iteration.
 
         :param int $code: The exit code to return from `run`
@@ -70,12 +70,13 @@ The script to run your consumer might look something like this. Check out the
 Retrying Messages
 -----------------
 
-When a message fails -- by throwing an exception or returns false from a
-``MessageHandler`` -- the consumer puts it back in the queue to retry up to 5
-times by default. This behavior can be adjusted by providing a ``RetrySpec`` as
-the third argument to the ``DefaultConsumer`` constructor. `pmg/queue` provides a
-few by default. Additionally, ``RetrySpec`` provides a method for calculating
-how long a message should be delayed before it can be retried.
+When a message fails, either by throwing an exception or by returning ``false``
+from a ``MessageHandler``, the consumer puts it back in the queue and retries
+it up to five times by default. This behavior can be adjusted by providing a
+``RetrySpec`` as the third argument to the ``DefaultConsumer`` constructor.
+``pmg/queue`` provides a few retry specs by default. Additionally,
+``RetrySpec`` provides a method for calculating how long a message should be
+delayed before it can be retried.
 
     Not all :ref:`drivers <drivers>` support retry delays. Check the driver's
     documentation for more details.
@@ -90,20 +91,20 @@ Retry specs look at ``PMG\Queue\Envelope`` instances, not raw messages. See the
 
     .. php:method:: canRetry(PMG\\Queue\\Envelope $env)
 
-        Inspects an envelop to see if it can retry again.
+        Inspects an envelope to see whether it can be retried again.
 
         :param $env: The message envelope to check
         :returns: true if the message can be retried, false otherwise.
         :rtype: boolean
 
-    .. php:method: retryDelay(PMG\\Queue\Envelope $env)
+    .. php:method:: retryDelay(PMG\\Queue\\Envelope $env)
 
-        Determines how long the message should be delays before retrying again.
+        Determines how long the message should be delayed before retrying again.
         Not all queue drivers will support retry delays.
 
         :param $env: The message envelope for which the delay should be calculated
         :returns: The delay in seconds
-        :rtype: boolean
+        :rtype: int
 
 
 Limited Retries
@@ -173,9 +174,9 @@ argument to ``DefaultConsumer``'s constructor.
 Using Message Lifecycles
 ------------------------
 
-A ``MessageLifecycle`` implementation provides a look into a message as it
-moves through the consumer. The goal is to allow an application to hook into a
-consumer processing to take actions they want. Say an application requires
+A ``MessageLifecycle`` implementation provides visibility into a message as it
+moves through the consumer. The goal is to allow an application to hook into
+consumer processing and take the actions it needs. Say an application requires
 sending a notification when a message fails and will not be retried.
 
 .. code-block:: php
@@ -221,16 +222,16 @@ same time as the queue name, it's up to the implementation to decide if they
 care about that detail. If the implementation does care, it can take the queue
 name as a constructor argument.
 
-We've found at PMG that most times queue name is a detail that simply does not
-matter to the application itself. It's just a way to distribute work.
+We've found at PMG that, most of the time, the queue name is a detail that does
+not matter to the application itself. It's just a way to distribute work.
 
 Provided Message Lifecycles
 """""""""""""""""""""""""""
 
-A ``NullLifecycle``, mentioned above, that does nothing. This makes a convenient
+A ``NullLifecycle``, mentioned above, does nothing. This makes a convenient
 base class to extend and implement what methods your application requires.
 
-Additionally there are a few other provided ``MessageLifecycle`` implementations.
+There are a few other provided ``MessageLifecycle`` implementations.
 
 ``DelegatingLifecycle`` proxies to multiple child lifecycles. Use this to compose
 other lifecycles together. In the example below, both ``NotifyingLifecycle`` and
@@ -258,7 +259,7 @@ moves.
 name. Use this if specific ``MessageLifecycle`` implementations need to fire
 for specific messages. In the example below ``NotifyingLifecycle`` would track
 ``messageA`` through its lifecycle and ``SomeOtherLifecycle`` would track
-``messageB``. Any other message would fallback to ``FallbackLifecycle``.
+``messageB``. Any other message would fall back to ``FallbackLifecycle``.
 
 .. code-block:: php
 
@@ -279,7 +280,7 @@ for specific messages. In the example below ``NotifyingLifecycle`` would track
         'messageB' => new SomeOtherLifecycle(),
     ]);
 
-These two implementations could be combined as well.
+You can combine these two implementations as well.
 
 .. code-block:: php
 
@@ -301,7 +302,7 @@ These two implementations could be combined as well.
 Build Custom Consumers
 ----------------------
 
-Extend ``PMG\\Queue\\AbstractConsumer`` to make things easy and
+Extend ``PMG\\Queue\\AbstractConsumer`` to make implementation easier and
 implement the ``once`` method. Here's an example that decorates another
 ``Consumer`` with events.
 
@@ -322,12 +323,13 @@ implement the ``once`` method. Here's an example that decorates another
 
         /** @var EventDispatcherInterface $events */
 
-        // constructor that takes a consumer and dispatcher to set the props ^
+        // constructor omitted; it should accept a consumer and dispatcher and
+        // assign the properties above.
 
         public function once($queueName)
         {
             $this->events->dispatch('queue:before_once', new Event());
             $this->wrapped->once($queueName);
-            $this->events->disaptch('queue:after_once', new Event());
+            $this->events->dispatch('queue:after_once', new Event());
         }
     }

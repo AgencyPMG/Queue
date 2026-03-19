@@ -14,7 +14,7 @@
 namespace PMG\Queue;
 
 /**
- * Consumer's pull messages out of the queue and execute them.
+ * Consumers pull messages out of the queue and execute them.
  *
  * @since   2.0
  * @api
@@ -35,16 +35,16 @@ interface Consumer
 
     /**
      * Consume a single job from the given queue. This will block until the
-     * job is competed then return. Implementations of this method MUST be
+     * job is completed and then return. Implementations of this method MUST be
      * safe to run in a loop.
      *
      * @param   string $queueName The queue from which jobs will be consumed.
      * @param $lifecycle The message lifecycle to apply to any job run.
      * @throws  Exception\MustStop if the executor or handler throws a must
-     *          stop execption indicating a graceful stop is necessary
+     *          stop exception indicating a graceful stop is necessary
      * @throws  Exception\DriverError|Exception if anything goes wrong with the
      *          underlying driver itself.
-     * @return  boolean|null True if the a job was execute successfully. Null if
+     * @return  boolean|null True if a job was executed successfully. Null if
      *          no job was executed. See the logs.
      */
     public function once(string $queueName, ?MessageLifecycle $lifecycle=null) : ?bool;

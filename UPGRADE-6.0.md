@@ -2,7 +2,7 @@
 
 ## PHP Version Requirement Bumped to ^8.0
 
-Stick with version 5.X should PHP ^7.3 support be required.
+Stick with version 5.X if PHP ^7.3 support is required.
 
 ## Lifecycle Changes
 
@@ -17,5 +17,5 @@ Stick with version 5.X should PHP ^7.3 support be required.
 
 ## MessageTrait
 
-- `PMG\Queue\MessageTrait` was removed, the default behavior has been to use the
-  FQCN since 5.X, so this added no additional functionalty.
+- `PMG\Queue\MessageTrait` was removed. The default behavior has been to use the
+  FQCN since 5.X, so this added no additional functionality.
