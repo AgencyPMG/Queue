@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/AgencyPMG/Queue.svg?branch=master)](https://travis-ci.org/AgencyPMG/Queue)
-[![Documentation Status](https://readthedocs.org/projects/pmg-queue/badge/?version=latest)](http://pmg-queue.readthedocs.io/en/latest/?badge=latest)
+This project is no longer maintained. We recommend using
+[Symfony Messenger](https://symfony.com/doc/current/messenger.html) instead.
 
 # PMG\Queue
 
